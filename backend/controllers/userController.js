@@ -127,7 +127,7 @@ const createDefaultCategories = async (userId) => {
     { name: 'Salary', type: 'income', color: '#10B981', icon: 'briefcase', isDefault: true },
     { name: 'Freelance', type: 'income', color: '#3B82F6', icon: 'laptop', isDefault: true },
     { name: 'Investments', type: 'income', color: '#8B5CF6', icon: 'chart-line', isDefault: true },
-    { name: 'Gifts', type: 'income', color: '#EC4899', icon: 'gift', isDefault: true },
+    { name: 'Allowance', type: 'income', color: '#F59E0B', icon: 'coins', isDefault: true },
     { name: 'Other Income', type: 'income', color: '#6B7280', icon: 'ellipsis-h', isDefault: true },
   ];
 
