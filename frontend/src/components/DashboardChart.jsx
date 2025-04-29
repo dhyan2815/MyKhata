@@ -22,7 +22,7 @@ ChartJS.register(
 );
 
 const DashboardChart = ({ transactionData, isLoading }) => {
-  const [chartType, setChartType] = useState('bar');
+  const [chartType, setChartType] = useState('doughnut');
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
@@ -58,8 +58,8 @@ const DashboardChart = ({ transactionData, isLoading }) => {
       };
 
       setChartData({
-        bar: incomeVsExpenseData,
         doughnut: expenseCategoryData,
+        bar: incomeVsExpenseData,
       });
     }
   }, [transactionData]);
@@ -86,6 +86,16 @@ const DashboardChart = ({ transactionData, isLoading }) => {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-800">Financial Overview</h2>
         <div className="flex space-x-2">
+        <button
+            className={`px-3 py-1 text-sm rounded-md ${
+              chartType === 'doughnut'
+                ? 'bg-teal-600 text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+            }`}
+            onClick={() => setChartType('doughnut')}
+          >
+            Expense Breakdown
+          </button>
           <button
             className={`px-3 py-1 text-sm rounded-md ${
               chartType === 'bar'
@@ -96,21 +106,35 @@ const DashboardChart = ({ transactionData, isLoading }) => {
           >
             Income vs Expense
           </button>
-          <button
-            className={`px-3 py-1 text-sm rounded-md ${
-              chartType === 'doughnut'
-                ? 'bg-teal-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-            onClick={() => setChartType('doughnut')}
-          >
-            Expense Breakdown
-          </button>
         </div>
       </div>
       
       <div className="h-64">
-        {chartType === 'bar' ? (
+        {chartType === 'doughnut' ? (
+          <Doughnut
+          data={chartData.doughnut}
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'right',
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const label = context.label || '';
+                    const value = context.raw || 0;
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const percentage = Math.round((value / total) * 100);
+                    return `${label}: ₹${value.toFixed(2)} (₹{percentage}%)`;
+                  }
+                }
+              }
+            },
+          }}
+        />
+        ) : (
           <Bar
             data={chartData.bar}
             options={{
@@ -138,30 +162,6 @@ const DashboardChart = ({ transactionData, isLoading }) => {
                   }
                 }
               }
-            }}
-          />
-        ) : (
-          <Doughnut
-            data={chartData.doughnut}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  position: 'right',
-                },
-                tooltip: {
-                  callbacks: {
-                    label: function(context) {
-                      const label = context.label || '';
-                      const value = context.raw || 0;
-                      const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                      const percentage = Math.round((value / total) * 100);
-                      return `${label}: ₹${value.toFixed(2)} (₹{percentage}%)`;
-                    }
-                  }
-                }
-              },
             }}
           />
         )}
