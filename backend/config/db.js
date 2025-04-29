@@ -1,9 +1,12 @@
 import mongoose from 'mongoose';
 
 const connectDB = async () => {
+
+  const URI =  process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/mykhata' ;
+  console.log('URI:', URI);
+
   try {
-    console.log('MONGO_URI:', process.env.MONGO_URI);
-    const conn = await mongoose.connect(process.env.MONGODB_URI);
+    const conn = await mongoose.connect(URI); 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error(`❌ MongoDB Connection Error: ${error.message}`);
