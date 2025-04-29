@@ -176,15 +176,15 @@ const TransactionList = ({
                       {transaction.category.name}
                     </span>
                   </td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium text-right ${
+                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium text-right ₹{
                     transaction.type === 'expense' ? 'text-red-600' : 'text-green-600'
                   }`}>
                     {transaction.type === 'expense' ? '-' : '+'}
-                    ${transaction.amount.toFixed(2)}
+                    ₹{transaction.amount.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <Link
-                      to={`/transactions/${transaction._id}/edit`}
+                      to={`/transactions/₹{transaction._id}/edit`}
                       className="text-blue-600 hover:text-blue-900 mr-3"
                     >
                       <Edit size={16} />

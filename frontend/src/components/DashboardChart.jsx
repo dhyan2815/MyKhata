@@ -123,7 +123,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
                 tooltip: {
                   callbacks: {
                     label: function(context) {
-                      return `$${context.raw.toFixed(2)}`;
+                      return `₹${context.raw.toFixed(2)}`;
                     }
                   }
                 }
@@ -133,7 +133,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
                   beginAtZero: true,
                   ticks: {
                     callback: function(value) {
-                      return '$' + value;
+                      return '₹' + value;
                     }
                   }
                 }
@@ -157,7 +157,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
                       const value = context.raw || 0;
                       const total = context.dataset.data.reduce((a, b) => a + b, 0);
                       const percentage = Math.round((value / total) * 100);
-                      return `${label}: $${value.toFixed(2)} (${percentage}%)`;
+                      return `${label}: ₹${value.toFixed(2)} (₹{percentage}%)`;
                     }
                   }
                 }

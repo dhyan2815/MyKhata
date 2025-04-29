@@ -20,12 +20,12 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
       icon: <Tag size={20} />,
       path: '/categories',
     },
-    {
-      name: 'Reports',
-      icon: <PieChart size={20} />,
-      path: '/reports',
-      disabled: true,
-    },
+    // {
+    //   name: 'Reports',
+    //   icon: <PieChart size={20} />,
+    //   path: '/reports',
+    //   disabled: true,
+    // },
     {
       name: 'Profile',
       icon: <User size={20} />,
@@ -91,24 +91,6 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
             ))}
           </ul>
         </nav>
-        
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <div className="rounded-lg bg-teal-50 p-3">
-            <h3 className="text-sm font-medium text-teal-800">Need help?</h3>
-            <p className="mt-1 text-xs text-teal-700">
-              Check out our documentation for tips on getting the most out of MyKhata.
-            </p>
-            <a 
-              href="#" 
-              className="mt-2 text-xs font-medium text-teal-600 hover:text-teal-700 inline-flex items-center"
-            >
-              View Documentation
-              <svg className="ml-1 h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </a>
-          </div>
-        </div>
       </aside>
     </>
   );

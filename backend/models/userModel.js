@@ -24,7 +24,7 @@ const userSchema = mongoose.Schema(
     },
     currency: {
       type: String,
-      default: 'USD',
+      default: 'INR',
     },
   },
   {

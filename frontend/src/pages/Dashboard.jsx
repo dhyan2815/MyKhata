@@ -174,7 +174,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <p className="text-2xl font-bold text-gray-900 mt-2">
-                ${summaryData?.summary?.balance.toFixed(2) || '0.00'}
+                ₹{summaryData?.summary?.balance.toFixed(2) || '0.00'}
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 {dateRange.startDate === dateRange.endDate 
@@ -202,7 +202,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <p className="text-2xl font-bold text-gray-900 mt-2">
-                ${summaryData?.summary?.income.toFixed(2) || '0.00'}
+                ₹{summaryData?.summary?.income.toFixed(2) || '0.00'}
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 {dateRange.startDate === dateRange.endDate 
@@ -230,7 +230,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <p className="text-2xl font-bold text-gray-900 mt-2">
-                ${summaryData?.summary?.expense.toFixed(2) || '0.00'}
+                ₹{summaryData?.summary?.expense.toFixed(2) || '0.00'}
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 {dateRange.startDate === dateRange.endDate 

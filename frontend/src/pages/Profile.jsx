@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getUserProfile, updateUserProfile } from '../api/auth';
 import { useAuth } from '../context/AuthContext';
-import { User, Mail, DollarSign, Save } from 'lucide-react';
+import { User, Mail, Save, IndianRupee } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Profile = () => {
@@ -11,7 +11,7 @@ const Profile = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    currency: 'USD',
+    currency: 'INR',
   });
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,7 +37,7 @@ const Profile = () => {
           email: userData.email,
           password: '',
           confirmPassword: '',
-          currency: userData.currency || 'USD',
+          currency: userData.currency || 'INR',
         });
       } catch (error) {
         toast.error('Failed to load profile data');
@@ -176,7 +176,7 @@ const Profile = () => {
               </label>
               <div className="relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <DollarSign size={16} className="text-gray-400" />
+                  <IndianRupee size={16} className="text-gray-400" />
                 </div>
                 <select
                   id="currency"
