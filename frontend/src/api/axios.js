@@ -4,13 +4,13 @@ import axios from 'axios';
 const api = axios.create({
 
   // Render backend server
-  // baseURL: 'https://mykhata-backend.onrender.com/api',
+  baseURL: 'https://mykhata-backend.onrender.com/api',
 
   // Mobile backend server
   // baseURL: 'http://192.168.1.90:5000/api',
 
   // Local backend server
-  baseURL: '/api',
+  // baseURL: '/api',
 
   headers: {
     'Content-Type': 'application/json',
