@@ -2,7 +2,8 @@ import mongoose from 'mongoose';
 
 const connectDB = async () => {
 
-  const URI =  process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/mykhata' ;
+  const URI =  process.env.MONGO_URI || 'mongodb+srv://dhyan2815:mykhata1234@mykhata.qcfkaci.mongodb.net/' ;
+  
   console.log('URI:', URI);
 
   try {
