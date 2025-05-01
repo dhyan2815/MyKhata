@@ -1,6 +1,5 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import cors from 'cors';
 import morgan from 'morgan';
 import connectDB from './config/db.js';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
@@ -23,6 +22,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const allowedOrigin = 'https://mykhata-frontend.onrender.com';
 
+// CORS Middleware Manual Setup
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', allowedOrigin);
   res.header('Access-Control-Allow-Credentials', 'true');
@@ -56,11 +56,8 @@ app.use(errorHandler);
 // Start server
 const PORT = process.env.PORT || 5000;
 
-// For local backend server || 0.0.0.0 for Mobile backend server
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
 
-  // console.log(`Server running on port http://localhost:${PORT}`);
-
-  // For Render backend server
+  // Render backend server
   console.log(`Server running on https://mykhata-backend.onrender.com`);
 });

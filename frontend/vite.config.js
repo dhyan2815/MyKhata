@@ -8,7 +8,6 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'https://mykhata-backend.onrender.com',
-        // target: 'http://localhost:5000',
         changeOrigin: true,
       },
     },
