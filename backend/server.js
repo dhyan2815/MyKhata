@@ -34,11 +34,14 @@ const corsOptions = {
   origin: 'https://mykhata-frontend.onrender.com',  
 
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 app.use(cors(corsOptions));
+
+// Ensure preflight OPTIONS requests are handled
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
 
@@ -47,7 +50,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/categories', categoryRoutes);
 
-// Welcome route
+// Welcome ROOT route
 app.get('/', (req, res) => {
   res.send('MyKhata API is running');
 });
