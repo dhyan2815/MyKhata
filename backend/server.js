@@ -21,27 +21,21 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-const corsOptions = {
-  // '*' for allowing all origins
+const allowedOrigin = 'https://mykhata-frontend.onrender.com';
 
-  // For Mobile frontend server
-  // origin: 'http://192.168.1.90:5173',
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', allowedOrigin);
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  // Respond to preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
 
-  // For Local frontend server
-  // origin: 'http://localhost:5173',
-
-  // For Render frontend server
-  origin: 'https://mykhata-frontend.onrender.com',  
-
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
-
-app.use(cors(corsOptions));
-
-// Ensure preflight OPTIONS requests are handled
-app.options('*', cors(corsOptions));
+  next();
+});
 
 app.use(express.json());
 
