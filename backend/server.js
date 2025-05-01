@@ -61,8 +61,8 @@ const PORT = process.env.PORT || 5000;
 // For local backend server || 0.0.0.0 for Mobile backend server
 app.listen(PORT, '0.0.0.0', () => {
 
-  console.log(`Server running on port http://localhost:${PORT}`);
+  // console.log(`Server running on port http://localhost:${PORT}`);
 
   // For Render backend server
-  // console.log(`Server running on https://mykhata-backend.onrender.com`);
+  console.log(`Server running on https://mykhata-backend.onrender.com`);
 });
