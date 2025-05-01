@@ -22,7 +22,17 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const corsOptions = {
-  origin: 'https://mykhata-frontend.onrender.com',  // '*' for allowing all origins
+  // '*' for allowing all origins
+
+  // For Mobile frontend server
+  // origin: 'http://192.168.1.90:5173',
+
+  // For Local frontend server
+  // origin: 'http://localhost:5173',
+
+  // For Render frontend server
+  origin: 'https://mykhata-frontend.onrender.com',  
+
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
@@ -47,7 +57,12 @@ app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  // console.log(`Server running on port http://localhost:${PORT}`);
-  console.log(`Server running on https://mykhata-backend.onrender.com`);
+
+// For local backend server || 0.0.0.0 for Mobile backend server
+app.listen(PORT, '0.0.0.0', () => {
+
+  console.log(`Server running on port http://localhost:${PORT}`);
+
+  // For Render backend server
+  // console.log(`Server running on https://mykhata-backend.onrender.com`);
 });

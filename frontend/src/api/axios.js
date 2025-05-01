@@ -2,7 +2,16 @@ import axios from 'axios';
 
 // Create an axios instance
 const api = axios.create({
-  baseURL: 'https://mykhata-backend.onrender.com/api' || 'http://localhost:5000/api',
+
+  // Render backend server
+  baseURL: 'https://mykhata-backend.onrender.com/api',
+
+  // Mobile backend server
+  // baseURL: 'http://192.168.1.90:5000/api',
+
+  // Local backend server
+  // baseURL: '/api',
+
   headers: {
     'Content-Type': 'application/json',
   },
