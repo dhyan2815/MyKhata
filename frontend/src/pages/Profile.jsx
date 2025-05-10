@@ -114,13 +114,13 @@ const Profile = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
-        <p className="text-gray-600 mt-1">
+        <h1 className="text-2xl font-bold dark:text-white dark:bg-gray-900 text-gray-900">Profile Settings</h1>
+        <p className="dark:text-white text-gray-600 mt-1">
           Manage your account details
         </p>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-gray-200">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex items-center justify-center mb-6">
             <div className="h-24 w-24 rounded-full bg-teal-600 text-white flex items-center justify-center text-2xl">
