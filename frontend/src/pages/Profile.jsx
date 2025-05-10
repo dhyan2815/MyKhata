@@ -202,9 +202,8 @@ const Profile = () => {
                 Preferred Theme
               </label>
               <div className="flex items-center">
-                <Sun size={16} className="mr-2" />
+                <ToggleMode />
               </div>
-              <ToggleMode />
             </div>
 
           </div>
