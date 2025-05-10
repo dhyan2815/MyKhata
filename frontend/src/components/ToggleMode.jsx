@@ -16,7 +16,7 @@ const ToggleMode = () => {
         }`}
       >
         <div
-          className={`w-6 h-6 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
+          className={`w-3 h-3 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
             isDark ? 'translate-x-6' : 'translate-x-0'
           }`}
         />

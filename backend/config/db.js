@@ -2,9 +2,7 @@ import mongoose from 'mongoose';
 
 const connectDB = async () => {
 
-  const URI = process.env.MONGO_URI;
-
-  // const URI =  process.env.MONGO_URI || 'mongodb+srv://dhyan2815:mykhata1234@mykhata.qcfkaci.mongodb.net/' ;
+  const URI = process.env.MONGODB_URI;
   
   console.log('URI:', URI);
 
