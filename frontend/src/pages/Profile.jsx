@@ -3,6 +3,7 @@ import { getUserProfile, updateUserProfile } from '../api/auth';
 import { useAuth } from '../context/AuthContext';
 import { User, Mail, Save, IndianRupee } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ToggleMode from '../components/ToggleMode';
 
 const Profile = () => {
   const { user, updateUser } = useAuth();
@@ -170,6 +171,7 @@ const Profile = () => {
               </div>
             </div>
 
+            {/* Currency Selection */}
             <div>
               <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-1">
                 Preferred Currency
@@ -192,6 +194,15 @@ const Profile = () => {
                   ))}
                 </select>
               </div>
+            </div>
+
+            {/* Theme Toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Sun size={16} className="mr-2" />
+                <span className="text-sm font-medium text-gray-900">Change Theme</span>
+              </div>
+              <ToggleMode />
             </div>
           </div>
 
