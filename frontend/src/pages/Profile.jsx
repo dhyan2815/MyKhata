@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getUserProfile, updateUserProfile } from '../api/auth';
 import { useAuth } from '../context/AuthContext';
-import { User, Mail, Save, IndianRupee } from 'lucide-react';
+import { User, Mail, Save, Sun, IndianRupee } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ToggleMode from '../components/ToggleMode';
 
