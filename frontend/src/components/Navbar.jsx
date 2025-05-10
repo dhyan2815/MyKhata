@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 const Navbar = ({ toggleSidebar }) => {
   const { user, logout } = useAuth();
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  console.log("User check:", user);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-30 bg-white shadow-sm h-16">
@@ -37,7 +38,7 @@ const Navbar = ({ toggleSidebar }) => {
               onClick={() => setProfileMenuOpen(!profileMenuOpen)}
             >
               <div className="h-8 w-8 rounded-full bg-teal-600 text-white flex items-center justify-center">
-                {user?.name?.charAt(0).toUpperCase() || <UserCircle />}
+                {user?.name ? user.name.charAt(0).toUpperCase() : <UserCircle size={20} />}
               </div>
               <span className="hidden md:block ml-2 text-sm font-medium">
                 {user?.name || 'User'}
