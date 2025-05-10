@@ -199,13 +199,12 @@ const Profile = () => {
             {/* Theme Toggle */}
             <div>
               <label htmlFor="theme" className="block text-sm font-medium text-gray-700 mb-1">
+                <Sun size={16} className="mr-2" />
                 Preferred Theme
               </label>
               <div className="flex items-center">
-                <Sun size={16} className="mr-2" />
-                <span className="text-sm font-medium text-gray-900">Change Theme</span>
-              </div>
               <ToggleMode />
+              </div>
             </div>
 
           </div>
