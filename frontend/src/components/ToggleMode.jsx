@@ -7,7 +7,7 @@ const ToggleMode = () => {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm text-black dark:text-gray-300">Theme:</span>
+      <span className="text-sm text-black dark:text-white">Theme:</span>
       
       <button
         onClick={toggleTheme}
@@ -22,7 +22,7 @@ const ToggleMode = () => {
         />
       </button>
       
-      <span className="text-sm text-black dark:text-gray-300">
+      <span className="text-sm text-black dark:text-white">
         {isDark ? 'Dark' : 'Light'}
       </span>
     </div>
