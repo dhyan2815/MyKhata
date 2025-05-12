@@ -155,11 +155,11 @@ const Categories = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen space-y-6 p-5 rounded-lg dark:bg-gray-800 dark:text-white">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Categories</h1>
+          <p className="text-gray-600 mt-1 dark:text-gray-300">
             Manage your income and expense categories
           </p>
         </div>
@@ -174,7 +174,7 @@ const Categories = () => {
             });
             setShowForm(!showForm);
           }}
-          className="btn btn-primary"
+          className="btn btn-primary bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
         >
           <Plus size={16} className="mr-2" />
           Add Category
@@ -182,14 +182,14 @@ const Categories = () => {
       </div>
 
       {showForm && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 animate-fadeIn">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 animate-fadeIn dark:bg-gray-700 dark:border-gray-600">
+          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
             {editingCategory ? 'Edit Category' : 'Add New Category'}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Category Name
                 </label>
                 <input
@@ -198,12 +198,12 @@ const Categories = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="input"
+                  className="input dark:bg-gray-700 dark:text-white"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Type
                 </label>
                 <select
@@ -211,20 +211,20 @@ const Categories = () => {
                   name="type"
                   value={formData.type}
                   onChange={handleInputChange}
-                  className="input"
+                  className="input dark:bg-gray-700 dark:text-white"
                   disabled={editingCategory?.isDefault}
                 >
                   <option value="income">Income</option>
                   <option value="expense">Expense</option>
                 </select>
                 {editingCategory?.isDefault && (
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     Type cannot be changed for default categories
                   </p>
                 )}
               </div>
               <div>
-                <label htmlFor="color" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="color" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Color
                 </label>
                 <select
@@ -232,7 +232,7 @@ const Categories = () => {
                   name="color"
                   value={formData.color}
                   onChange={handleInputChange}
-                  className="input"
+                  className="input dark:bg-gray-700 dark:text-white"
                 >
                   {colorOptions.map(color => (
                     <option key={color.value} value={color.value}>
@@ -246,7 +246,7 @@ const Categories = () => {
                 ></div>
               </div>
               <div>
-                <label htmlFor="icon" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="icon" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Icon
                 </label>
                 <select
@@ -254,7 +254,7 @@ const Categories = () => {
                   name="icon"
                   value={formData.icon}
                   onChange={handleInputChange}
-                  className="input"
+                  className="input dark:bg-gray-700 dark:text-white"
                 >
                   {iconOptions.map(icon => (
                     <option key={icon.value} value={icon.value}>
@@ -268,12 +268,12 @@ const Categories = () => {
               <button
                 type="button"
                 onClick={cancelEdit}
-                className="btn btn-secondary"
+                className="btn btn-secondary dark:bg-gray-600 dark:hover:bg-gray-500"
               >
                 <X size={16} className="mr-2" />
                 Cancel
               </button>
-              <button type="submit" className="btn btn-primary">
+              <button type="submit" className="btn btn-primary bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
                 <Save size={16} className="mr-2" />
                 {editingCategory ? 'Update' : 'Save'}
               </button>
@@ -282,25 +282,17 @@ const Categories = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        <div className="p-4 border-b border-gray-200">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden dark:bg-gray-700 dark:border-gray-600">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-600">
           <div className="flex">
             <button
-              className={`px-4 py-2 rounded-l-md ${
-                selectedType === 'expense'
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+              className={`px-4 py-2 rounded-l-md ${selectedType === 'expense' ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500'}`}
               onClick={() => setSelectedType('expense')}
             >
               Expense Categories
             </button>
             <button
-              className={`px-4 py-2 rounded-r-md ${
-                selectedType === 'income'
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+              className={`px-4 py-2 rounded-r-md ${selectedType === 'income' ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500'}`}
               onClick={() => setSelectedType('income')}
             >
               Income Categories
@@ -313,20 +305,20 @@ const Categories = () => {
             {[1, 2, 3, 4].map(i => (
               <div key={i} className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
-                  <div className="ml-4 w-24 h-4 bg-gray-200 rounded"></div>
+                  <div className="w-8 h-8 bg-gray-200 rounded-full dark:bg-gray-600"></div>
+                  <div className="ml-4 w-24 h-4 bg-gray-200 rounded dark:bg-gray-600"></div>
                 </div>
-                <div className="w-16 h-4 bg-gray-200 rounded"></div>
+                <div className="w-16 h-4 bg-gray-200 rounded dark:bg-gray-600"></div>
               </div>
             ))}
           </div>
         ) : (
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-gray-200 dark:divide-gray-600">
             {filteredCategories.length > 0 ? (
               filteredCategories.map(category => (
                 <li 
                   key={category._id} 
-                  className="p-4 hover:bg-gray-50 flex items-center justify-between"
+                  className="p-4 hover:bg-gray-50 flex items-center justify-between dark:hover:bg-gray-600"
                 >
                   <div className="flex items-center">
                     <div 
@@ -335,11 +327,11 @@ const Categories = () => {
                     >
                       <Tag size={14} />
                     </div>
-                    <span className="ml-4 text-gray-900 font-medium">
+                    <span className="ml-4 text-gray-900 font-medium dark:text-gray-100">
                       {category.name}
                     </span>
                     {category.isDefault && (
-                      <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full">
+                      <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full dark:bg-gray-800 dark:text-gray-400">
                         Default
                       </span>
                     )}
@@ -347,14 +339,14 @@ const Categories = () => {
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => handleEdit(category)}
-                      className="p-1 text-blue-600 hover:text-blue-800"
+                      className="p-1 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-600"
                     >
                       <Edit size={16} />
                     </button>
                     {!category.isDefault && (
                       <button
                         onClick={() => handleDelete(category._id)}
-                        className="p-1 text-red-600 hover:text-red-800"
+                        className="p-1 text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-600"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -363,7 +355,7 @@ const Categories = () => {
                 </li>
               ))
             ) : (
-              <li className="p-6 text-center text-gray-500">
+              <li className="p-6 text-center text-gray-500 dark:text-gray-400">
                 No {selectedType} categories found
               </li>
             )}

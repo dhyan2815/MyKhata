@@ -82,21 +82,21 @@ const TransactionForm = ({
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+    <form onSubmit={handleSubmit} className="space-y-6 dark:bg-gray-900 dark:text-white">
+      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
         <div className="flex flex-col space-y-4">
           {/* Transaction Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Transaction Type
             </label>
-            <div className="flex w-full rounded-md overflow-hidden border border-gray-300">
+            <div className="flex w-full rounded-md overflow-hidden border border-gray-300 dark:border-gray-600">
               <button
                 type="button"
                 className={`flex-1 py-2 px-4 text-sm font-medium text-center ${
                   formData.type === 'expense'
                     ? 'bg-red-500 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-100'
                 }`}
                 onClick={() => handleTypeChange('expense')}
               >
@@ -107,7 +107,7 @@ const TransactionForm = ({
                 className={`flex-1 py-2 px-4 text-sm font-medium text-center ${
                   formData.type === 'income'
                     ? 'bg-green-500 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-100'
                 }`}
                 onClick={() => handleTypeChange('income')}
               >
@@ -118,12 +118,12 @@ const TransactionForm = ({
           
           {/* Amount */}
           <div>
-            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Amount
             </label>
             <div className="relative rounded-md shadow-sm">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <IndianRupee size={16} className="text-gray-400" />
+                <IndianRupee size={16} className="text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type="number"
@@ -132,7 +132,7 @@ const TransactionForm = ({
                 placeholder="0.00"
                 step="0.01"
                 min="0"
-                className="input pl-10"
+                className="input pl-10 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                 value={formData.amount}
                 onChange={handleChange}
                 required
@@ -142,17 +142,17 @@ const TransactionForm = ({
           
           {/* Category */}
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Category
             </label>
             <div className="relative rounded-md shadow-sm">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Tag size={16} className="text-gray-400" />
+                <Tag size={16} className="text-gray-400 dark:text-gray-500" />
               </div>
               <select
                 id="category"
                 name="category"
-                className="input pl-10 appearance-none"
+                className="input pl-10 appearance-none dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                 value={formData.category}
                 onChange={handleChange}
                 required
@@ -166,26 +166,26 @@ const TransactionForm = ({
                 ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                <ChevronDown size={16} className="text-gray-400" />
+                <ChevronDown size={16} className="text-gray-400 dark:text-gray-500" />
               </div>
             </div>
           </div>
           
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Description
             </label>
             <div className="relative rounded-md shadow-sm">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <AlignLeft size={16} className="text-gray-400" />
+                <AlignLeft size={16} className="text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type="text"
                 id="description"
                 name="description"
                 placeholder="What was this transaction for?"
-                className="input pl-10"
+                className="input pl-10 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                 value={formData.description}
                 onChange={handleChange}
                 required
@@ -195,18 +195,18 @@ const TransactionForm = ({
           
           {/* Date */}
           <div>
-            <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Date
             </label>
             <div className="relative rounded-md shadow-sm">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Calendar size={16} className="text-gray-400" />
+                <Calendar size={16} className="text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type="date"
                 id="date"
                 name="date"
-                className="input pl-10"
+                className="input pl-10 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                 value={formData.date}
                 onChange={handleChange}
                 required
@@ -219,7 +219,7 @@ const TransactionForm = ({
       <div className="flex space-x-4 justify-end">
         <button
           type="button"
-          className="btn btn-secondary"
+          className="btn btn-secondary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           onClick={() => navigate(-1)}
           disabled={isLoading}
         >
@@ -227,7 +227,7 @@ const TransactionForm = ({
         </button>
         <button
           type="submit"
-          className="btn btn-primary"
+          className="btn btn-primary dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
           disabled={isLoading}
         >
           {isLoading ? (

@@ -26,71 +26,115 @@ const DashboardChart = ({ transactionData, isLoading }) => {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
-    if (transactionData && transactionData.categories) {
-      // Prepare data for Bar Chart (Income vs Expense)
-      const incomeVsExpenseData = {
-        labels: ['Income', 'Expense'],
-        datasets: [
-          {
-            data: [
-              transactionData.summary.income || 0,
-              transactionData.summary.expense || 0,
-            ],
-            backgroundColor: ['#10B981', '#EF4444'],
-            borderColor: ['#10B981', '#EF4444'],
-            borderWidth: 1,
-          },
-        ],
-      };
+    if (!transactionData?.summary || !transactionData?.categories) return;
 
-      // Prepare data for Doughnut Chart (Expense Categories)
-      const expenseCategories = transactionData.categories.expense || [];
-      const expenseCategoryData = {
-        labels: expenseCategories.map((cat) => cat.name),
-        datasets: [
-          {
-            data: expenseCategories.map((cat) => cat.total),
-            backgroundColor: expenseCategories.map((cat) => cat.color),
-            borderColor: expenseCategories.map((cat) => cat.color),
-            borderWidth: 1,
-          },
-        ],
-      };
+    const { summary, categories } = transactionData;
 
-      setChartData({
-        doughnut: expenseCategoryData,
-        bar: incomeVsExpenseData,
-      });
-    }
+    const incomeVsExpenseData = {
+      labels: ['Income', 'Expense'],
+      datasets: [
+        {
+          data: [summary.income || 0, summary.expense || 0],
+          backgroundColor: ['#10B981', '#EF4444'],
+          borderColor: ['#10B981', '#EF4444'],
+          borderWidth: 1,
+        },
+      ],
+    };
+
+    const expenseCategories = categories.expense || [];
+    const expenseCategoryData = {
+      labels: expenseCategories.map(cat => cat.name),
+      datasets: [
+        {
+          data: expenseCategories.map(cat => cat.total),
+          backgroundColor: expenseCategories.map(cat => cat.color),
+          borderColor: expenseCategories.map(cat => cat.color),
+          borderWidth: 1,
+        },
+      ],
+    };
+
+    setChartData({
+      doughnut: expenseCategoryData,
+      bar: incomeVsExpenseData,
+    });
   }, [transactionData]);
 
   if (isLoading) {
     return (
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 animate-pulse">
-        <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
-        <div className="h-64 bg-gray-200 rounded w-full"></div>
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 animate-pulse">
+        <div className="h-6 bg-gray-200 dark:bg-gray-600 rounded w-1/4 mb-4"></div>
+        <div className="h-64 bg-gray-200 dark:bg-gray-600 rounded w-full"></div>
       </div>
     );
   }
 
   if (!chartData) {
     return (
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 flex items-center justify-center h-64">
-        <p className="text-gray-500">No data available for charts</p>
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 flex items-center justify-center h-64">
+        <p className="text-gray-500 dark:text-gray-400">No data available for charts</p>
       </div>
     );
   }
 
+  const doughnutOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'right',
+        labels: {
+          color: 'rgb(255, 255, 255)', // Ensure legend labels are white in dark mode
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            const label = context.label || '';
+            const value = context.raw || 0;
+            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+            const percentage = total ? Math.round((value / total) * 100) : 0;
+            return `${label}: ₹${value.toFixed(2)} (${percentage}%)`;
+          },
+        },
+      },
+    },
+  };
+
+  const barOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => `₹${context.raw.toFixed(2)}`,
+        },
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        ticks: {
+          callback: (value) => '₹' + value,
+        },
+      },
+    },
+  };
+
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-gray-800">Financial Overview</h2>
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Financial Overview</h2>
         <div className="flex space-x-2">
-        <button
+          <button
             className={`px-3 py-1 text-sm rounded-md ${
               chartType === 'doughnut'
                 ? 'bg-teal-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500'
             }`}
             onClick={() => setChartType('doughnut')}
           >
@@ -100,7 +144,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
             className={`px-3 py-1 text-sm rounded-md ${
               chartType === 'bar'
                 ? 'bg-teal-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                : 'bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500'
             }`}
             onClick={() => setChartType('bar')}
           >
@@ -108,62 +152,12 @@ const DashboardChart = ({ transactionData, isLoading }) => {
           </button>
         </div>
       </div>
-      
+
       <div className="h-64">
         {chartType === 'doughnut' ? (
-          <Doughnut
-          data={chartData.doughnut}
-          options={{
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'right',
-              },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    const label = context.label || '';
-                    const value = context.raw || 0;
-                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                    const percentage = Math.round((value / total) * 100);
-                    return `${label}: ₹${value.toFixed(2)} (₹{percentage}%)`;
-                  }
-                }
-              }
-            },
-          }}
-        />
+          <Doughnut data={chartData.doughnut} options={doughnutOptions} />
         ) : (
-          <Bar
-            data={chartData.bar}
-            options={{
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  display: false,
-                },
-                tooltip: {
-                  callbacks: {
-                    label: function(context) {
-                      return `₹${context.raw.toFixed(2)}`;
-                    }
-                  }
-                }
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  ticks: {
-                    callback: function(value) {
-                      return '₹' + value;
-                    }
-                  }
-                }
-              }
-            }}
-          />
+          <Bar data={chartData.bar} options={barOptions} />
         )}
       </div>
     </div>

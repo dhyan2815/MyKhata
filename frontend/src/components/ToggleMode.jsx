@@ -7,12 +7,13 @@ const ToggleMode = () => {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm text-white dark:text-black">Theme:</span>
+      <span className="text-sm">Theme:</span>
       
       <button
+        type='button'
         onClick={toggleTheme}
         className={`w-7 h-4 flex items-center rounded-full p-1 transition-colors duration-300 ${
-          isDark ? 'bg-teal-600' : 'bg-gray-300'
+          isDark ? 'bg-teal-600' : 'text-black'
         }`}
       >
         <div
@@ -22,7 +23,7 @@ const ToggleMode = () => {
         />
       </button>
       
-      <span className="text-sm text-white dark:text-black">
+      <span className="text-sm">
         {isDark ? 'Dark' : 'Light'}
       </span>
     </div>

@@ -69,10 +69,7 @@ const Profile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     const updateData = {
       name: formData.name,
@@ -89,8 +86,6 @@ const Profile = () => {
       const updatedUser = await updateUserProfile(updateData);
       updateUser(updatedUser);
       toast.success('Profile updated successfully');
-      
-      // Reset password fields
       setFormData({
         ...formData,
         password: '',
@@ -105,22 +100,20 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="min-h-screen flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
       </div>
     );
   }
-
+  
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
-        <p className="text-gray-600 mt-1">
-          Manage your account details
-        </p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your account details</p>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex items-center justify-center mb-6">
             <div className="h-24 w-24 rounded-full bg-teal-600 text-white flex items-center justify-center text-2xl">
@@ -129,13 +122,12 @@ const Profile = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Name */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name
-              </label>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
               <div className="relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User size={16} className="text-gray-400" />
+                  <User size={16} className="text-gray-400 dark:text-gray-500" />
                 </div>
                 <input
                   id="name"
@@ -145,18 +137,17 @@ const Profile = () => {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="input pl-10"
+                  className="input pl-10 dark:bg-gray-800 dark:text-white dark:border-gray-600"
                 />
               </div>
             </div>
 
+            {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
               <div className="relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail size={16} className="text-gray-400" />
+                  <Mail size={16} className="text-gray-400 dark:text-gray-500" />
                 </div>
                 <input
                   id="email"
@@ -166,26 +157,24 @@ const Profile = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="input pl-10"
+                  className="input pl-10 dark:bg-gray-800 dark:text-white dark:border-gray-600"
                 />
               </div>
             </div>
 
-            {/* Currency Selection */}
+            {/* Currency */}
             <div>
-              <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-1">
-                Preferred Currency
-              </label>
+              <label htmlFor="currency" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Preferred Currency</label>
               <div className="relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <IndianRupee size={16} className="text-gray-400" />
+                  <IndianRupee size={16} className="text-gray-400 dark:text-gray-500" />
                 </div>
                 <select
                   id="currency"
                   name="currency"
                   value={formData.currency}
                   onChange={handleChange}
-                  className="input pl-10 appearance-none"
+                  className="input pl-10 appearance-none dark:bg-gray-800 dark:text-white dark:border-gray-600"
                 >
                   {currencies.map(currency => (
                     <option key={currency.code} value={currency.code}>
@@ -198,27 +187,22 @@ const Profile = () => {
 
             {/* Theme Toggle */}
             <div>
-              <label htmlFor="theme" className="block text-sm font-medium text-gray-700 mb-1">
-                Preferred Theme
-              </label>
-              <div className="flex items-center">
-              </div>
+              <label htmlFor="theme" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Preferred Theme</label>
               <ToggleMode />
             </div>
-
           </div>
 
-          <div className="border-t border-gray-200 pt-6 mt-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Change Password</h3>
-            <p className="text-sm text-gray-600 mb-4">
+          {/* Change Password */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Change Password</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               Leave blank if you don't want to change your password
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  New Password
-                </label>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password</label>
                 <input
                   id="password"
                   name="password"
@@ -226,15 +210,14 @@ const Profile = () => {
                   autoComplete="new-password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="input"
+                  className="input dark:bg-gray-800 dark:text-white dark:border-gray-600"
                   placeholder="••••••••"
                 />
               </div>
 
+              {/* Confirm Password */}
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirm New Password
-                </label>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm New Password</label>
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -242,18 +225,19 @@ const Profile = () => {
                   autoComplete="new-password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="input"
+                  className="input dark:bg-gray-800 dark:text-white dark:border-gray-600"
                   placeholder="••••••••"
                 />
               </div>
             </div>
           </div>
 
+          {/* Save Button */}
           <div className="flex justify-end">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn btn-primary"
+              className="btn btn-primary dark:bg-teal-700 dark:hover:bg-teal-800 dark:text-white"
             >
               {isSubmitting ? (
                 <div className="flex items-center">

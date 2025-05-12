@@ -18,7 +18,7 @@ const Layout = () => {
         <Sidebar isOpen={sidebarOpen} closeSidebar={() => setSidebarOpen(false)} />
         
         <main className="flex-1 transition-all duration-200 ease-in-out">
-          <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto animate-fadeIn">
+          <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto animate-fadeIn dark:bg-gray-900 dark:text-white">
             <Outlet />
           </div>
         </main>

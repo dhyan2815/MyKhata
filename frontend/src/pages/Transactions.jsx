@@ -76,39 +76,39 @@ const Transactions = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen dark:bg-gray-900 dark:text-white">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Transactions</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Transactions</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
             View and manage your financial transactions
           </p>
         </div>
         <div className="flex space-x-3">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="btn btn-secondary"
+            className="btn btn-secondary dark:bg-gray-700 dark:text-gray-300"
           >
             <Filter size={16} className="mr-2" />
             {showFilters ? 'Hide Filters' : 'Show Filters'}
           </button>
-          <Link to="/transactions/add" className="btn btn-primary">
+          <Link to="/transactions/add" className="btn btn-primary dark:bg-teal-500 dark:text-white">
             <Plus size={16} className="mr-2" /> Add Transaction
           </Link>
         </div>
       </div>
 
       {showFilters && (
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 animate-fadeIn">
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 animate-fadeIn">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
-              <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Type
               </label>
               <select
                 id="type"
                 name="type"
-                className="input"
+                className="input dark:bg-gray-700 dark:text-white"
                 value={filters.type}
                 onChange={handleFilterChange}
               >
@@ -118,13 +118,13 @@ const Transactions = () => {
               </select>
             </div>
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Category
               </label>
               <select
                 id="category"
                 name="category"
-                className="input"
+                className="input dark:bg-gray-700 dark:text-white"
                 value={filters.category}
                 onChange={handleFilterChange}
               >
@@ -137,27 +137,27 @@ const Transactions = () => {
               </select>
             </div>
             <div>
-              <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 From Date
               </label>
               <input
                 type="date"
                 id="startDate"
                 name="startDate"
-                className="input"
+                className="input dark:bg-gray-700 dark:text-white"
                 value={filters.startDate}
                 onChange={handleFilterChange}
               />
             </div>
             <div>
-              <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 To Date
               </label>
               <input
                 type="date"
                 id="endDate"
                 name="endDate"
-                className="input"
+                className="input dark:bg-gray-700 dark:text-white"
                 value={filters.endDate}
                 onChange={handleFilterChange}
               />
@@ -166,7 +166,7 @@ const Transactions = () => {
           <div className="mt-4 flex justify-end">
             <button
               onClick={clearFilters}
-              className="btn btn-secondary"
+              className="btn btn-secondary dark:bg-gray-700 dark:text-gray-300"
             >
               Clear Filters
             </button>
