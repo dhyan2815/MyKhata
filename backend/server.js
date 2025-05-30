@@ -20,7 +20,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-const allowedOrigin = 'https://mykhata-frontend.onrender.com';
+const allowedOrigin = 'https://mykhataa.onrender.com';
 
 // CORS Middleware Manual Setup
 app.use((req, res, next) => {
