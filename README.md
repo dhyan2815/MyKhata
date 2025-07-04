@@ -1,7 +1,6 @@
-﻿# MyKhata - Take Control of Your Spending
-[![Visit Live Site](https://img.shields.io/badge/Visit-Live%20Site-brightgreen?style=for-the-badge)](https://mykhata-frontend.onrender.com/)
+﻿# MyKhata - Track Your Finances  [![Visit Live Site](https://img.shields.io/badge/Visit-Live%20Site-brightgreen?style=for-the-badge)](https://mykhata-frontend.onrender.com/)
 
-MyKhata is a personal finance tracker designed for efficient money management. Log your income and expenses, categorize transactions, and visualize your financial patterns with intuitive charts. Powered by the MERN stack (MongoDB, Express.js, React, Node.js).
+- 💰 MyKhata is a personal finance tracker designed for efficient money management. Log your income and expenses, categorize transactions, and visualize your financial patterns with intuitive charts. Powered by the MERN stack (MongoDB, Express.js, React, Node.js).
 
 ## ✨ Features
 
