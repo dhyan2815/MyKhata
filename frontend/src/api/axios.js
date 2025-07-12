@@ -1,23 +1,18 @@
 import axios from 'axios';
 
-// Create an axios instance
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+// Automatically choose backend base URL
 const api = axios.create({
-
-  // Render backend server
-  baseURL: 'https://mykhata-backend.onrender.com/api',
-
-  // Mobile backend server
-  // baseURL: 'http://192.168.1.90:5000/api',
-
-  // Local backend server
-  // baseURL: '/api',
-
+  baseURL: isLocalhost
+    ? '/api' // Handled by Vite proxy in development
+    : 'https://mykhata-backend.onrender.com/api', // Production backend
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add a request interceptor to include the auth token in requests
+// Include token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('wealthflow_token');
@@ -26,23 +21,16 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Add a response interceptor to handle token expiration
+// Token expiration handler
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
-    // Handle 401 errors by redirecting to login
-    if (error.response && error.response.status === 401) {
+    if (error.response?.status === 401) {
       localStorage.removeItem('wealthflow_user');
       localStorage.removeItem('wealthflow_token');
-      
-      // Only redirect if we're not already on the login page
       if (!window.location.pathname.includes('/login')) {
         window.location.href = '/login';
       }
