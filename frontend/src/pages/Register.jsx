@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../api/auth';
 import { useAuth } from '../context/AuthContext';
-import { User, Mail, LockKeyhole, ArrowRight } from 'lucide-react';
+import { User, Mail, LockKeyhole, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Image from '../assets/illustration-img.jpg'
 
@@ -16,6 +16,7 @@ const Register = () => {
     confirmPassword: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -143,7 +144,7 @@ const Register = () => {
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     autoComplete="new-password"
                     required
                     value={formData.password}
@@ -151,6 +152,15 @@ const Register = () => {
                     className="input pl-10"
                     placeholder="••••••••"
                   />
+                  {/* Password Visbility */}
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    tabIndex={-1}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
                 </div>
                 <p className="mt-1 text-xs text-gray-500">
                   Password must be at least 6 characters long

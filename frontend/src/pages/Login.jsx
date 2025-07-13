@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../api/auth';
 import { useAuth } from '../context/AuthContext';
-import { LockKeyhole, Mail, User } from 'lucide-react';
+import { LockKeyhole, Mail, User, EyeOff, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Image from '../assets/illustration-img.jpg'
 
@@ -14,6 +14,7 @@ const Login = () => {
     password: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -94,7 +95,7 @@ const Login = () => {
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     required
                     value={formData.password}
@@ -102,6 +103,15 @@ const Login = () => {
                     className="input pl-10"
                     placeholder="••••••••"
                   />
+                  {/* Password Visbility */}
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    tabIndex={-1}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
                 </div>
               </div>
 
