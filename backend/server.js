@@ -20,22 +20,16 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Accept either local or deployed frontend origin
-const allowedOrigins = [
-  'https://mykhataa.onrender.com',
-  'http://localhost:5173'
-];
+const allowedOrigin = 'https://mykhataa.onrender.com';
 
-// CORS Middleware Setup
+// CORS Middleware Manual Setup
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
+  res.header('Access-Control-Allow-Origin', allowedOrigin);
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-
+  
+  // Respond to preflight requests
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
