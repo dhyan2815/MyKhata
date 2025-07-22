@@ -54,24 +54,20 @@ const Login = () => {
     <div className="min-h-screen bg-white flex">
 
       {/* Login form */}
-      <div className="w-1/2 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="flex gap-x-10">
-            <div>
-              <h2 className="mt-6 text-2xl font-extrabold text-gray-900">
-                Sign in to MyKhata
-              </h2>
-              <p className="mt-2 text-sm text-gray-600">
-                Track your finances with ease
-              </p>
-            </div>
-          </div>
-        </div>
+      <div className="w-1/2 flex flex-col justify-center pt-5 sm:px-6 lg:px-8">
 
-        <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="py-8 px-4 sm:rounded-lg sm:px-10">
+        <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
+          <div className="sm:rounded-lg sm:px-30">
             {/* Login form */}
             <form className="space-y-6" onSubmit={handleSubmit}>
+              <div>
+                <h2 className="mt-6 text-2xl font-extrabold text-gray-900">
+                  Balance your Books! not just your life.
+                </h2>
+                <p className="mt-2 text-sm text-gray-600">
+                  Let's get you back in, Input your credentials
+                </p>
+              </div>
               {/* Email input */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
