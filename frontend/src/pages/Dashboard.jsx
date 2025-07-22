@@ -7,24 +7,30 @@ import TransactionList from '../components/TransactionList';
 import DashboardChart from '../components/DashboardChart';
 import toast from 'react-hot-toast';
 
+// Main Dashboard component
 const Dashboard = () => {
+  // State for loading indicator
   const [loading, setLoading] = useState(true);
+  // State for summary data (balance, income, expense)
   const [summaryData, setSummaryData] = useState(null);
+  // State for recent transactions list
   const [recentTransactions, setRecentTransactions] = useState([]);
+  // State for selected date range
   const [dateRange, setDateRange] = useState({
     startDate: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
     endDate: format(endOfMonth(new Date()), 'yyyy-MM-dd'),
   });
   
+  // Fetch dashboard data whenever dateRange changes
   useEffect(() => {
     const fetchDashboardData = async () => {
       setLoading(true);
       try {
-        // Fetch summary data
+        // Fetch summary data for the selected date range
         const summary = await getTransactionSummary(dateRange);
         setSummaryData(summary);
         
-        // Fetch recent transactions
+        // Fetch the 5 most recent transactions for the selected date range
         const { transactions } = await getTransactions({ 
           limit: 5, 
           sort: 'date:desc',
@@ -32,6 +38,7 @@ const Dashboard = () => {
         });
         setRecentTransactions(transactions);
       } catch (error) {
+        // Show error toast if fetching fails
         toast.error('Failed to load dashboard data');
         console.error(error);
       } finally {
@@ -42,6 +49,7 @@ const Dashboard = () => {
     fetchDashboardData();
   }, [dateRange]);
   
+  // Handler for quick date range buttons (Today, Last 7 Days, etc.)
   const handleQuickDateRange = (range) => {
     const today = new Date();
     let startDate, endDate;
@@ -72,6 +80,7 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header: Title and Add Transaction button */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
@@ -87,11 +96,13 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Date Range Selector: Quick buttons and custom date pickers */}
       <div className="flex flex-wrap items-center justify-between space-y-2 sm:space-y-0 bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
         <div className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
           <Calendar size={16} className="mr-1" /> Date Range:
         </div>
         <div className="flex flex-wrap gap-2">
+          {/* Quick date range buttons */}
           {['today', 'week', 'month', 'year'].map((range) => {
             const labelMap = {
               today: 'Today',
@@ -100,6 +111,7 @@ const Dashboard = () => {
               year: 'This Year',
             };
 
+            // Expected start and end dates for each quick range
             const expectedDate = {
               today: {
                 start: format(new Date(), 'yyyy-MM-dd'),
@@ -119,6 +131,7 @@ const Dashboard = () => {
               },
             };
 
+            // Highlight the active quick range button
             const isActive =
               dateRange.startDate === expectedDate[range].start &&
               dateRange.endDate === expectedDate[range].end;
@@ -139,6 +152,7 @@ const Dashboard = () => {
           })}
         </div>
 
+        {/* Custom date range pickers */}
         <div className="flex items-center space-x-2">
           <input
             type="date"
@@ -156,8 +170,10 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Summary Cards: Balance, Income, Expenses */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {['balance', 'income', 'expense'].map((key, index) => {
+          // Card configuration for each summary type
           const config = {
             balance: {
               title: 'Balance',
@@ -182,6 +198,7 @@ const Dashboard = () => {
           return (
             <div key={key} className={`card p-5 dark:bg-gray-900 dark:border-gray-700 ${loading ? 'animate-pulse' : ''}`}>
               {loading ? (
+                // Loading skeleton for summary cards
                 <>
                   <div className="h-5 w-1/3 bg-gray-200 dark:bg-gray-700 rounded"></div>
                   <div className="h-8 w-1/2 bg-gray-300 dark:bg-gray-600 rounded mt-3"></div>
@@ -210,9 +227,12 @@ const Dashboard = () => {
         })}
       </div>
 
+      {/* Chart and Recent Transactions section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Dashboard chart for visualizing summary data */}
         <DashboardChart transactionData={summaryData} isLoading={loading} />
 
+        {/* Recent Transactions Card */}
         <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
           <div className="px-4 py-5 border-b border-gray-200 dark:border-gray-700 sm:px-6 flex justify-between items-center">
             <div>
@@ -228,6 +248,7 @@ const Dashboard = () => {
             </Link>
           </div>
           <div className="px-4 py-5 sm:p-6">
+            {/* List of recent transactions */}
             <TransactionList
               transactions={recentTransactions}
               isLoading={loading}

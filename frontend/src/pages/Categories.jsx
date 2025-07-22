@@ -17,20 +17,27 @@ import {
 } from '../api/categories';
 import toast from 'react-hot-toast';
 
+// Categories page component for managing income and expense categories
 const Categories = () => {
+  // State to store all categories
   const [categories, setCategories] = useState([]);
+  // State to indicate if categories are loading
   const [loading, setLoading] = useState(true);
+  // State to track selected type (income/expense)
   const [selectedType, setSelectedType] = useState('expense');
+  // State to track the category being edited
   const [editingCategory, setEditingCategory] = useState(null);
+  // State for form data (add/edit)
   const [formData, setFormData] = useState({
     name: '',
     type: 'expense',
     color: '#3B82F6',
     icon: 'tag'
   });
+  // State to show/hide the form
   const [showForm, setShowForm] = useState(false);
 
-  // Color options
+  // Color options for category selection
   const colorOptions = [
     { name: 'Blue', value: '#3B82F6' },
     { name: 'Red', value: '#EF4444' },
@@ -42,7 +49,7 @@ const Categories = () => {
     { name: 'Gray', value: '#6B7280' },
   ];
 
-  // Icon options
+  // Icon options for category selection
   const iconOptions = [
     { name: 'Tag', value: 'tag' },
     { name: 'Home', value: 'home' },
@@ -59,7 +66,7 @@ const Categories = () => {
     { name: 'Other', value: 'more-horizontal' },
   ];
 
-  // Load categories
+  // Load categories from API on mount
   useEffect(() => {
     const fetchCategories = async () => {
       setLoading(true);
@@ -76,10 +83,12 @@ const Categories = () => {
     fetchCategories();
   }, []);
 
+  // Filter categories by selected type (income/expense)
   const filteredCategories = categories.filter(
     category => category.type === selectedType
   );
 
+  // Handle input changes in the form
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -88,6 +97,7 @@ const Categories = () => {
     });
   };
 
+  // Handle form submission for add/edit category
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -106,7 +116,7 @@ const Categories = () => {
         toast.success('Category created successfully');
       }
       
-      // Reset form
+      // Reset form after submit
       setFormData({
         name: '',
         type: selectedType,
@@ -120,6 +130,7 @@ const Categories = () => {
     }
   };
 
+  // Handle edit button click
   const handleEdit = (category) => {
     setEditingCategory(category);
     setFormData({
@@ -131,6 +142,7 @@ const Categories = () => {
     setShowForm(true);
   };
 
+  // Handle delete button click
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this category?')) {
       try {
@@ -143,6 +155,7 @@ const Categories = () => {
     }
   };
 
+  // Cancel editing or adding a category
   const cancelEdit = () => {
     setEditingCategory(null);
     setFormData({
@@ -156,6 +169,7 @@ const Categories = () => {
 
   return (
     <div className="min-h-screen space-y-6 p-5 rounded-lg dark:bg-gray-800 dark:text-white">
+      {/* Header section with title and add button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Categories</h1>
@@ -181,6 +195,7 @@ const Categories = () => {
         </button>
       </div>
 
+      {/* Category form for add/edit */}
       {showForm && (
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 animate-fadeIn dark:bg-gray-700 dark:border-gray-600">
           <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
@@ -188,6 +203,7 @@ const Categories = () => {
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Category Name input */}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Category Name
@@ -202,6 +218,7 @@ const Categories = () => {
                   required
                 />
               </div>
+              {/* Type select (income/expense) */}
               <div>
                 <label htmlFor="type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Type
@@ -223,6 +240,7 @@ const Categories = () => {
                   </p>
                 )}
               </div>
+              {/* Color select */}
               <div>
                 <label htmlFor="color" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Color
@@ -240,11 +258,13 @@ const Categories = () => {
                     </option>
                   ))}
                 </select>
+                {/* Color preview bar */}
                 <div 
                   className="w-full h-2 mt-1 rounded-full"
                   style={{ backgroundColor: formData.color }}
                 ></div>
               </div>
+              {/* Icon select */}
               <div>
                 <label htmlFor="icon" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Icon
@@ -264,6 +284,7 @@ const Categories = () => {
                 </select>
               </div>
             </div>
+            {/* Form action buttons */}
             <div className="flex justify-end space-x-3">
               <button
                 type="button"
@@ -282,7 +303,9 @@ const Categories = () => {
         </div>
       )}
 
+      {/* Category list section */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden dark:bg-gray-700 dark:border-gray-600">
+        {/* Tabs for switching between expense and income categories */}
         <div className="p-4 border-b border-gray-200 dark:border-gray-600">
           <div className="flex">
             <button
@@ -300,6 +323,7 @@ const Categories = () => {
           </div>
         </div>
 
+        {/* Loading skeleton while fetching categories */}
         {loading ? (
           <div className="p-6 animate-pulse space-y-4">
             {[1, 2, 3, 4].map(i => (
@@ -313,6 +337,7 @@ const Categories = () => {
             ))}
           </div>
         ) : (
+          // Category list
           <ul className="divide-y divide-gray-200 dark:divide-gray-600">
             {filteredCategories.length > 0 ? (
               filteredCategories.map(category => (
@@ -321,21 +346,25 @@ const Categories = () => {
                   className="p-4 hover:bg-gray-50 flex items-center justify-between dark:hover:bg-gray-600"
                 >
                   <div className="flex items-center">
+                    {/* Category icon with color */}
                     <div 
                       className="w-8 h-8 rounded-full flex items-center justify-center text-white"
                       style={{ backgroundColor: category.color }}
                     >
                       <Tag size={14} />
                     </div>
+                    {/* Category name */}
                     <span className="ml-4 text-gray-900 font-medium dark:text-gray-100">
                       {category.name}
                     </span>
+                    {/* Default badge */}
                     {category.isDefault && (
                       <span className="ml-2 px-2 py-0.5 bg-gray-100 text-gray-500 text-xs rounded-full dark:bg-gray-800 dark:text-gray-400">
                         Default
                       </span>
                     )}
                   </div>
+                  {/* Edit and Delete buttons */}
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => handleEdit(category)}
@@ -343,6 +372,7 @@ const Categories = () => {
                     >
                       <Edit size={16} />
                     </button>
+                    {/* Only allow delete if not a default category */}
                     {!category.isDefault && (
                       <button
                         onClick={() => handleDelete(category._id)}
@@ -355,6 +385,7 @@ const Categories = () => {
                 </li>
               ))
             ) : (
+              // No categories found message
               <li className="p-6 text-center text-gray-500 dark:text-gray-400">
                 No {selectedType} categories found
               </li>

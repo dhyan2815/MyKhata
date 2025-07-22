@@ -6,17 +6,18 @@ import { User, Mail, LockKeyhole, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Image from '../assets/illustration-img.jpg'
 
+// Register component for user registration
 const Register = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  // State for form data
+  // State for form data (name, email, password, confirmPassword)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
-  // State for loading indicator
+  // State for loading indicator (shows spinner on submit)
   const [isLoading, setIsLoading] = useState(false);
   // State to toggle password visibility
   const [showPassword, setShowPassword] = useState(false);

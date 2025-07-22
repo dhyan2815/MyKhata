@@ -12,13 +12,13 @@ const Login = () => {
   // Get login function from AuthContext
   const { login: authLogin } = useAuth();
 
-  // State for form data
+  // State for form data (email and password)
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
 
-  // State for loading indicator
+  // State for loading indicator (shows spinner on submit)
   const [isLoading, setIsLoading] = useState(false);
 
   // State to toggle password visibility
@@ -52,10 +52,8 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-white flex">
-
-      {/* Login form */}
+      {/* Login form section (left side) */}
       <div className="w-1/2 flex flex-col justify-center pt-5 sm:px-6 lg:px-8">
-
         <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="sm:rounded-lg sm:px-30">
             {/* Login form */}
@@ -187,7 +185,7 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Illustration image */}
+      {/* Illustration image (right side) */}
       <div className="w-1/2 h-screen">
         <img
           src={Image}

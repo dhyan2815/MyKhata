@@ -1,18 +1,32 @@
+// Import React core library
 import React from 'react';
+// Import ReactDOM for rendering the app
 import ReactDOM from 'react-dom/client';
+// Import BrowserRouter for routing
 import { BrowserRouter } from 'react-router-dom';
+// Import main App component
 import App from './App.jsx';
+// Import AuthProvider for authentication context
 import { AuthProvider } from './context/AuthContext.jsx';
+// Import Toaster for toast notifications
 import { Toaster } from 'react-hot-toast';
+// Import global styles
 import './index.css';
+// Import ThemeProvider for theme context
 import { ThemeProvider } from './context/ThemeContext.jsx';
 
+// Render the React application into the root DOM node
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
+    {/* Provide theme context to the app */}
     <ThemeProvider>
+      {/* Enable client-side routing */}
       <BrowserRouter>
+        {/* Provide authentication context to the app */}
         <AuthProvider>
+          {/* Main application component */}
           <App />
+          {/* Toast notification component with custom options */}
           <Toaster 
             position="top-right"
             toastOptions={{

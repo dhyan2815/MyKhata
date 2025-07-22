@@ -5,19 +5,27 @@ import { getTransactionById, updateTransaction } from '../api/transactions';
 import toast from 'react-hot-toast';
 
 const EditTransaction = () => {
+  // Get the transaction ID from the URL parameters
   const { id } = useParams();
+  // Hook for navigation
   const navigate = useNavigate();
+  // State to hold the transaction data
   const [transaction, setTransaction] = useState(null);
+  // State to indicate if the transaction is being loaded
   const [isLoading, setIsLoading] = useState(true);
+  // State to indicate if the form is being submitted
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    // Fetch the transaction data when the component mounts or the ID changes
     const fetchTransaction = async () => {
       setIsLoading(true);
       try {
+        // Attempt to get the transaction by ID
         const data = await getTransactionById(id);
         setTransaction(data);
       } catch (error) {
+        // Show error toast and redirect if fetching fails
         toast.error(error.response?.data?.message || 'Failed to load transaction');
         navigate('/transactions');
       } finally {
@@ -28,19 +36,24 @@ const EditTransaction = () => {
     fetchTransaction();
   }, [id, navigate]);
 
+  // Handle form submission for updating the transaction
   const handleSubmit = async (formData) => {
     setIsSubmitting(true);
     try {
+      // Attempt to update the transaction
       await updateTransaction(id, formData);
       toast.success('Transaction updated successfully');
+      // Redirect to the transactions list after successful update
       navigate('/transactions');
     } catch (error) {
+      // Show error toast if update fails
       toast.error(error.response?.data?.message || 'Failed to update transaction');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // Show a loading spinner while fetching transaction data
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -49,6 +62,7 @@ const EditTransaction = () => {
     );
   }
 
+  // Render the edit transaction form with initial data
   return (
     <div className="space-y-6 min-h-screen">
       <div>

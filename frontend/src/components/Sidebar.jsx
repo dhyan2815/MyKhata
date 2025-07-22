@@ -1,9 +1,11 @@
 import { Link, useLocation } from 'react-router-dom';
 import { X, LayoutDashboard, ListOrdered, Tag, User } from 'lucide-react';
 
+// Sidebar component for navigation
 const Sidebar = ({ isOpen, closeSidebar }) => {
   const location = useLocation();
 
+  // Navigation items for the sidebar
   const navItems = [
     {
       name: 'Dashboard',
@@ -27,6 +29,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
     },
   ];
 
+  // Function to determine if a nav item is active based on current route
   const isActive = (path) => {
     if (path === '/') {
       return location.pathname === '/';
@@ -36,7 +39,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
 
   return (
     <>
-      {/* Mobile sidebar backdrop */}
+      {/* Mobile sidebar backdrop (closes sidebar on click) */}
       {isOpen && (
         <div 
           className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
@@ -44,12 +47,13 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
         ></div>
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar panel */}
       <aside 
         className={`fixed top-0 left-0 z-40 h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 pt-16 transition-transform duration-300 ease-in-out transform lg:translate-x-0 lg:static lg:h-auto ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
+        {/* Sidebar header (visible on mobile) */}
         <div className="flex items-center justify-between px-4 py-3 lg:hidden">
           <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Menu</h2>
           <button 
@@ -60,6 +64,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           </button>
         </div>
 
+        {/* Navigation links */}
         <nav className="mt-4 px-2">
           <ul className="space-y-1">
             {navItems.map((item) => (
@@ -79,8 +84,11 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
                   } ${item.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
+                  {/* Icon for the nav item */}
                   <span className="mr-3">{item.icon}</span>
+                  {/* Name of the nav item */}
                   {item.name}
+                  {/* "Soon" badge for disabled items */}
                   {item.disabled && (
                     <span className="ml-auto text-xs bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded-full text-gray-700 dark:text-gray-200">
                       Soon
