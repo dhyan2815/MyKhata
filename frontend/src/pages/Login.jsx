@@ -6,30 +6,44 @@ import { LockKeyhole, Mail, User, EyeOff, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Image from '../assets/illustration-img.jpg'
 
+// Login component for user authentication
 const Login = () => {
   const navigate = useNavigate();
+  // Get login function from AuthContext
   const { login: authLogin } = useAuth();
+
+  // State for form data
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
+  // State for loading indicator
   const [isLoading, setIsLoading] = useState(false);
+
+  // State to toggle password visibility
   const [showPassword, setShowPassword] = useState(false);
 
+  // Handle input changes for form fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
+      // Call login API with email and password
       const userData = await login(formData.email, formData.password);
+      // Set user in auth context
       authLogin(userData, userData.token);
       toast.success('Login successful');
+      // Redirect to home page after successful login
       navigate('/');
     } catch (error) {
+      // Show error message if login fails
       toast.error(error.response?.data?.message || 'Login failed');
     } finally {
       setIsLoading(false);
@@ -38,13 +52,8 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-white flex">
-      <div className="w-1/2 h-screen">
-        <img
-          src={Image}
-          alt="Login"
-          className="w-full h-full object-cover"
-        />
-      </div>
+
+      {/* Login form */}
       <div className="w-1/2 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="flex gap-x-10">
@@ -60,13 +69,16 @@ const Login = () => {
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="py-8 px-4 shadow-md hover:shadow-lg duration-300 transition-all sm:rounded-lg sm:px-10">
+          <div className="py-8 px-4 sm:rounded-lg sm:px-10">
+            {/* Login form */}
             <form className="space-y-6" onSubmit={handleSubmit}>
+              {/* Email input */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   Email address
                 </label>
                 <div className="mt-1 relative rounded-md shadow-sm">
+                  {/* Email icon */}
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Mail size={16} className="text-gray-400" />
                   </div>
@@ -84,11 +96,13 @@ const Login = () => {
                 </div>
               </div>
 
+              {/* Password input */}
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                   Password
                 </label>
                 <div className="mt-1 relative rounded-md shadow-sm">
+                  {/* Password icon */}
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <LockKeyhole size={16} className="text-gray-400" />
                   </div>
@@ -103,7 +117,7 @@ const Login = () => {
                     className="input pl-10"
                     placeholder="••••••••"
                   />
-                  {/* Password Visbility */}
+                  {/* Password Visibility Toggle Button */}
                   <button
                     type="button"
                     onClick={() => setShowPassword((prev) => !prev)}
@@ -115,6 +129,7 @@ const Login = () => {
                 </div>
               </div>
 
+              {/* Submit button */}
               <div>
                 <button
                   type="submit"
@@ -122,6 +137,7 @@ const Login = () => {
                   className="w-full btn btn-primary py-2"
                 >
                   {isLoading ? (
+                    // Loading spinner and text while signing in
                     <div className="flex items-center justify-center">
                       <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
                         <circle
@@ -147,6 +163,7 @@ const Login = () => {
               </div>
             </form>
 
+            {/* Divider and link to registration */}
             <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
@@ -159,6 +176,7 @@ const Login = () => {
                 </div>
               </div>
 
+              {/* Link to registration page */}
               <div className="mt-6">
                 <Link
                   to="/register"
@@ -172,6 +190,16 @@ const Login = () => {
           </div>
         </div>
       </div>
+
+      {/* Illustration image */}
+      <div className="w-1/2 h-screen">
+        <img
+          src={Image}
+          alt="Login"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      
     </div>
   );
 };

@@ -62,14 +62,6 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-white flex">
-      {/* Image Section */}
-      <div className="w-1/2 h-screen">
-        <img
-          src={Image}
-          alt="Register"
-          className="w-full h-full object-cover"
-        />
-      </div>
 
       {/* Registration Form Section */}
       <div className="w-1/2 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -87,7 +79,7 @@ const Register = () => {
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow-md hover:shadow-lg duration-300 transition-all sm:rounded-lg sm:px-10">
+          <div className="bg-white py-8 px-4 sm:rounded-lg sm:px-10">
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700">
@@ -246,6 +238,16 @@ const Register = () => {
           </div>
         </div>
       </div>
+
+      {/* Image Section */}
+      <div className="w-1/2 h-screen">
+        <img
+          src={Image}
+          alt="Register"
+          className="w-full h-full object-cover"
+        />
+      </div>
+
     </div>
   );
 };
