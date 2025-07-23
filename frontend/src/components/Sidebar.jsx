@@ -1,32 +1,35 @@
 import { Link, useLocation } from 'react-router-dom';
-import { X, LayoutDashboard, ListOrdered, Tag, User } from 'lucide-react';
+import { X, LayoutDashboard, ListOrdered, Tag, User, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
-const Sidebar = ({ isOpen, closeSidebar }) => {
+// Sidebar component for navigation
+const Sidebar = ({ isOpen, closeSidebar, collapsed = false, toggleCollapsed }) => {
   const location = useLocation();
 
+  // Navigation items for the sidebar
   const navItems = [
     {
       name: 'Dashboard',
-      icon: <LayoutDashboard size={20} />,
+      icon: <LayoutDashboard size={23} />,
       path: '/',
     },
     {
       name: 'Transactions',
-      icon: <ListOrdered size={20} />,
+      icon: <ListOrdered size={23} />,
       path: '/transactions',
     },
     {
       name: 'Categories',
-      icon: <Tag size={20} />,
+      icon: <Tag size={23} />,
       path: '/categories',
     },
     {
       name: 'Profile',
-      icon: <User size={20} />,
+      icon: <User size={23} />,
       path: '/profile',
     },
   ];
 
+  // Function to determine if a nav item is active based on current route
   const isActive = (path) => {
     if (path === '/') {
       return location.pathname === '/';
@@ -36,7 +39,7 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
 
   return (
     <>
-      {/* Mobile sidebar backdrop */}
+      {/* Mobile sidebar backdrop (closes sidebar on click) */}
       {isOpen && (
         <div 
           className="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden"
@@ -44,12 +47,13 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
         ></div>
       )}
 
-      {/* Sidebar */}
-      <aside 
-        className={`fixed top-0 left-0 z-40 h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 pt-16 transition-transform duration-300 ease-in-out transform lg:translate-x-0 lg:static lg:h-auto ${
+      {/* Sidebar panel */}
+      <aside
+        className={`fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] min-w-0 overflow-hidden ${collapsed ? 'w-16' : 'w-64'} bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out transform ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        } lg:translate-x-0`}
       >
+        {/* Sidebar header (visible on mobile) */}
         <div className="flex items-center justify-between px-4 py-3 lg:hidden">
           <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Menu</h2>
           <button 
@@ -60,6 +64,18 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
           </button>
         </div>
 
+        {/* Collapse/Expand button (desktop only) */}
+        <div className="hidden lg:flex items-center justify-end px-3 py-3">
+          <button
+            onClick={toggleCollapsed}
+            className="p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {collapsed ? <ChevronsRight size={23} /> : <ChevronsLeft size={23} />}
+          </button>
+        </div>
+
+        {/* Navigation links */}
         <nav className="mt-4 px-2">
           <ul className="space-y-1">
             {navItems.map((item) => (
@@ -73,15 +89,18 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                       ? closeSidebar
                       : undefined
                   }
-                  className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-md transition-colors ${
+                  className={`flex items-center px-3 py-3 text-base font-medium rounded-md transition-colors ${
                     isActive(item.path)
                       ? 'bg-teal-50 dark:bg-teal-800 text-teal-600 dark:text-white'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
                   } ${item.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                  <span className="mr-3">{item.icon}</span>
-                  {item.name}
-                  {item.disabled && (
+                  {/* Icon for the nav item */}
+                  <span className="mr-3 flex-shrink-0">{item.icon}</span>
+                  {/* Name of the nav item (hide if collapsed) */}
+                  {!collapsed && item.name}
+                  {/* "Soon" badge for disabled items */}
+                  {item.disabled && !collapsed && (
                     <span className="ml-auto text-xs bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded-full text-gray-700 dark:text-gray-200">
                       Soon
                     </span>

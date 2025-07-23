@@ -5,8 +5,12 @@ import { User, Mail, Save, Sun, IndianRupee } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ToggleMode from '../components/ToggleMode';
 
+// Profile component for user profile management
 const Profile = () => {
+  // Get user and updateUser function from AuthContext
   const { user, updateUser } = useAuth();
+
+  // State for form data
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -14,9 +18,13 @@ const Profile = () => {
     confirmPassword: '',
     currency: 'INR',
   });
+
+  // State for loading indicator (profile fetch)
   const [loading, setLoading] = useState(true);
+  // State for form submission indicator
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Supported currencies for selection
   const currencies = [
     { code: 'USD', name: 'US Dollar ($)' },
     { code: 'EUR', name: 'Euro (€)' },
@@ -28,6 +36,7 @@ const Profile = () => {
     { code: 'CNY', name: 'Chinese Yuan (¥)' },
   ];
 
+  // Fetch user profile data on mount
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
@@ -50,11 +59,13 @@ const Profile = () => {
     fetchProfile();
   }, []);
 
+  // Handle input changes for form fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
+  // Validate form before submission
   const validateForm = () => {
     if (formData.password && formData.password.length < 6) {
       toast.error('Password must be at least 6 characters long');
@@ -67,25 +78,30 @@ const Profile = () => {
     return true;
   };
 
+  // Handle form submission for profile update
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
+    // Prepare update data
     const updateData = {
       name: formData.name,
       email: formData.email,
       currency: formData.currency,
     };
 
+    // Include password if provided
     if (formData.password) {
       updateData.password = formData.password;
     }
 
     setIsSubmitting(true);
     try {
+      // Update user profile via API
       const updatedUser = await updateUserProfile(updateData);
-      updateUser(updatedUser);
+      updateUser(updatedUser); // Update user in context
       toast.success('Profile updated successfully');
+      // Reset password fields after update
       setFormData({
         ...formData,
         password: '',
@@ -98,6 +114,7 @@ const Profile = () => {
     }
   };
 
+  // Show loading spinner while fetching profile
   if (loading) {
     return (
       <div className="min-h-screen flex justify-center items-center h-64">
@@ -106,6 +123,7 @@ const Profile = () => {
     );
   }
   
+  // Render profile form
   return (
     <div className="space-y-6">
       <div>
@@ -115,6 +133,7 @@ const Profile = () => {
 
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* User avatar or initial */}
           <div className="flex items-center justify-center mb-6">
             <div className="h-24 w-24 rounded-full bg-teal-600 text-white flex items-center justify-center text-2xl">
               {user?.name?.charAt(0).toUpperCase() || <User size={32} />}
@@ -192,7 +211,7 @@ const Profile = () => {
             </div>
           </div>
 
-          {/* Change Password */}
+          {/* Change Password Section */}
           <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Change Password</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
@@ -241,6 +260,7 @@ const Profile = () => {
             >
               {isSubmitting ? (
                 <div className="flex items-center">
+                  {/* Loading spinner while saving */}
                   <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>

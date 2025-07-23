@@ -6,10 +6,15 @@ import { Plus, Filter } from 'lucide-react';
 import { getCategories } from '../api/categories';
 import toast from 'react-hot-toast';
 
+// Transactions page component
 const Transactions = () => {
+  // State for list of transactions
   const [transactions, setTransactions] = useState([]);
+  // State for loading indicator
   const [loading, setLoading] = useState(true);
+  // State for available categories (for filtering)
   const [categories, setCategories] = useState([]);
+  // State for filter values
   const [filters, setFilters] = useState({
     type: '',
     category: '',
@@ -17,7 +22,9 @@ const Transactions = () => {
     endDate: '',
     page: 1
   });
+  // State for pagination info
   const [pagination, setPagination] = useState(null);
+  // State to show/hide filter panel
   const [showFilters, setShowFilters] = useState(false);
 
   // Load transactions based on current filters
@@ -25,10 +32,12 @@ const Transactions = () => {
     const fetchTransactions = async () => {
       setLoading(true);
       try {
+        // Fetch transactions from API with filters
         const result = await getTransactions(filters);
         setTransactions(result.transactions);
         setPagination(result.pagination);
       } catch (error) {
+        // Show error toast if fetch fails
         toast.error(error.response?.data?.message || 'Failed to load transactions');
       } finally {
         setLoading(false);
@@ -42,9 +51,11 @@ const Transactions = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
+        // Fetch all categories from API
         const allCategories = await getCategories();
         setCategories(allCategories);
       } catch (error) {
+        // Show error toast if fetch fails
         toast.error('Failed to load categories');
       }
     };
@@ -52,11 +63,14 @@ const Transactions = () => {
     fetchCategories();
   }, []);
 
+  // Handle changes in filter inputs
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
+    // Update filters and reset to first page
     setFilters({ ...filters, [name]: value, page: 1 });
   };
 
+  // Clear all filters
   const clearFilters = () => {
     setFilters({
       type: '',
@@ -67,16 +81,19 @@ const Transactions = () => {
     });
   };
 
+  // Handle pagination page change
   const handlePageChange = (page) => {
     setFilters({ ...filters, page });
   };
 
+  // Remove a transaction from the list after deletion
   const handleTransactionDeleted = (id) => {
     setTransactions(transactions.filter(transaction => transaction._id !== id));
   };
 
   return (
     <div className="space-y-6 min-h-screen dark:bg-gray-900 dark:text-white">
+      {/* Header and action buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Transactions</h1>
@@ -85,6 +102,7 @@ const Transactions = () => {
           </p>
         </div>
         <div className="flex space-x-3">
+          {/* Toggle filter panel button */}
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="btn btn-secondary dark:bg-gray-700 dark:text-gray-300"
@@ -92,15 +110,18 @@ const Transactions = () => {
             <Filter size={16} className="mr-2" />
             {showFilters ? 'Hide Filters' : 'Show Filters'}
           </button>
+          {/* Add transaction button */}
           <Link to="/transactions/add" className="btn btn-primary dark:bg-teal-500 dark:text-white">
             <Plus size={16} className="mr-2" /> Add Transaction
           </Link>
         </div>
       </div>
 
+      {/* Filter panel */}
       {showFilters && (
         <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 animate-fadeIn">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* Type filter */}
             <div>
               <label htmlFor="type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Type
@@ -117,6 +138,7 @@ const Transactions = () => {
                 <option value="expense">Expense</option>
               </select>
             </div>
+            {/* Category filter */}
             <div>
               <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Category
@@ -136,6 +158,7 @@ const Transactions = () => {
                 ))}
               </select>
             </div>
+            {/* Start date filter */}
             <div>
               <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 From Date
@@ -149,6 +172,7 @@ const Transactions = () => {
                 onChange={handleFilterChange}
               />
             </div>
+            {/* End date filter */}
             <div>
               <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 To Date
@@ -163,6 +187,7 @@ const Transactions = () => {
               />
             </div>
           </div>
+          {/* Clear filters button */}
           <div className="mt-4 flex justify-end">
             <button
               onClick={clearFilters}
@@ -174,6 +199,7 @@ const Transactions = () => {
         </div>
       )}
 
+      {/* Transaction list with pagination and loading state */}
       <TransactionList
         transactions={transactions}
         onTransactionDeleted={handleTransactionDeleted}

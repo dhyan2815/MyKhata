@@ -11,6 +11,7 @@ import {
   ArcElement,
 } from 'chart.js';
 
+// Register necessary Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -22,14 +23,18 @@ ChartJS.register(
 );
 
 const DashboardChart = ({ transactionData, isLoading }) => {
+  // State to control which chart type is shown
   const [chartType, setChartType] = useState('doughnut');
+  // State to hold chart data for both chart types
   const [chartData, setChartData] = useState(null);
 
+  // Prepare chart data whenever transactionData changes
   useEffect(() => {
     if (!transactionData?.summary || !transactionData?.categories) return;
 
     const { summary, categories } = transactionData;
 
+    // Data for Income vs Expense bar chart
     const incomeVsExpenseData = {
       labels: ['Income', 'Expense'],
       datasets: [
@@ -42,6 +47,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
       ],
     };
 
+    // Data for Expense Breakdown doughnut chart
     const expenseCategories = categories.expense || [];
     const expenseCategoryData = {
       labels: expenseCategories.map(cat => cat.name),
@@ -55,12 +61,14 @@ const DashboardChart = ({ transactionData, isLoading }) => {
       ],
     };
 
+    // Store both chart data objects in state
     setChartData({
       doughnut: expenseCategoryData,
       bar: incomeVsExpenseData,
     });
   }, [transactionData]);
 
+  // Show loading skeleton if data is loading
   if (isLoading) {
     return (
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 animate-pulse">
@@ -70,6 +78,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
     );
   }
 
+  // Show message if no chart data is available
   if (!chartData) {
     return (
       <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 flex items-center justify-center h-64">
@@ -78,6 +87,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
     );
   }
 
+  // Chart options for doughnut chart
   const doughnutOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -102,6 +112,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
     },
   };
 
+  // Chart options for bar chart
   const barOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -130,6 +141,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Financial Overview</h2>
         <div className="flex space-x-2">
+          {/* Button to switch to Expense Breakdown (doughnut) chart */}
           <button
             className={`px-3 py-1 text-sm rounded-md ${
               chartType === 'doughnut'
@@ -140,6 +152,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
           >
             Expense Breakdown
           </button>
+          {/* Button to switch to Income vs Expense (bar) chart */}
           <button
             className={`px-3 py-1 text-sm rounded-md ${
               chartType === 'bar'
@@ -154,11 +167,15 @@ const DashboardChart = ({ transactionData, isLoading }) => {
       </div>
 
       <div className="h-64">
-        {chartType === 'doughnut' ? (
-          <Doughnut data={chartData.doughnut} options={doughnutOptions} />
-        ) : (
-          <Bar data={chartData.bar} options={barOptions} />
-        )}
+        {/* Conditionally render the selected chart type, or a message if no data */}
+        {chartType === 'doughnut'
+          ? chartData.doughnut?.datasets?.[0]?.data?.length > 0
+            ? <Doughnut data={chartData.doughnut} options={doughnutOptions} />
+            : <div className="flex items-center justify-center h-full text-gray-500">No data available</div>
+          : chartData.bar?.datasets?.[0]?.data?.length > 0
+            ? <Bar data={chartData.bar} options={barOptions} />
+            : <div className="flex items-center justify-center h-full text-gray-500">No data available</div>
+        }
       </div>
     </div>
   );

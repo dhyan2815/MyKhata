@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { deleteTransaction } from '../api/transactions';
 import toast from 'react-hot-toast';
 
+// TransactionList component displays a list of transactions with sorting, searching, and pagination
 const TransactionList = ({ 
   transactions, 
   onTransactionDeleted, 
@@ -12,10 +13,13 @@ const TransactionList = ({
   pagination = null,
   onPageChange = () => {}
 }) => {
+  // State for search input
   const [searchTerm, setSearchTerm] = useState('');
+  // State for sorting field and direction
   const [sortField, setSortField] = useState('date');
   const [sortDirection, setSortDirection] = useState('desc');
 
+  // Handles sorting logic when a column header is clicked
   const handleSort = (field) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -25,6 +29,7 @@ const TransactionList = ({
     }
   };
 
+  // Handles deletion of a transaction
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this transaction?')) {
       try {
@@ -39,11 +44,13 @@ const TransactionList = ({
     }
   };
 
+  // Filter transactions based on search term (description or category)
   const filteredTransactions = transactions.filter((transaction) => 
     transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     transaction.category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Sort filtered transactions based on selected field and direction
   const sortedTransactions = [...filteredTransactions].sort((a, b) => {
     if (sortField === 'date') {
       return sortDirection === 'asc' 
@@ -63,6 +70,7 @@ const TransactionList = ({
     return 0;
   });
 
+  // Show loading spinner if data is loading
   if (isLoading) {
       return (
         <div className="flex justify-center items-center h-64">
@@ -73,6 +81,7 @@ const TransactionList = ({
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      {/* Search bar */}
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center">
           <div className="relative flex-1">
@@ -90,10 +99,12 @@ const TransactionList = ({
         </div>
       </div>
       
+      {/* Transactions table */}
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
+              {/* Date column header with sorting */}
               <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                 onClick={() => handleSort('date')}
@@ -105,6 +116,7 @@ const TransactionList = ({
                   )}
                 </div>
               </th>
+              {/* Description column header with sorting */}
               <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                 onClick={() => handleSort('description')}
@@ -116,6 +128,7 @@ const TransactionList = ({
                   )}
                 </div>
               </th>
+              {/* Category column header with sorting */}
               <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                 onClick={() => handleSort('category')}
@@ -127,6 +140,7 @@ const TransactionList = ({
                   )}
                 </div>
               </th>
+              {/* Amount column header with sorting */}
               <th
                 className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                 onClick={() => handleSort('amount')}
@@ -138,12 +152,14 @@ const TransactionList = ({
                   )}
                 </div>
               </th>
+              {/* Actions column header */}
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            {/* Show loading skeleton rows if loading */}
             {isLoading ? (
               Array.from({ length: 5 }).map((_, index) => (
                 <tr key={index} className="animate-pulse">
@@ -165,6 +181,7 @@ const TransactionList = ({
                 </tr>
               ))
             ) : sortedTransactions.length > 0 ? (
+              // Render each transaction row
               sortedTransactions.map((transaction) => (
                 <tr key={transaction._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
@@ -189,22 +206,25 @@ const TransactionList = ({
                     ₹{transaction.amount.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <Link
-                      to={`/transactions/${transaction._id}/edit`}
-                      className="text-blue-600 hover:text-blue-900 mr-3"
-                    >
-                      <Edit size={16} />
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(transaction._id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div className="flex justify-end items-center gap-5">
+                      <Link
+                        to={`/transactions/${transaction._id}/edit`}
+                        className="text-blue-600 hover:text-blue-900"
+                      >
+                        <Edit size={16} />
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(transaction._id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
             ) : (
+              // Show message if no transactions found
               <tr>
                 <td colSpan="5" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                   No transactions found
@@ -215,6 +235,7 @@ const TransactionList = ({
         </table>
       </div>
       
+      {/* Pagination controls */}
       {pagination && pagination.total > 0 && (
         <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div className="text-sm text-gray-500 dark:text-gray-400">

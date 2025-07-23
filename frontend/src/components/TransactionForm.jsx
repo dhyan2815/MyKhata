@@ -11,12 +11,15 @@ import {
 import { getCategories } from '../api/categories';
 import toast from 'react-hot-toast';
 
+// TransactionForm component for adding or editing a transaction
 const TransactionForm = ({ 
   initialData = null, 
   onSubmit, 
   isLoading = false 
 }) => {
   const navigate = useNavigate();
+
+  // State for form fields, initialized with initialData if provided
   const [formData, setFormData] = useState({
     type: initialData?.type || 'expense',
     amount: initialData?.amount || '',
@@ -27,9 +30,11 @@ const TransactionForm = ({
       : new Date().toISOString().split('T')[0],
   });
   
+  // State for categories and loading state for categories
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
   
+  // Load categories whenever the transaction type changes
   useEffect(() => {
     const loadCategories = async () => {
       setLoadingCategories(true);
@@ -46,15 +51,18 @@ const TransactionForm = ({
     loadCategories();
   }, [formData.type]);
   
+  // Handle input changes for all form fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
   
+  // Handle transaction type change (expense/income)
   const handleTypeChange = (type) => {
     setFormData({ ...formData, type, category: '' });
   };
   
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -91,6 +99,7 @@ const TransactionForm = ({
               Transaction Type
             </label>
             <div className="flex w-full rounded-md overflow-hidden border border-gray-300 dark:border-gray-600">
+              {/* Expense button */}
               <button
                 type="button"
                 className={`flex-1 py-2 px-4 text-sm font-medium text-center ${
@@ -102,6 +111,7 @@ const TransactionForm = ({
               >
                 Expense
               </button>
+              {/* Income button */}
               <button
                 type="button"
                 className={`flex-1 py-2 px-4 text-sm font-medium text-center ${
@@ -122,6 +132,7 @@ const TransactionForm = ({
               Amount
             </label>
             <div className="relative rounded-md shadow-sm">
+              {/* Rupee icon */}
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <IndianRupee size={16} className="text-gray-400 dark:text-gray-500" />
               </div>
@@ -146,6 +157,7 @@ const TransactionForm = ({
               Category
             </label>
             <div className="relative rounded-md shadow-sm">
+              {/* Tag icon */}
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Tag size={16} className="text-gray-400 dark:text-gray-500" />
               </div>
@@ -159,12 +171,14 @@ const TransactionForm = ({
                 disabled={loadingCategories}
               >
                 <option value="">Select a category</option>
+                {/* Render category options */}
                 {categories.map((category) => (
                   <option key={category._id} value={category._id}>
                     {category.name}
                   </option>
                 ))}
               </select>
+              {/* Dropdown arrow icon */}
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                 <ChevronDown size={16} className="text-gray-400 dark:text-gray-500" />
               </div>
@@ -177,6 +191,7 @@ const TransactionForm = ({
               Description
             </label>
             <div className="relative rounded-md shadow-sm">
+              {/* AlignLeft icon */}
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <AlignLeft size={16} className="text-gray-400 dark:text-gray-500" />
               </div>
@@ -199,6 +214,7 @@ const TransactionForm = ({
               Date
             </label>
             <div className="relative rounded-md shadow-sm">
+              {/* Calendar icon */}
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Calendar size={16} className="text-gray-400 dark:text-gray-500" />
               </div>
@@ -216,7 +232,9 @@ const TransactionForm = ({
         </div>
       </div>
       
+      {/* Action buttons */}
       <div className="flex space-x-4 justify-end">
+        {/* Cancel button */}
         <button
           type="button"
           className="btn btn-secondary dark:bg-gray-700 dark:border-gray-600 dark:text-white"
@@ -225,12 +243,14 @@ const TransactionForm = ({
         >
           Cancel
         </button>
+        {/* Submit button */}
         <button
           type="submit"
           className="btn btn-primary dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
           disabled={isLoading}
         >
           {isLoading ? (
+            // Show spinner when loading
             <span className="flex items-center">
               <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -239,6 +259,7 @@ const TransactionForm = ({
               Processing...
             </span>
           ) : (
+            // Show add/update label
             <span className="flex items-center">
               <Plus size={16} className="mr-2" />
               {initialData ? 'Update Transaction' : 'Add Transaction'}
