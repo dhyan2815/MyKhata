@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, UserCircle, LogOut, Settings, ChevronDown } from 'lucide-react';
+import { Menu, X, UserCircle, LogOut, Settings, ChevronDown, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 // Navbar component for the top navigation bar
-const Navbar = ({ toggleSidebar }) => {
+const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => {
   // Get user and logout function from AuthContext
   const { user, logout } = useAuth();
   // State to control profile dropdown menu
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-30 bg-white dark:bg-gray-900 shadow-sm dark:shadow-md h-16">
+    <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-sm dark:shadow-md h-16">
       <div className="h-full flex items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Left section: Sidebar toggle and logo */}
         <div className="flex items-center">

@@ -1,8 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
-import { X, LayoutDashboard, ListOrdered, Tag, User } from 'lucide-react';
+import { X, LayoutDashboard, ListOrdered, Tag, User, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
 // Sidebar component for navigation
-const Sidebar = ({ isOpen, closeSidebar }) => {
+const Sidebar = ({ isOpen, closeSidebar, collapsed = false, toggleCollapsed }) => {
   const location = useLocation();
 
   // Navigation items for the sidebar
@@ -48,10 +48,10 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
       )}
 
       {/* Sidebar panel */}
-      <aside 
-        className={`fixed top-0 left-0 z-40 h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 pt-16 transition-transform duration-300 ease-in-out transform lg:translate-x-0 lg:static lg:h-auto ${
+      <aside
+        className={`fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] min-w-0 overflow-hidden ${collapsed ? 'w-16' : 'w-64'} bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transition-all duration-300 ease-in-out transform ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        } lg:translate-x-0`}
       >
         {/* Sidebar header (visible on mobile) */}
         <div className="flex items-center justify-between px-4 py-3 lg:hidden">
@@ -61,6 +61,17 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
             className="p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
           >
             <X size={20} />
+          </button>
+        </div>
+
+        {/* Collapse/Expand button (desktop only) */}
+        <div className="hidden lg:flex items-center justify-end px-2 py-2">
+          <button
+            onClick={toggleCollapsed}
+            className="p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {collapsed ? <ChevronsRight size={20} /> : <ChevronsLeft size={20} />}
           </button>
         </div>
 
@@ -85,11 +96,11 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                   } ${item.disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {/* Icon for the nav item */}
-                  <span className="mr-3">{item.icon}</span>
-                  {/* Name of the nav item */}
-                  {item.name}
+                  <span className="mr-3 flex-shrink-0">{item.icon}</span>
+                  {/* Name of the nav item (hide if collapsed) */}
+                  {!collapsed && item.name}
                   {/* "Soon" badge for disabled items */}
-                  {item.disabled && (
+                  {item.disabled && !collapsed && (
                     <span className="ml-auto text-xs bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded-full text-gray-700 dark:text-gray-200">
                       Soon
                     </span>
