@@ -206,20 +206,20 @@ const TransactionList = ({
                     ₹{transaction.amount.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    {/* Edit transaction link */}
-                    <Link
-                      to={`/transactions/${transaction._id}/edit`}
-                      className="text-blue-600 hover:text-blue-900 mr-3"
-                    >
-                      <Edit size={16} />
-                    </Link>
-                    {/* Delete transaction button */}
-                    <button
-                      onClick={() => handleDelete(transaction._id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div className="flex justify-end items-center gap-5">
+                      <Link
+                        to={`/transactions/${transaction._id}/edit`}
+                        className="text-blue-600 hover:text-blue-900"
+                      >
+                        <Edit size={16} />
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(transaction._id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
