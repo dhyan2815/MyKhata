@@ -9,22 +9,22 @@ const Sidebar = ({ isOpen, closeSidebar, collapsed = false, toggleCollapsed }) =
   const navItems = [
     {
       name: 'Dashboard',
-      icon: <LayoutDashboard size={20} />,
+      icon: <LayoutDashboard size={23} />,
       path: '/',
     },
     {
       name: 'Transactions',
-      icon: <ListOrdered size={20} />,
+      icon: <ListOrdered size={23} />,
       path: '/transactions',
     },
     {
       name: 'Categories',
-      icon: <Tag size={20} />,
+      icon: <Tag size={23} />,
       path: '/categories',
     },
     {
       name: 'Profile',
-      icon: <User size={20} />,
+      icon: <User size={23} />,
       path: '/profile',
     },
   ];
@@ -65,13 +65,13 @@ const Sidebar = ({ isOpen, closeSidebar, collapsed = false, toggleCollapsed }) =
         </div>
 
         {/* Collapse/Expand button (desktop only) */}
-        <div className="hidden lg:flex items-center justify-end px-2 py-2">
+        <div className="hidden lg:flex items-center justify-end px-3 py-3">
           <button
             onClick={toggleCollapsed}
             className="p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
-            {collapsed ? <ChevronsRight size={20} /> : <ChevronsLeft size={20} />}
+            {collapsed ? <ChevronsRight size={23} /> : <ChevronsLeft size={23} />}
           </button>
         </div>
 
@@ -89,7 +89,7 @@ const Sidebar = ({ isOpen, closeSidebar, collapsed = false, toggleCollapsed }) =
                       ? closeSidebar
                       : undefined
                   }
-                  className={`flex items-center px-4 py-2.5 text-sm font-medium rounded-md transition-colors ${
+                  className={`flex items-center px-3 py-3 text-base font-medium rounded-md transition-colors ${
                     isActive(item.path)
                       ? 'bg-teal-50 dark:bg-teal-800 text-teal-600 dark:text-white'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
