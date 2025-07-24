@@ -5,6 +5,7 @@ import TransactionList from '../components/TransactionList';
 import { Plus, Filter } from 'lucide-react';
 import { getCategories } from '../api/categories';
 import toast from 'react-hot-toast';
+import { Helmet } from 'react-helmet-async';
 
 // Transactions page component
 const Transactions = () => {
@@ -20,7 +21,8 @@ const Transactions = () => {
     category: '',
     startDate: '',
     endDate: '',
-    page: 1
+    page: 1,
+    limit: 10,
   });
   // State for pagination info
   const [pagination, setPagination] = useState(null);
@@ -93,6 +95,9 @@ const Transactions = () => {
 
   return (
     <div className="space-y-6 min-h-screen dark:bg-gray-900 dark:text-white">
+      <Helmet>
+        <title>Transactions · MyKhata</title>
+      </Helmet>
       {/* Header and action buttons */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>

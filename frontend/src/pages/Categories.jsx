@@ -16,6 +16,7 @@ import {
   deleteCategory 
 } from '../api/categories';
 import toast from 'react-hot-toast';
+import { Helmet } from 'react-helmet-async';
 
 // Categories page component for managing income and expense categories
 const Categories = () => {
@@ -169,6 +170,9 @@ const Categories = () => {
 
   return (
     <div className="min-h-screen space-y-6 p-5 rounded-lg dark:bg-gray-800 dark:text-white">
+      <Helmet>
+        <title>Categories · MyKhata</title>
+      </Helmet>
       {/* Header section with title and add button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>

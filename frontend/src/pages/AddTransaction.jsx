@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import TransactionForm from '../components/TransactionForm';
 import { createTransaction } from '../api/transactions';
 import toast from 'react-hot-toast';
+import { Helmet } from 'react-helmet-async';
 
 // AddTransaction page component for adding a new transaction
 const AddTransaction = () => {
@@ -29,6 +30,9 @@ const AddTransaction = () => {
 
   return (
     <div className="min-h-screen space-y-6 dark:bg-gray-900 dark:text-white">
+      <Helmet>
+        <title>Add Transaction · MyKhata</title>
+      </Helmet>
       <div>
         {/* Page title and description */}
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Add Transaction</h1>

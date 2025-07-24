@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { User, Mail, Save, Sun, IndianRupee } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ToggleMode from '../components/ToggleMode';
+import { Helmet } from 'react-helmet-async';
 
 // Profile component for user profile management
 const Profile = () => {
@@ -125,16 +126,19 @@ const Profile = () => {
   
   // Render profile form
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your account details</p>
-      </div>
+    <div className="profile-page">
+      <Helmet>
+        <title>Profile · MyKhata</title>
+      </Helmet>
 
       <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* User avatar or initial */}
-          <div className="flex items-center justify-center mb-6">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
+              <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your account details</p>
+            </div>
             <div className="h-24 w-24 rounded-full bg-teal-600 text-white flex items-center justify-center text-2xl">
               {user?.name?.charAt(0).toUpperCase() || <User size={32} />}
             </div>

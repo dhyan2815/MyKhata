@@ -6,6 +6,7 @@ import { getTransactionSummary, getTransactions } from '../api/transactions';
 import TransactionList from '../components/TransactionList';
 import DashboardChart from '../components/DashboardChart';
 import toast from 'react-hot-toast';
+import { Helmet } from 'react-helmet-async';
 
 // Main Dashboard component
 const Dashboard = () => {
@@ -80,6 +81,9 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
+      <Helmet>
+        <title>Dashboard · MyKhata</title>
+      </Helmet>
       {/* Header: Title and Add Transaction button */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
         <div>
