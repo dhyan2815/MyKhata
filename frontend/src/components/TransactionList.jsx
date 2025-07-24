@@ -164,7 +164,7 @@ const TransactionList = ({
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             {/* Show loading skeleton rows if loading */}
             {isLoading ? (
-              Array.from({ length: 5 }).map((_, index) => (
+              Array.from({ length: 3 }).map((_, index) => (
                 <tr key={index} className="animate-pulse">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-24"></div>
