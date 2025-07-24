@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, UserCircle, LogOut, Settings, ChevronDown, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { Menu, X, UserCircle, LogOut, Settings, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { fetchInsights } from '../api/insights';
 
 // Navbar component for the top navigation bar
 const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => {
@@ -9,6 +10,40 @@ const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => 
   const { user, logout } = useAuth();
   // State to control profile dropdown menu
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  // State for insights
+  const [insights, setInsights] = useState([]);
+  const [insightsLoading, setInsightsLoading] = useState(true);
+  const [currentInsightIdx, setCurrentInsightIdx] = useState(0);
+  const [fade, setFade] = useState(true);
+
+  useEffect(() => {
+    const loadInsights = async () => {
+      setInsightsLoading(true);
+      try {
+        const data = await fetchInsights();
+        setInsights(data);
+      } catch (err) {
+        setInsights([]);
+      } finally {
+        setInsightsLoading(false);
+      }
+    };
+    loadInsights();
+  }, []);
+
+  // Slideshow effect for insights with fade transition
+  useEffect(() => {
+    if (!insights || insights.length <= 1) return;
+    setFade(true);
+    const interval = setInterval(() => {
+      setFade(false);
+      setTimeout(() => {
+        setCurrentInsightIdx((prev) => (prev + 1) % insights.length);
+        setFade(true);
+      }, 400); // fade out duration
+    }, 4000); // 4 seconds per slide
+    return () => clearInterval(interval);
+  }, [insights, currentInsightIdx]);
 
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-sm dark:shadow-md h-16">
@@ -34,6 +69,26 @@ const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => 
             </span>
             <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">MyKhata</span>
           </Link>
+
+          {/* Insights display */}
+          <div className="ml-4 flex items-center space-x-2 overflow-x-auto hide-scrollbar max-w-xs sm:max-w-md md:max-w-lg">
+            {insightsLoading ? (
+              <span className="inline-flex items-center px-4 py-1.5 rounded-md text-teal-800 dark:text-teal-200 text-sm animate-pulse shadow-sm">
+                <Lightbulb size={16} className="mr-1" /> Loading insights...
+              </span>
+            ) : insights.length > 0 ? (
+              <span
+                className={`inline-flex items-center px-4 py-1.5 rounded-md text-teal-800 dark:text-teal-200 text-sm whitespace-nowrap transition-opacity duration-400 shadow-sm ${fade ? 'opacity-100' : 'opacity-0'}`}
+                key={currentInsightIdx}
+              >
+                <Lightbulb size={16} className="mr-1 text-teal-500 dark:text-teal-300" /> {insights[currentInsightIdx]}
+              </span>
+            ) : (
+              <span className="inline-flex items-center px-4 py-1.5 rounded-full text-gray-500 dark:text-gray-300 text-sm shadow-sm">
+                <Lightbulb size={16} className="mr-1" /> No insights yet
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Right section: Profile menu */}

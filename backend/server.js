@@ -1,3 +1,5 @@
+// backend/server.js
+
 import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
@@ -6,6 +8,7 @@ import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
 import transactionRoutes from './routes/transactionRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
+import insightRoutes from './routes/insightRoutes.js';
 import cors from 'cors';
 
 // Load env vars
@@ -34,6 +37,7 @@ app.use(express.json());
 app.use('/api/users', userRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/insights', insightRoutes);
 
 // Welcome ROOT route
 app.get('/', (req, res) => {
