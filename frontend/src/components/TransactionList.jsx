@@ -1,70 +1,77 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Edit, Trash2, ChevronDown, ChevronUp, Search } from 'lucide-react';
-import { format } from 'date-fns';
-import { deleteTransaction } from '../api/transactions';
-import toast from 'react-hot-toast';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Edit, Trash2, ChevronDown, ChevronUp, Search } from "lucide-react";
+import { format } from "date-fns";
+import { deleteTransaction } from "../api/transactions";
+import toast from "react-hot-toast";
 
 // TransactionList component displays a list of transactions with sorting, searching, and pagination
-const TransactionList = ({ 
-  transactions, 
-  onTransactionDeleted, 
+const TransactionList = ({
+  transactions,
+  onTransactionDeleted,
   isLoading = false,
   pagination = null,
   onPageChange = () => {},
   showActions = true,
 }) => {
   // State for search input
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   // State for sorting field and direction
-  const [sortField, setSortField] = useState('date');
-  const [sortDirection, setSortDirection] = useState('desc');
+  const [sortField, setSortField] = useState("date");
+  const [sortDirection, setSortDirection] = useState("desc");
 
   // Handles sorting logic when a column header is clicked
   const handleSort = (field) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('asc');
+      setSortDirection("asc");
     }
   };
 
   // Handles deletion of a transaction
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this transaction?')) {
+    if (window.confirm("Are you sure you want to delete this transaction?")) {
       try {
         await deleteTransaction(id);
-        toast.success('Transaction deleted successfully');
+        toast.success("Transaction deleted successfully");
         if (onTransactionDeleted) {
           onTransactionDeleted(id);
         }
       } catch (error) {
-        toast.error(error.response?.data?.message || 'Failed to delete transaction');
+        toast.error(
+          error.response?.data?.message || "Failed to delete transaction"
+        );
       }
     }
   };
 
   // Filter transactions based on search term (description or category)
-  const filteredTransactions = transactions.filter((transaction) => 
-    transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    transaction.category.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTransactions = transactions.filter(
+    (transaction) =>
+      transaction.description
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      transaction.category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Sort filtered transactions based on selected field and direction
   const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-    if (sortField === 'date') {
-      return sortDirection === 'asc' 
+    if (sortField === "date") {
+      return sortDirection === "asc"
         ? new Date(a.date) - new Date(b.date)
         : new Date(b.date) - new Date(a.date);
-    } else if (sortField === 'amount') {
-      return sortDirection === 'asc' ? a.amount - b.amount : b.amount - a.amount;
-    } else if (sortField === 'description') {
-      return sortDirection === 'asc'
+    } else if (sortField === "amount") {
+      return sortDirection === "asc"
+        ? a.amount - b.amount
+        : b.amount - a.amount;
+    } else if (sortField === "description") {
+      return sortDirection === "asc"
         ? a.description.localeCompare(b.description)
         : b.description.localeCompare(a.description);
-    } else if (sortField === 'category') {
-      return sortDirection === 'asc'
+    } else if (sortField === "category") {
+      return sortDirection === "asc"
         ? a.category.name.localeCompare(b.category.name)
         : b.category.name.localeCompare(a.category.name);
     }
@@ -73,12 +80,12 @@ const TransactionList = ({
 
   // Show loading spinner if data is loading
   if (isLoading) {
-      return (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
-        </div>
-      );
-    }
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -99,61 +106,92 @@ const TransactionList = ({
           </div>
         </div>
       </div>
-      
-      {/* Transactions table */}
+      {/* Responsive Table/Card */}
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        {/* Table for md+ screens, cards for mobile */}
+        <table className="hidden md:table min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
-              {/* Date column header with sorting */}
               <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('date')}
+                onClick={() => handleSort("date")}
               >
                 <div className="flex items-center">
                   Date
-                  {sortField === 'date' && (
-                    sortDirection === 'asc' ? <ChevronUp size={16} className="text-gray-500 dark:text-gray-300" /> : <ChevronDown size={16} className="text-gray-500 dark:text-gray-300" />
-                  )}
+                  {sortField === "date" &&
+                    (sortDirection === "asc" ? (
+                      <ChevronUp
+                        size={16}
+                        className="text-gray-500 dark:text-gray-300"
+                      />
+                    ) : (
+                      <ChevronDown
+                        size={16}
+                        className="text-gray-500 dark:text-gray-300"
+                      />
+                    ))}
                 </div>
               </th>
-              {/* Description column header with sorting */}
               <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('description')}
+                onClick={() => handleSort("description")}
               >
                 <div className="flex items-center">
                   Description
-                  {sortField === 'description' && (
-                    sortDirection === 'asc' ? <ChevronUp size={16} className="text-gray-500 dark:text-gray-300" /> : <ChevronDown size={16} className="text-gray-500 dark:text-gray-300" />
-                  )}
+                  {sortField === "description" &&
+                    (sortDirection === "asc" ? (
+                      <ChevronUp
+                        size={16}
+                        className="text-gray-500 dark:text-gray-300"
+                      />
+                    ) : (
+                      <ChevronDown
+                        size={16}
+                        className="text-gray-500 dark:text-gray-300"
+                      />
+                    ))}
                 </div>
               </th>
-              {/* Category column header with sorting */}
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('category')}
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hidden sm:table-cell"
+                onClick={() => handleSort("category")}
               >
                 <div className="flex items-center">
                   Category
-                  {sortField === 'category' && (
-                    sortDirection === 'asc' ? <ChevronUp size={16} className="text-gray-500 dark:text-gray-300" /> : <ChevronDown size={16} className="text-gray-500 dark:text-gray-300" />
-                  )}
+                  {sortField === "category" &&
+                    (sortDirection === "asc" ? (
+                      <ChevronUp
+                        size={16}
+                        className="text-gray-500 dark:text-gray-300"
+                      />
+                    ) : (
+                      <ChevronDown
+                        size={16}
+                        className="text-gray-500 dark:text-gray-300"
+                      />
+                    ))}
                 </div>
               </th>
-              {/* Amount column header with sorting */}
               <th
                 className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('amount')}
+                onClick={() => handleSort("amount")}
               >
                 <div className="flex items-center justify-end">
                   Amount
-                  {sortField === 'amount' && (
-                    sortDirection === 'asc' ? <ChevronUp size={16} className="text-gray-500 dark:text-gray-300" /> : <ChevronDown size={16} className="text-gray-500 dark:text-gray-300" />
-                  )}
+                  {sortField === "amount" &&
+                    (sortDirection === "asc" ? (
+                      <ChevronUp
+                        size={16}
+                        className="text-gray-500 dark:text-gray-300"
+                      />
+                    ) : (
+                      <ChevronDown
+                        size={16}
+                        className="text-gray-500 dark:text-gray-300"
+                      />
+                    ))}
                 </div>
               </th>
-              {/* Actions column header */}
               {showActions && (
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Actions
@@ -162,7 +200,6 @@ const TransactionList = ({
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            {/* Show loading skeleton rows if loading */}
             {isLoading ? (
               Array.from({ length: 3 }).map((_, index) => (
                 <tr key={index} className="animate-pulse">
@@ -172,7 +209,7 @@ const TransactionList = ({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-32"></div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
                     <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-20"></div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -186,29 +223,37 @@ const TransactionList = ({
                 </tr>
               ))
             ) : sortedTransactions.length > 0 ? (
-              // Render each transaction row
               sortedTransactions.map((transaction) => (
-                <tr key={transaction._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <tr
+                  key={transaction._id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                    {format(new Date(transaction.date), 'MMM dd, yyyy')}
+                    {format(new Date(transaction.date), "MMM dd, yyyy")}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                     {transaction.description}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span 
+                  <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
+                    <span
                       className="px-2.5 py-1 rounded-full text-xs font-medium"
-                      style={{ 
+                      style={{
                         backgroundColor: `${transaction.category.color}20`,
-                        color: transaction.category.color
+                        color: transaction.category.color,
                       }}
                     >
                       {transaction.category.name}
                     </span>
                   </td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium text-right ${transaction.type === 'expense' ? 'text-red-600' : 'text-green-600'}`}>
-                    {transaction.type === 'expense' ? '-' : '+'}
-                    ₹{transaction.amount.toFixed(2)}
+                  <td
+                    className={`px-6 py-4 whitespace-nowrap text-sm font-medium text-right ${
+                      transaction.type === "expense"
+                        ? "text-red-600"
+                        : "text-green-600"
+                    }`}
+                  >
+                    {transaction.type === "expense" ? "-" : "+"}₹
+                    {transaction.amount.toFixed(2)}
                   </td>
                   {showActions && (
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -231,22 +276,99 @@ const TransactionList = ({
                 </tr>
               ))
             ) : (
-              // Show message if no transactions found
               <tr>
-                <td colSpan={showActions ? 5 : 4} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                <td
+                  colSpan={showActions ? 5 : 4}
+                  className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
+                >
                   No transactions found
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+        {/* Cards for mobile (below md) */}
+        <div className="md:hidden space-y-3 p-2">
+          {isLoading ? (
+            Array.from({ length: 3 }).map((_, index) => (
+              <div
+                key={index}
+                className="animate-pulse bg-gray-100 dark:bg-gray-700 rounded-lg p-4"
+              >
+                <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-24 mb-2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-32 mb-2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-20 mb-2"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-16"></div>
+              </div>
+            ))
+          ) : sortedTransactions.length > 0 ? (
+            sortedTransactions.map((transaction) => (
+              <div
+                key={transaction._id}
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex flex-col gap-2"
+              >
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {format(new Date(transaction.date), "MMM dd, yyyy")}
+                  </span>
+                  <span
+                    className={`text-sm font-medium ${
+                      transaction.type === "expense"
+                        ? "text-red-600"
+                        : "text-green-600"
+                    }`}
+                  >
+                    {transaction.type === "expense" ? "-" : "+"}₹
+                    {transaction.amount.toFixed(2)}
+                  </span>
+                </div>
+                <div className="text-sm text-gray-900 dark:text-gray-100 font-semibold">
+                  {transaction.description}
+                </div>
+                {/* Hide category on xs, show on sm+ */}
+                <div className="hidden sm:block text-xs">
+                  <span
+                    className="px-2.5 py-1 rounded-full font-medium"
+                    style={{
+                      backgroundColor: `${transaction.category.color}20`,
+                      color: transaction.category.color,
+                    }}
+                  >
+                    {transaction.category.name}
+                  </span>
+                </div>
+                {showActions && (
+                  <div className="flex gap-4 mt-2">
+                    <Link
+                      to={`/transactions/${transaction._id}/edit`}
+                      className="text-blue-600 hover:text-blue-900"
+                    >
+                      <Edit size={16} />
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(transaction._id)}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="text-center text-gray-500 dark:text-gray-400 py-4">
+              No transactions found
+            </div>
+          )}
+        </div>
       </div>
-      
       {/* Pagination controls */}
       {pagination && pagination.total > 0 && showActions && (
         <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            Showing {(pagination.page - 1) * 10 + 1} to {Math.min(pagination.page * 10, pagination.total)} of {pagination.total} transactions
+            Showing {(pagination.page - 1) * 10 + 1} to{" "}
+            {Math.min(pagination.page * 10, pagination.total)} of{" "}
+            {pagination.total} transactions
           </div>
           <div className="flex space-x-2">
             <button
