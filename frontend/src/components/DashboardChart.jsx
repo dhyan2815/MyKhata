@@ -138,7 +138,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
 
   return (
     <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-20">
         <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Financial Overview</h2>
         <div className="flex space-x-2">
           {/* Button to switch to Expense Breakdown (doughnut) chart */}

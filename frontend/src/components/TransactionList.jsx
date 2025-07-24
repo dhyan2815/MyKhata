@@ -11,7 +11,8 @@ const TransactionList = ({
   onTransactionDeleted, 
   isLoading = false,
   pagination = null,
-  onPageChange = () => {}
+  onPageChange = () => {},
+  showActions = true,
 }) => {
   // State for search input
   const [searchTerm, setSearchTerm] = useState('');
@@ -153,9 +154,11 @@ const TransactionList = ({
                 </div>
               </th>
               {/* Actions column header */}
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Actions
-              </th>
+              {showActions && (
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Actions
+                </th>
+              )}
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -175,9 +178,11 @@ const TransactionList = ({
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-16 ml-auto"></div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-20 ml-auto"></div>
-                  </td>
+                  {showActions && (
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-20 ml-auto"></div>
+                    </td>
+                  )}
                 </tr>
               ))
             ) : sortedTransactions.length > 0 ? (
@@ -205,28 +210,30 @@ const TransactionList = ({
                     {transaction.type === 'expense' ? '-' : '+'}
                     ₹{transaction.amount.toFixed(2)}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex justify-end items-center gap-5">
-                      <Link
-                        to={`/transactions/${transaction._id}/edit`}
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        <Edit size={16} />
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(transaction._id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+                  {showActions && (
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex justify-end items-center gap-5">
+                        <Link
+                          to={`/transactions/${transaction._id}/edit`}
+                          className="text-blue-600 hover:text-blue-900"
+                        >
+                          <Edit size={16} />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(transaction._id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (
               // Show message if no transactions found
               <tr>
-                <td colSpan="5" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                <td colSpan={showActions ? 5 : 4} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                   No transactions found
                 </td>
               </tr>
@@ -236,7 +243,7 @@ const TransactionList = ({
       </div>
       
       {/* Pagination controls */}
-      {pagination && pagination.total > 0 && (
+      {pagination && pagination.total > 0 && showActions && (
         <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <div className="text-sm text-gray-500 dark:text-gray-400">
             Showing {(pagination.page - 1) * 10 + 1} to {Math.min(pagination.page * 10, pagination.total)} of {pagination.total} transactions

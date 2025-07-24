@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, UserCircle, LogOut, Settings, ChevronDown, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { Menu, X, UserCircle, LogOut, Settings, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { fetchInsights } from '../api/insights';
 
 // Navbar component for the top navigation bar
 const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => {
@@ -9,6 +10,24 @@ const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => 
   const { user, logout } = useAuth();
   // State to control profile dropdown menu
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  // State for insights
+  const [insights, setInsights] = useState([]);
+  const [insightsLoading, setInsightsLoading] = useState(true);
+
+  useEffect(() => {
+    const loadInsights = async () => {
+      setInsightsLoading(true);
+      try {
+        const data = await fetchInsights();
+        setInsights(data);
+      } catch (err) {
+        setInsights([]);
+      } finally {
+        setInsightsLoading(false);
+      }
+    };
+    loadInsights();
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-sm dark:shadow-md h-16">
@@ -34,6 +53,25 @@ const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => 
             </span>
             <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">MyKhata</span>
           </Link>
+
+          {/* Insights display */}
+          <div className="ml-4 flex items-center space-x-2 overflow-x-auto hide-scrollbar max-w-xs sm:max-w-md md:max-w-lg">
+            {insightsLoading ? (
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-xs animate-pulse">
+                <Lightbulb size={14} className="mr-1" /> Loading insights...
+              </span>
+            ) : insights.length > 0 ? (
+              insights.slice(0, 2).map((insight, idx) => (
+                <span key={idx} className="inline-flex items-center px-3 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-xs whitespace-nowrap">
+                  <Lightbulb size={14} className="mr-1" /> {insight}
+                </span>
+              ))
+            ) : (
+              <span className="inline-flex items-center px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-300 text-xs">
+                <Lightbulb size={14} className="mr-1" /> No insights yet
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Right section: Profile menu */}

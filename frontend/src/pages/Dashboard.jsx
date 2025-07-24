@@ -252,6 +252,7 @@ const Dashboard = () => {
             <TransactionList
               transactions={recentTransactions}
               isLoading={loading}
+              showActions={false}
             />
           </div>
         </div>
