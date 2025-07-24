@@ -6,7 +6,9 @@ import moment from 'moment';
 // Helper: Sum by category
 const sumByCategory = (txns) => {
   return txns.reduce((acc, txn) => {
-    acc[txn.category] = (acc[txn.category] || 0) + txn.amount;
+    // Use category name if populated, otherwise fallback to ID
+    const cat = txn.category?.name || txn.category;
+    acc[cat] = (acc[cat] || 0) + txn.amount;
     return acc;
   }, {});
 };
@@ -118,20 +120,20 @@ const getSpendingInsights = async (req, res) => {
     const thisMonthTxns = await Transaction.find({
       user: userId,
       date: { $gte: startOfThisMonth.toDate(), $lte: endOfThisMonth.toDate() },
-    });
+    }).populate('category', 'name');
 
     // Fetch transactions for last month
     const lastMonthTxns = await Transaction.find({
       user: userId,
       date: { $gte: startOfLastMonth.toDate(), $lte: endOfLastMonth.toDate() },
-    });
+    }).populate('category', 'name');
 
     // Fetch transactions for the last 3 months
     const startOfThreeMonthsAgo = now.clone().subtract(2, 'month').startOf('month');
     const threeMonthsTxns = await Transaction.find({
       user: userId,
       date: { $gte: startOfThreeMonthsAgo.toDate(), $lte: endOfThisMonth.toDate() },
-    });
+    }).populate('category', 'name');
 
     const thisMonthSums = sumByCategory(thisMonthTxns);
     const lastMonthSums = sumByCategory(lastMonthTxns);
