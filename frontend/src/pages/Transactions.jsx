@@ -20,7 +20,8 @@ const Transactions = () => {
     category: '',
     startDate: '',
     endDate: '',
-    page: 1
+    page: 1,
+    limit: 10,
   });
   // State for pagination info
   const [pagination, setPagination] = useState(null);
