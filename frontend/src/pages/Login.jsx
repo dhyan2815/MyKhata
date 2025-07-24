@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { LockKeyhole, Mail, User, EyeOff, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Image from '../assets/illustration-img.jpg'
+import { Helmet } from 'react-helmet-async';
 
 // Login component for user authentication
 const Login = () => {
@@ -52,6 +53,9 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-white flex">
+      <Helmet>
+        <title>Login · MyKhata</title>
+      </Helmet>
       {/* Login form section (left side) */}
       <div className="w-1/2 flex flex-col justify-center pt-5 sm:px-6 lg:px-8">
         <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">

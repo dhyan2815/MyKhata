@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { User, Mail, Save, Sun, IndianRupee } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ToggleMode from '../components/ToggleMode';
+import { Helmet } from 'react-helmet-async';
 
 // Profile component for user profile management
 const Profile = () => {
@@ -125,7 +126,10 @@ const Profile = () => {
   
   // Render profile form
   return (
-    <div className="space-y-6">
+    <div className="profile-page">
+      <Helmet>
+        <title>Profile · MyKhata</title>
+      </Helmet>
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
         <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your account details</p>

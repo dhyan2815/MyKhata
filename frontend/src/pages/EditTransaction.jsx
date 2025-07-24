@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import TransactionForm from '../components/TransactionForm';
 import { getTransactionById, updateTransaction } from '../api/transactions';
 import toast from 'react-hot-toast';
+import { Helmet } from 'react-helmet-async';
 
 const EditTransaction = () => {
   // Get the transaction ID from the URL parameters
@@ -64,7 +65,10 @@ const EditTransaction = () => {
 
   // Render the edit transaction form with initial data
   return (
-    <div className="space-y-6 min-h-screen">
+    <div className="edit-transaction-page">
+      <Helmet>
+        <title>Edit Transaction · MyKhata</title>
+      </Helmet>
       <div>
         <h1 className="text-2xl font-bold text-white">Edit Transaction</h1>
         <p className="text-gray-400 mt-1">

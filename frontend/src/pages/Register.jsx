@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { User, Mail, LockKeyhole, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Image from '../assets/illustration-img.jpg'
+import { Helmet } from 'react-helmet-async';
 
 // Register component for user registration
 const Register = () => {
@@ -73,6 +74,9 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-white flex">
+      <Helmet>
+        <title>Register · MyKhata</title>
+      </Helmet>
 
       {/* Registration Form Section */}
       <div className="w-1/2 flex flex-col justify-center pt-1 sm:px-6 lg:px-8">
