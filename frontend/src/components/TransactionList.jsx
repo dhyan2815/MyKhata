@@ -46,7 +46,8 @@ const TransactionList = ({
   };
 
   // Filter transactions based on search term (description or category)
-  const filteredTransactions = transactions.filter((transaction) => 
+  const safeTransactions = Array.isArray(transactions) ? transactions : [];
+  const filteredTransactions = safeTransactions.filter((transaction) => 
     transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     transaction.category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );

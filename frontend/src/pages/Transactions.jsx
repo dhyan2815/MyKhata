@@ -36,7 +36,7 @@ const Transactions = () => {
       try {
         // Fetch transactions from API with filters
         const result = await getTransactions(filters);
-        setTransactions(result.transactions);
+        setTransactions(Array.isArray(result.transactions) ? result.transactions : []);
         setPagination(result.pagination);
       } catch (error) {
         // Show error toast if fetch fails
