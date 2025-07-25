@@ -45,13 +45,13 @@ const TransactionList = ({
     }
   };
 
-  // Filter transactions based on search term (description or category)
+  // Always use a safe array for all array operations
   const safeTransactions = Array.isArray(transactions) ? transactions : [];
+  // Filter transactions based on search term (description or category)
   const filteredTransactions = safeTransactions.filter((transaction) => 
     transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
     transaction.category.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
   // Sort filtered transactions based on selected field and direction
   const sortedTransactions = [...filteredTransactions].sort((a, b) => {
     if (sortField === 'date') {
