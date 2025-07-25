@@ -7,6 +7,7 @@ import TransactionList from '../components/TransactionList';
 import DashboardChart from '../components/DashboardChart';
 import toast from 'react-hot-toast';
 import { Helmet } from 'react-helmet-async';
+import { safeArray } from '../utils/safeArray';
 
 // Main Dashboard component
 const Dashboard = () => {
@@ -254,7 +255,7 @@ const Dashboard = () => {
           <div className="px-4 py-5 sm:p-6">
             {/* List of recent transactions */}
             <TransactionList
-              transactions={Array.isArray(recentTransactions) ? recentTransactions.slice(0, 3) : []}
+              transactions={safeArray(recentTransactions).slice(0, 3)}
               isLoading={loading}
               showActions={false}
             />

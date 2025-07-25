@@ -4,6 +4,7 @@ import { Edit, Trash2, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { format } from 'date-fns';
 import { deleteTransaction } from '../api/transactions';
 import toast from 'react-hot-toast';
+import { safeArray } from '../utils/safeArray';
 
 // TransactionList component displays a list of transactions with sorting, searching, and pagination
 const TransactionList = ({ 
@@ -46,7 +47,7 @@ const TransactionList = ({
   };
 
   // Always use a safe array for all array operations
-  const safeTransactions = Array.isArray(transactions) ? transactions : [];
+  const safeTransactions = safeArray(transactions);
   // Filter transactions based on search term (description or category)
   const filteredTransactions = safeTransactions.filter((transaction) => 
     transaction.description.toLowerCase().includes(searchTerm.toLowerCase()) ||

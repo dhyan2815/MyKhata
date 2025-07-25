@@ -6,6 +6,7 @@ import { Plus, Filter } from 'lucide-react';
 import { getCategories } from '../api/categories';
 import toast from 'react-hot-toast';
 import { Helmet } from 'react-helmet-async';
+import { safeArray } from '../utils/safeArray';
 
 // Transactions page component
 const Transactions = () => {
@@ -36,7 +37,7 @@ const Transactions = () => {
       try {
         // Fetch transactions from API with filters
         const result = await getTransactions(filters);
-        setTransactions(Array.isArray(result.transactions) ? result.transactions : []);
+        setTransactions(safeArray(result.transactions));
         setPagination(result.pagination);
       } catch (error) {
         // Show error toast if fetch fails
@@ -55,7 +56,7 @@ const Transactions = () => {
       try {
         // Fetch all categories from API
         const allCategories = await getCategories();
-        setCategories(allCategories);
+        setCategories(safeArray(allCategories));
       } catch (error) {
         // Show error toast if fetch fails
         toast.error('Failed to load categories');
