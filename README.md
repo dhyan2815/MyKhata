@@ -1,6 +1,12 @@
-﻿# MyKhata - Track Your Finances  [![Visit Live Site](https://img.shields.io/badge/Visit-Live%20Site-brightgreen?style=for-the-badge)](https://mykhata-frontend.onrender.com/)
+﻿# MyKhata - Track Your Finances
 
-- 💰 MyKhata is a personal finance tracker designed for efficient money management. Log your income and expenses, categorize transactions, and visualize your financial patterns with intuitive charts. Powered by the MERN stack (MongoDB, Express.js, React, Node.js).
+- [📖 Introduction](#-introduction)
+- [✨ Features](#-features)
+- [✨ Tech Stack](#-tech-stack)
+
+## 📖 Introduction
+
+MyKhata is a personal finance tracker that helps you manage your expenses and income efficiently. It provides a user-friendly interface for tracking your financial transactions, categorizing them, and generating insights to help you make informed financial decisions.
 
 ## ✨ Features
 
@@ -8,9 +14,9 @@
 - 💰 **Transaction Management**: Add, edit, and delete financial transactions
 - 📊 **Data Visualization**: Charts and graphs for income vs expenses
 - 🏷️ **Categorization**: Organize transactions with customizable categories
-- 📱 **Responsive Design**: Works seamlessly on desktop and mobile devices
 - 📈 **Financial Summary**: View total income, expenses, and current balance
 - 🔍 **Advanced Filtering**: Sort and filter transactions by date, category, and type
+- 📑 **Spending Insights & Analytics**: Get personalized insights and trends about your spending habits
 
 ## ✨ Tech Stack
 
@@ -20,21 +26,20 @@
   ✔️ React Router for routing.   
   ✔️ Axios for API calls.       
   ✔️ Lucide Icons for icons.   
-  ✔️ Material UI for UI components.   
   ✔️ React Hooks for state management.   
   ✔️ React Hot Toast for toast notifications.   
   ✔️ React ChartJS for data visualization.   
+  ✔️ Robust error handling with ErrorBoundary.  
+  ✔️ ProtectedRoute for route guarding.  
+  ✔️ safeArray utility for defensive programming.  
+  ✔️ Dark/Light theme toggle.  
 
 💫 **Backend**:    
   ✔️ Node.js for server-side logic.  
   ✔️ Express.js for handling HTTP requests and responses.   
   ✔️ JWT Authentication for secure user sessions.   
-  ✔️ JSON Web Tokens (JWT) for authentication.   
-  ✔️ Cors Middleware for handling cross-origin requests.   
-
-💫 **Database**:   
+  ✔️ CORS Middleware for handling cross-origin requests.   
   ✔️ MongoDB Atlas for hosting the database.    
   ✔️ Mongoose for database schema and model management.   
-
-💫 **Production**:    
-  ✔️ Render for hosting the application.   
+  ✔️ Spending Insights API for analytics and trends.  
+  ✔️ Moment.js for date handling in insights.  
