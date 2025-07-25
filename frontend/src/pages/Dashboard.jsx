@@ -254,7 +254,7 @@ const Dashboard = () => {
           <div className="px-4 py-5 sm:p-6">
             {/* List of recent transactions */}
             <TransactionList
-              transactions={recentTransactions.slice(0, 3)}
+              transactions={Array.isArray(recentTransactions) ? recentTransactions.slice(0, 3) : []}
               isLoading={loading}
               showActions={false}
             />
