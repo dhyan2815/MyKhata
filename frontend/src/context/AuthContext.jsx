@@ -19,8 +19,6 @@ export const AuthProvider = ({ children }) => {
     const storedUser = localStorage.getItem('wealthflow_user');
     const token = localStorage.getItem('wealthflow_token');
 
-    console.log('[AuthContext] Loaded from localStorage:', { storedUser, token });
-
     // Function to verify user by checking token validity
     const verifyUser = async () => {
       if (storedUser && token) {
@@ -28,13 +26,11 @@ export const AuthProvider = ({ children }) => {
           // Verify token validity by fetching user profile
           const userData = await getUserProfile();
           setUser(userData);
-          console.log('[AuthContext] Verified user profile:', userData);
         } catch (error) {
           // If token is invalid, clear localStorage and reset user
           localStorage.removeItem('wealthflow_user');
           localStorage.removeItem('wealthflow_token');
           setUser(null);
-          console.error('[AuthContext] Token verification failed:', error);
         }
       }
       // Set loading to false after verification
@@ -49,7 +45,6 @@ export const AuthProvider = ({ children }) => {
     setUser(userData);
     localStorage.setItem('wealthflow_user', JSON.stringify(userData));
     localStorage.setItem('wealthflow_token', token);
-    console.log('[AuthContext] User logged in:', userData, token);
   };
 
   // Logout user: clear user state and remove from localStorage
@@ -57,14 +52,12 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem('wealthflow_user');
     localStorage.removeItem('wealthflow_token');
-    console.log('[AuthContext] User logged out');
   };
 
   // Update user: update user state and localStorage
   const updateUser = (userData) => {
     setUser(userData);
     localStorage.setItem('wealthflow_user', JSON.stringify(userData));
-    console.log('[AuthContext] User updated:', userData);
   };
 
   // Provide auth state and functions to children components

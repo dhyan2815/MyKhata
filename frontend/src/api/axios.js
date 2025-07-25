@@ -44,6 +44,4 @@ api.interceptors.response.use(
   }
 );
 
-console.log('[axios] API base URL:', import.meta.env.VITE_API_BASE_URL);
-
 export default api;
