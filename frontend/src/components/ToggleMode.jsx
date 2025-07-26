@@ -1,5 +1,7 @@
 import { useContext } from 'react';
 import { ThemeContext } from '../context/ThemeContext.jsx';
+import { Sun, Moon } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // ToggleMode component for switching between light and dark themes
 const ToggleMode = () => {
@@ -8,28 +10,65 @@ const ToggleMode = () => {
   const isDark = theme === 'dark';
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-3">
       {/* Label for the theme toggle */}
-      <span className="text-sm">Theme:</span>
+      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Theme:</span>
       
-      {/* Toggle button for switching theme */}
-      <button
+      {/* Enhanced toggle button for switching theme */}
+      <motion.button
         type='button'
         onClick={toggleTheme}
-        className={`w-7 h-4 flex items-center rounded-full p-1 transition-colors duration-300 ${
-          isDark ? 'bg-teal-600' : 'text-black'
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className={`relative w-12 h-6 flex items-center rounded-full p-0.5 transition-all duration-300 ease-in-out shadow-md ${
+          isDark 
+            ? 'bg-gradient-to-r from-teal-600 to-teal-700' 
+            : 'bg-gradient-to-r from-teal-400 to-teal-500'
         }`}
       >
-        {/* The toggle knob */}
-        <div
-          className={`w-3 h-3 bg-white rounded-full shadow-md transform transition-transform duration-300 ${
-            isDark ? 'translate-x-3' : 'translate-x-0'
+        {/* Background icons */}
+        <div className="absolute inset-0 flex items-center justify-between px-1.5">
+          <Sun 
+            size={10} 
+            className={`transition-all duration-300 ${
+              isDark ? 'text-teal-100 opacity-80' : 'text-white opacity-100'
+            }`}
+          />
+          <Moon 
+            size={10} 
+            className={`transition-all duration-300 ${
+              isDark ? 'text-white opacity-100' : 'text-teal-200 opacity-80'
+            }`}
+          />
+        </div>
+        
+        {/* The toggle knob with icon */}
+        <motion.div
+          layout
+          className={`w-5 h-5 bg-white rounded-full shadow-lg flex items-center justify-center transform transition-all duration-300 ${
+            isDark ? 'translate-x-6' : 'translate-x-0'
           }`}
-        />
-      </button>
+        >
+          <motion.div
+            initial={false}
+            animate={{ rotate: isDark ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {isDark ? (
+              <Moon size={8} className="text-teal-900" />
+            ) : (
+              <Sun size={8} className="text-teal-700" />
+            )}
+          </motion.div>
+        </motion.div>
+      </motion.button>
       
-      {/* Display current theme mode */}
-      <span className="text-sm">
+      {/* Display current theme mode with better styling */}
+      <span className={`text-sm font-medium px-2 py-1 rounded-md transition-colors duration-300 ${
+        isDark 
+          ? 'bg-gray-800 text-gray-200 border border-gray-700' 
+          : 'bg-gray-100 text-gray-700 border border-gray-200'
+      }`}>
         {isDark ? 'Dark' : 'Light'}
       </span>
     </div>
