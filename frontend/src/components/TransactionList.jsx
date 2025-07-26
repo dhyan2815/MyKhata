@@ -244,7 +244,7 @@ const TransactionList = ({
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                     {format(new Date(transaction.date), "MMM dd, yyyy")}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 max-w-[120px] overflow-hidden text-ellipsis" title={transaction.description}>
                     {transaction.description}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap hidden sm:table-cell">
@@ -345,7 +345,7 @@ const TransactionList = ({
                     {formatTransactionAmount(transaction.amount, transaction.type, user?.currency || 'INR', { fromCurrency: transaction.currency || 'INR' })}
                   </span>
                 </div>
-                <div className="text-sm text-gray-900 dark:text-gray-100 font-semibold">
+                <div className="text-sm text-gray-900 dark:text-gray-100 font-semibold max-w-[180px] overflow-hidden text-ellipsis whitespace-nowrap" title={transaction.description}>
                   {transaction.description}
                 </div>
                 {/* Show category on all mobile sizes */}

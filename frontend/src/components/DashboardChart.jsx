@@ -101,7 +101,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
       legend: {
         position: 'right',
         labels: {
-          color: 'rgb(255, 255, 255)', // Ensure legend labels are white in dark mode
+          color: typeof window !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--chart-legend-label').trim() || '#222' : '#222',
         },
       },
       tooltip: {

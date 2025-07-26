@@ -16,6 +16,13 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold text-gray-900; /* Headings: bold and darker text */
   }
+
+  :root {
+    --chart-legend-label: #222;
+  }
+  .dark {
+    --chart-legend-label: #fff;
+  }
 }
 
 /* Components layer: reusable UI classes */

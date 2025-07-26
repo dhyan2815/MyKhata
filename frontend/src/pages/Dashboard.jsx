@@ -109,79 +109,71 @@ const Dashboard = () => {
 
       {/* Date Range Selector: Quick buttons and custom date pickers */}
       <div className="bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4 mb-4 sm:mb-6">
-        <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
+        <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr_auto] sm:items-center gap-3">
+          {/* Left: Date Range label */}
           <div className="text-sm text-gray-600 dark:text-gray-300 flex items-center">
             <Calendar size={16} className="mr-1" /> Date Range:
           </div>
-          
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-            {/* Quick date range buttons */}
-            <div className="flex flex-wrap gap-2">
-              {['today', 'week', 'month', 'year'].map((range) => {
-                const labelMap = {
-                  today: 'Today',
-                  week: 'Last 7 Days',
-                  month: 'This Month',
-                  year: 'This Year',
-                };
-
-                // Expected start and end dates for each quick range
-                const expectedDate = {
-                  today: {
-                    start: format(new Date(), 'yyyy-MM-dd'),
-                    end: format(new Date(), 'yyyy-MM-dd'),
-                  },
-                  week: {
-                    start: format(subDays(new Date(), 7), 'yyyy-MM-dd'),
-                    end: format(new Date(), 'yyyy-MM-dd'),
-                  },
-                  month: {
-                    start: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
-                    end: format(endOfMonth(new Date()), 'yyyy-MM-dd'),
-                  },
-                  year: {
-                    start: format(new Date(new Date().getFullYear(), 0, 1), 'yyyy-MM-dd'),
-                    end: format(new Date(new Date().getFullYear(), 11, 31), 'yyyy-MM-dd'),
-                  },
-                };
-
-                // Highlight the active quick range button
-                const isActive =
-                  dateRange.startDate === expectedDate[range].start &&
-                  dateRange.endDate === expectedDate[range].end;
-
-                return (
-                  <button
-                    key={range}
-                    onClick={() => handleQuickDateRange(range)}
-                    className={`px-2 sm:px-3 py-1 text-xs rounded-full border transition ${
-                      isActive
-                        ? 'bg-teal-600 text-white border-teal-600'
-                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    {labelMap[range]}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Custom date range pickers */}
-            <div className="flex items-center space-x-2">
-              <input
-                type="date"
-                value={dateRange.startDate}
-                onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
-                className="input py-1 h-8 text-xs sm:text-sm dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
-              />
-              <span className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">to</span>
-              <input
-                type="date"
-                value={dateRange.endDate}
-                onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
-                className="input py-1 h-8 text-xs sm:text-sm dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
-              />
-            </div>
+          {/* Center: Quick range buttons */}
+          <div className="flex flex-wrap justify-center gap-2">
+            {['today', 'week', 'month', 'year'].map((range) => {
+              const labelMap = {
+                today: 'Today',
+                week: 'Last 7 Days',
+                month: 'This Month',
+                year: 'This Year',
+              };
+              const expectedDate = {
+                today: {
+                  start: format(new Date(), 'yyyy-MM-dd'),
+                  end: format(new Date(), 'yyyy-MM-dd'),
+                },
+                week: {
+                  start: format(subDays(new Date(), 7), 'yyyy-MM-dd'),
+                  end: format(new Date(), 'yyyy-MM-dd'),
+                },
+                month: {
+                  start: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
+                  end: format(endOfMonth(new Date()), 'yyyy-MM-dd'),
+                },
+                year: {
+                  start: format(new Date(new Date().getFullYear(), 0, 1), 'yyyy-MM-dd'),
+                  end: format(new Date(new Date().getFullYear(), 11, 31), 'yyyy-MM-dd'),
+                },
+              };
+              const isActive =
+                dateRange.startDate === expectedDate[range].start &&
+                dateRange.endDate === expectedDate[range].end;
+              return (
+                <button
+                  key={range}
+                  onClick={() => handleQuickDateRange(range)}
+                  className={`px-2 sm:px-3 py-1 text-xs rounded-full border transition ${
+                    isActive
+                      ? 'bg-teal-600 text-white border-teal-600'
+                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  {labelMap[range]}
+                </button>
+              );
+            })}
+          </div>
+          {/* Right: Custom date range pickers */}
+          <div className="flex items-center space-x-2 justify-end">
+            <input
+              type="date"
+              value={dateRange.startDate}
+              onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
+              className="input py-1 h-8 text-xs sm:text-sm dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
+            />
+            <span className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">To</span>
+            <input
+              type="date"
+              value={dateRange.endDate}
+              onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
+              className="input py-1 h-8 text-xs sm:text-sm dark:bg-gray-800 dark:text-gray-100 dark:border-gray-700"
+            />
           </div>
         </div>
       </div>
