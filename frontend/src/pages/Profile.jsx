@@ -5,6 +5,7 @@ import { User, Mail, Save, Sun, IndianRupee } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ToggleMode from '../components/ToggleMode';
 import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
 
 // Profile component for user profile management
 const Profile = () => {
@@ -126,25 +127,35 @@ const Profile = () => {
   
   // Render profile form
   return (
-    <div className="profile-page">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="profile-page"
+    >
       <Helmet>
         <title>Profile · MyKhata</title>
       </Helmet>
 
-      <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-        <form onSubmit={handleSubmit} className="space-y-6">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* User avatar or initial */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your account details</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">Manage your account details</p>
             </div>
-            <div className="h-24 w-24 rounded-full bg-teal-600 text-white flex items-center justify-center text-2xl">
-              {user?.name?.charAt(0).toUpperCase() || <User size={32} />}
+            <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-teal-600 text-white flex items-center justify-center text-xl sm:text-2xl self-center sm:self-auto">
+              {user?.name?.charAt(0).toUpperCase() || <User size={28} className="sm:w-8 sm:h-8" />}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Name */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
@@ -216,13 +227,13 @@ const Profile = () => {
           </div>
 
           {/* Change Password Section */}
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Change Password</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 sm:pt-6 mt-4 sm:mt-6">
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">Change Password</h3>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3 sm:mb-4">
               Leave blank if you don't want to change your password
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Password */}
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password</label>
@@ -280,8 +291,8 @@ const Profile = () => {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
