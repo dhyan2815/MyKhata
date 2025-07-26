@@ -90,8 +90,10 @@ function App() {
         } />
       </Route>
       
-      {/* Catch-all route for 404 Not Found */}
-      <Route path="*" element={<NotFound />} />
+      {/* Default route - redirect unauthenticated users to register page */}
+      <Route path="*" element={
+        !user ? <Navigate to="/register" replace /> : <NotFound />
+      } />
     </Routes>
   );
 }
