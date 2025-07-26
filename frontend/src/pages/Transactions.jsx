@@ -100,24 +100,24 @@ const Transactions = () => {
         <title>Transactions · MyKhata</title>
       </Helmet>
       {/* Header and action buttons */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Transactions</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Transactions</h1>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
             View and manage your financial transactions
           </p>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
           {/* Toggle filter panel button */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="btn btn-secondary dark:bg-gray-700 dark:text-gray-300"
+            className="btn btn-secondary dark:bg-gray-700 dark:text-gray-300 text-sm"
           >
             <Filter size={16} className="mr-2" />
             {showFilters ? 'Hide Filters' : 'Show Filters'}
           </button>
           {/* Add transaction button */}
-          <Link to="/transactions/add" className="btn btn-primary dark:bg-teal-500 dark:text-white">
+          <Link to="/transactions/add" className="btn btn-primary dark:bg-teal-500 dark:text-white text-sm">
             <Plus size={16} className="mr-2" /> Add Transaction
           </Link>
         </div>
@@ -125,8 +125,8 @@ const Transactions = () => {
 
       {/* Filter panel */}
       {showFilters && (
-        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 animate-fadeIn">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-gray-800 p-3 sm:p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 animate-fadeIn">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {/* Type filter */}
             <div>
               <label htmlFor="type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

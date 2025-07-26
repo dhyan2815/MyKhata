@@ -73,20 +73,20 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex">
+    <div className="min-h-screen bg-white flex flex-col lg:flex-row">
       <Helmet>
         <title>Register · MyKhata</title>
       </Helmet>
 
       {/* Registration Form Section */}
-      <div className="w-1/2 flex flex-col justify-center pt-1 sm:px-6 lg:px-8">
+      <div className="w-full lg:w-1/2 flex flex-col justify-center pt-1 px-4 sm:px-6 lg:px-8">
 
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="sm:rounded-lg sm:px-30">
             {/* Registration form */}
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
               <div>
-                <h2 className="text-2xl font-extrabold text-gray-900">
+                <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900">
                   Start smart with MyKhata
                 </h2>
                 <p className="mt-2 text-sm text-gray-600">
@@ -264,7 +264,7 @@ const Register = () => {
       </div>
 
       {/* Image Section */}
-      <div className="w-1/2 h-screen">
+      <div className="hidden lg:block w-1/2 h-screen">
         <img
           src={Image}
           alt="Register"

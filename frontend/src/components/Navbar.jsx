@@ -47,31 +47,31 @@ const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => 
 
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-sm dark:shadow-md h-16">
-      <div className="h-full flex items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="h-full flex items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Left section: Sidebar toggle and logo */}
-        <div className="flex items-center">
+        <div className="flex items-center flex-1 min-w-0">
           {/* Sidebar toggle button (visible on mobile) */}
           <button
             className="p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 lg:hidden"
             onClick={toggleSidebar}
           >
-            <Menu size={24} />
+            <Menu size={20} />
           </button>
 
           {/* Logo and app name */}
-          <Link to="/" className="flex items-center ml-2 lg:ml-0">
+          <Link to="/" className="flex items-center ml-2 lg:ml-0 flex-shrink-0">
             <span className="bg-teal-600 text-white p-1.5 rounded">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-bar-chart-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-bar-chart-2">
                 <line x1="18" x2="18" y1="20" y2="10"></line>
                 <line x1="12" x2="12" y1="20" y2="4"></line>
                 <line x1="6" x2="6" y1="20" y2="14"></line>
               </svg>
             </span>
-            <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">MyKhata</span>
+            <span className="ml-2 text-lg sm:text-xl font-bold text-gray-900 dark:text-white">MyKhata</span>
           </Link>
 
-          {/* Insights display */}
-          <div className="ml-4 flex items-center space-x-2 overflow-x-auto hide-scrollbar max-w-xs sm:max-w-md md:max-w-lg">
+          {/* Insights display - hidden on very small screens */}
+          <div className="hidden sm:flex ml-3 md:ml-4 items-center space-x-2 overflow-x-auto hide-scrollbar max-w-xs sm:max-w-md md:max-w-lg">
             {insightsLoading ? (
               <span className="inline-flex items-center px-4 py-1.5 rounded-md text-teal-800 dark:text-teal-200 text-sm animate-pulse shadow-sm">
                 <Lightbulb size={16} className="mr-1" /> Loading insights...
@@ -92,7 +92,7 @@ const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => 
         </div>
 
         {/* Right section: Profile menu */}
-        <div className="flex items-center">
+        <div className="flex items-center flex-shrink-0">
           <div className="relative">
             {/* Profile button (shows user initial or icon) */}
             <button
@@ -105,7 +105,7 @@ const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => 
               <span className="hidden md:block ml-2 text-sm font-medium text-gray-800 dark:text-gray-200">
                 {user?.name || 'User'}
               </span>
-              <ChevronDown size={16} className="ml-1 text-gray-700 dark:text-gray-300" />
+              <ChevronDown size={16} className="hidden sm:block ml-1 text-gray-700 dark:text-gray-300" />
             </button>
 
             {/* Dropdown menu for profile actions */}

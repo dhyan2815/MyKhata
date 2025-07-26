@@ -94,7 +94,7 @@ const TransactionList = ({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
       {/* Search bar */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -103,7 +103,7 @@ const TransactionList = ({
             <input
               type="text"
               placeholder="Search transactions..."
-              className="pl-10 pr-3 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="pl-10 pr-3 py-2 w-full border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm sm:text-base"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -112,8 +112,8 @@ const TransactionList = ({
       </div>
       {/* Responsive Table/Card */}
       <div className="overflow-x-auto">
-        {/* Table for md+ screens, cards for mobile */}
-        <table className="hidden md:table min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        {/* Table for lg+ screens, cards for mobile */}
+        <table className="hidden lg:table min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
               <th
@@ -290,8 +290,8 @@ const TransactionList = ({
             )}
           </tbody>
         </table>
-        {/* Cards for mobile (below md) */}
-        <div className="md:hidden space-y-3 p-2">
+        {/* Cards for mobile (below lg) */}
+        <div className="lg:hidden space-y-3 p-2">
           {isLoading ? (
             Array.from({ length: 3 }).map((_, index) => (
               <div
@@ -308,7 +308,7 @@ const TransactionList = ({
             sortedTransactions.map((transaction) => (
               <div
                 key={transaction._id}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex flex-col gap-2"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4 flex flex-col gap-2"
               >
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -327,8 +327,8 @@ const TransactionList = ({
                 <div className="text-sm text-gray-900 dark:text-gray-100 font-semibold">
                   {transaction.description}
                 </div>
-                {/* Hide category on xs, show on sm+ */}
-                <div className="hidden sm:block text-xs">
+                {/* Show category on all mobile sizes */}
+                <div className="text-xs">
                   <span
                     className="px-2.5 py-1 rounded-full font-medium"
                     style={{

@@ -169,15 +169,15 @@ const Categories = () => {
   };
 
   return (
-    <div className="min-h-screen space-y-6 p-5 rounded-lg dark:bg-gray-800 dark:text-white">
+    <div className="min-h-screen space-y-4 sm:space-y-6 p-3 sm:p-5 rounded-lg dark:bg-gray-800 dark:text-white">
       <Helmet>
         <title>Categories · MyKhata</title>
       </Helmet>
       {/* Header section with title and add button */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Categories</h1>
-          <p className="text-gray-600 mt-1 dark:text-gray-300">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Categories</h1>
+          <p className="text-sm sm:text-base text-gray-600 mt-1 dark:text-gray-300">
             Manage your income and expense categories
           </p>
         </div>
@@ -201,12 +201,12 @@ const Categories = () => {
 
       {/* Category form for add/edit */}
       {showForm && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 animate-fadeIn dark:bg-gray-700 dark:border-gray-600">
-          <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 animate-fadeIn dark:bg-gray-700 dark:border-gray-600">
+          <h2 className="text-base sm:text-lg font-medium text-gray-900 dark:text-gray-100 mb-3 sm:mb-4">
             {editingCategory ? 'Edit Category' : 'Add New Category'}
           </h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
               {/* Category Name input */}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

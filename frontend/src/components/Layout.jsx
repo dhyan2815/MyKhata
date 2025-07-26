@@ -31,7 +31,7 @@ const Layout = () => {
         
         {/* Main content area, expands when sidebar is collapsed */}
         <main className={`flex-1 transition-all duration-200 ease-in-out ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'}`}> 
-          <div className="px-4 sm:px-6 lg:px-8 py-6 max-w-7xl mx-auto animate-fadeIn dark:bg-gray-900 dark:text-white">
+          <div className="px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 max-w-7xl mx-auto animate-fadeIn dark:bg-gray-900 dark:text-white">
             {/* Renders the matched child route */}
             <Outlet />
           </div>

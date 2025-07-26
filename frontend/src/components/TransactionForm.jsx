@@ -93,9 +93,9 @@ const TransactionForm = ({
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 dark:bg-gray-900 dark:text-white">
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-        <div className="flex flex-col space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 dark:bg-gray-900 dark:text-white">
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+        <div className="flex flex-col space-y-3 sm:space-y-4">
           {/* Transaction Type */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -105,7 +105,7 @@ const TransactionForm = ({
               {/* Expense button */}
               <button
                 type="button"
-                className={`flex-1 py-2 px-4 text-sm font-medium text-center ${
+                className={`flex-1 py-2.5 sm:py-2 px-3 sm:px-4 text-sm font-medium text-center ${
                   formData.type === 'expense'
                     ? 'bg-red-500 text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-100'
@@ -117,7 +117,7 @@ const TransactionForm = ({
               {/* Income button */}
               <button
                 type="button"
-                className={`flex-1 py-2 px-4 text-sm font-medium text-center ${
+                className={`flex-1 py-2.5 sm:py-2 px-3 sm:px-4 text-sm font-medium text-center ${
                   formData.type === 'income'
                     ? 'bg-green-500 text-white'
                     : 'bg-white text-gray-700 hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-100'
