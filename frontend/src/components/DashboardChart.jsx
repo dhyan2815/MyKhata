@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import { useAuth } from '../context/AuthContext';
 import { formatCurrency } from '../utils/currencyFormatter';
+import { motion } from 'framer-motion';
 
 // Register necessary Chart.js components
 ChartJS.register(
@@ -142,12 +143,19 @@ const DashboardChart = ({ transactionData, isLoading }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+    >
       <div className="flex items-center justify-between mb-20">
         <h2 className="text-lg font-semibold text-gray-800 dark:text-white">Financial Overview</h2>
         <div className="flex space-x-2">
           {/* Button to switch to Expense Breakdown (doughnut) chart */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             className={`px-3 py-1 text-sm rounded-md ${
               chartType === 'doughnut'
                 ? 'bg-teal-600 text-white'
@@ -156,9 +164,11 @@ const DashboardChart = ({ transactionData, isLoading }) => {
             onClick={() => setChartType('doughnut')}
           >
             Expense Breakdown
-          </button>
+          </motion.button>
           {/* Button to switch to Income vs Expense (bar) chart */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             className={`px-3 py-1 text-sm rounded-md ${
               chartType === 'bar'
                 ? 'bg-teal-600 text-white'
@@ -167,7 +177,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
             onClick={() => setChartType('bar')}
           >
             Income vs Expense
-          </button>
+          </motion.button>
         </div>
       </div>
 
@@ -182,7 +192,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
             : <div className="flex items-center justify-center h-full text-gray-500">No data available</div>
         }
       </div>
-    </div>
+    </motion.div>
   );
 };
 

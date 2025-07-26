@@ -6,6 +6,7 @@ import { Plus, Filter } from 'lucide-react';
 import { getCategories } from '../api/categories';
 import toast from 'react-hot-toast';
 import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
 import { safeArray } from '../utils/safeArray';
 
 // Transactions page component
@@ -95,12 +96,22 @@ const Transactions = () => {
   };
 
   return (
-    <div className="space-y-6 min-h-screen dark:bg-gray-900 dark:text-white">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6 min-h-screen dark:bg-gray-900 dark:text-white"
+    >
       <Helmet>
         <title>Transactions · MyKhata</title>
       </Helmet>
       {/* Header and action buttons */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0"
+      >
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Transactions</h1>
           <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
@@ -121,7 +132,7 @@ const Transactions = () => {
             <Plus size={16} className="mr-2" /> Add Transaction
           </Link>
         </div>
-      </div>
+      </motion.div>
 
       {/* Filter panel */}
       {showFilters && (
@@ -213,7 +224,7 @@ const Transactions = () => {
         pagination={pagination}
         onPageChange={handlePageChange}
       />
-    </div>
+    </motion.div>
   );
 };
 

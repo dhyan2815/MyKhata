@@ -10,6 +10,7 @@ import { Helmet } from 'react-helmet-async';
 import { safeArray } from '../utils/safeArray';
 import { useAuth } from '../context/AuthContext';
 import { formatCurrency } from '../utils/currencyFormatter';
+import { motion } from 'framer-motion';
 
 // Main Dashboard component
 const Dashboard = () => {
@@ -211,7 +212,21 @@ const Dashboard = () => {
           };
 
           return (
-            <div key={key} className={`card p-4 sm:p-5 dark:bg-gray-900 dark:border-gray-700 ${loading ? 'animate-pulse' : ''}`}>
+            <motion.div 
+              key={key} 
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ 
+                duration: 0.4,
+                delay: index * 0.1,
+                ease: "easeOut"
+              }}
+              whileHover={{ 
+                y: -5,
+                transition: { duration: 0.2 }
+              }}
+              className={`card p-4 sm:p-5 dark:bg-gray-900 dark:border-gray-700 cursor-pointer ${loading ? 'animate-pulse' : ''}`}
+            >
               {loading ? (
                 // Loading skeleton for summary cards
                 <>
@@ -237,7 +252,7 @@ const Dashboard = () => {
                   </p>
                 </>
               )}
-            </div>
+            </motion.div>
           );
         })}
       </div>

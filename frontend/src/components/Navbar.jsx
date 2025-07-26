@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Menu, X, UserCircle, LogOut, Settings, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { fetchInsights } from '../api/insights';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Navbar component for the top navigation bar
 const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => {
@@ -46,7 +47,12 @@ const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => 
   }, [insights, currentInsightIdx]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-sm dark:shadow-md h-16">
+    <motion.header 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-sm dark:shadow-md h-16"
+    >
       <div className="h-full flex items-center justify-between px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Left section: Sidebar toggle and logo */}
         <div className="flex items-center flex-1 min-w-0">
@@ -136,7 +142,7 @@ const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => 
           </div>
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 };
 

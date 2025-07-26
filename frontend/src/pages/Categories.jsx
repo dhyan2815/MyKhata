@@ -17,6 +17,7 @@ import {
 } from '../api/categories';
 import toast from 'react-hot-toast';
 import { Helmet } from 'react-helmet-async';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Categories page component for managing income and expense categories
 const Categories = () => {
@@ -169,12 +170,22 @@ const Categories = () => {
   };
 
   return (
-    <div className="min-h-screen space-y-4 sm:space-y-6 p-3 sm:p-5 rounded-lg dark:bg-gray-800 dark:text-white">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="min-h-screen space-y-4 sm:space-y-6 p-3 sm:p-5 rounded-lg dark:bg-gray-800 dark:text-white"
+    >
       <Helmet>
         <title>Categories · MyKhata</title>
       </Helmet>
       {/* Header section with title and add button */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0"
+      >
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Categories</h1>
           <p className="text-sm sm:text-base text-gray-600 mt-1 dark:text-gray-300">
@@ -197,7 +208,7 @@ const Categories = () => {
           <Plus size={16} className="mr-2" />
           Add Category
         </button>
-      </div>
+      </motion.div>
 
       {/* Category form for add/edit */}
       {showForm && (
@@ -397,7 +408,7 @@ const Categories = () => {
           </ul>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

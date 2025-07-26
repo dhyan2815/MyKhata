@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { safeArray } from '../utils/safeArray';
 import { useAuth } from '../context/AuthContext';
 import { formatTransactionAmount } from '../utils/currencyFormatter';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // TransactionList component displays a list of transactions with sorting, searching, and pagination
 const TransactionList = ({
@@ -227,9 +228,17 @@ const TransactionList = ({
                 </tr>
               ))
             ) : sortedTransactions.length > 0 ? (
-              sortedTransactions.map((transaction) => (
-                <tr
+              sortedTransactions.map((transaction, index) => (
+                <motion.tr
                   key={transaction._id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ 
+                    duration: 0.3,
+                    delay: index * 0.05,
+                    ease: "easeOut"
+                  }}
+                  exit={{ opacity: 0, x: 20 }}
                   className="hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
@@ -276,7 +285,7 @@ const TransactionList = ({
                       </div>
                     </td>
                   )}
-                </tr>
+                </motion.tr>
               ))
             ) : (
               <tr>
@@ -305,9 +314,21 @@ const TransactionList = ({
               </div>
             ))
           ) : sortedTransactions.length > 0 ? (
-            sortedTransactions.map((transaction) => (
-              <div
+            sortedTransactions.map((transaction, index) => (
+              <motion.div
                 key={transaction._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ 
+                  duration: 0.3,
+                  delay: index * 0.05,
+                  ease: "easeOut"
+                }}
+                exit={{ opacity: 0, y: -20 }}
+                whileHover={{ 
+                  y: -2,
+                  transition: { duration: 0.2 }
+                }}
                 className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4 flex flex-col gap-2"
               >
                 <div className="flex justify-between items-center">
@@ -355,7 +376,7 @@ const TransactionList = ({
                     </button>
                   </div>
                 )}
-              </div>
+              </motion.div>
             ))
           ) : (
             <div className="text-center text-gray-500 dark:text-gray-400 py-4">

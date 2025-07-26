@@ -5,6 +5,7 @@ import { User, Mail, Save, Sun, IndianRupee } from 'lucide-react';
 import toast from 'react-hot-toast';
 import ToggleMode from '../components/ToggleMode';
 import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
 
 // Profile component for user profile management
 const Profile = () => {
@@ -126,12 +127,22 @@ const Profile = () => {
   
   // Render profile form
   return (
-    <div className="profile-page">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="profile-page"
+    >
       <Helmet>
         <title>Profile · MyKhata</title>
       </Helmet>
 
-      <div className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="bg-white dark:bg-gray-900 p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+      >
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* User avatar or initial */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
@@ -280,8 +291,8 @@ const Profile = () => {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

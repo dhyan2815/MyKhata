@@ -11,6 +11,7 @@ import { getCategories } from '../api/categories';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { getCurrencySymbol } from '../utils/currencyFormatter';
+import { motion } from 'framer-motion';
 
 // TransactionForm component for adding or editing a transaction
 const TransactionForm = ({ 
@@ -93,8 +94,19 @@ const TransactionForm = ({
   };
   
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 dark:bg-gray-900 dark:text-white">
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+    <motion.form 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      onSubmit={handleSubmit} 
+      className="space-y-4 sm:space-y-6 dark:bg-gray-900 dark:text-white"
+    >
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+      >
         <div className="flex flex-col space-y-3 sm:space-y-4">
           {/* Transaction Type */}
           <div>
@@ -235,10 +247,15 @@ const TransactionForm = ({
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
       
       {/* Action buttons */}
-      <div className="flex space-x-4 justify-end">
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+        className="flex space-x-4 justify-end"
+      >
         {/* Cancel button */}
         <button
           type="button"
@@ -271,8 +288,8 @@ const TransactionForm = ({
             </span>
           )}
         </button>
-      </div>
-    </form>
+      </motion.div>
+    </motion.form>
   );
 };
 

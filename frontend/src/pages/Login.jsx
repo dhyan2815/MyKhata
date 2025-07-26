@@ -6,6 +6,7 @@ import { LockKeyhole, Mail, User, EyeOff, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Image from '../assets/illustration-img.jpg'
 import { Helmet } from 'react-helmet-async';
+import { motion } from 'framer-motion';
 
 // Login component for user authentication
 const Login = () => {
@@ -52,12 +53,22 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col lg:flex-row">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-white flex flex-col lg:flex-row"
+    >
       <Helmet>
         <title>Login · MyKhata</title>
       </Helmet>
       {/* Login form section (left side) */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center pt-5 px-4 sm:px-6 lg:px-8">
+      <motion.div 
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="w-full lg:w-1/2 flex flex-col justify-center pt-5 px-4 sm:px-6 lg:px-8"
+      >
         <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="sm:rounded-lg sm:px-30">
             {/* Login form */}
@@ -187,18 +198,23 @@ const Login = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Illustration image (right side) */}
-      <div className="hidden lg:block w-1/2 h-screen">
+      <motion.div 
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6, delay: 0.4 }}
+        className="hidden lg:block w-1/2 h-screen"
+      >
         <img
           src={Image}
           alt="Login"
           className="w-full h-full object-cover"
         />
-      </div>
+      </motion.div>
       
-    </div>
+    </motion.div>
   );
 };
 
