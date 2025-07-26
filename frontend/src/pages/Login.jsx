@@ -75,10 +75,11 @@ const Login = () => {
             <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
               <div>
                 <h2 className="mt-6 text-xl sm:text-2xl font-extrabold text-gray-900">
-                  Balance your Books! not just your life.
+                  <span className="whitespace-nowrap">Balance Your Books! Not Just Your Life</span><br />
+                  With MyKhata
                 </h2>
                 <p className="mt-2 text-sm text-gray-600">
-                  Let's get you back in, Input your credentials
+                  Let's get you back in, Input your credentials below
                 </p>
               </div>
               {/* Email input */}

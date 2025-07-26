@@ -98,10 +98,10 @@ const Register = () => {
             <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
               <div>
                 <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900">
-                  Start smart with MyKhata
+                  Start Smart With MyKhata
                 </h2>
                 <p className="mt-2 text-sm text-gray-600">
-                  Create your account to get started
+                  Create your Khata to Get Started!
                 </p>
               </div>
               {/* Name input */}
