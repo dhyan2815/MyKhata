@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Transaction from '../models/transactionModel.js';
+import { convertCurrency } from '../utils/currencyConverter.js';
 
 // @desc    Create a new transaction
 // @route   POST /api/transactions
@@ -14,6 +15,7 @@ const createTransaction = asyncHandler(async (req, res) => {
     category,
     description,
     date: date || new Date(),
+    currency: req.user.currency || 'INR', // Store the user's currency at the time of creation
   });
 
   res.status(201).json(transaction);
@@ -59,6 +61,7 @@ const getTransactions = asyncHandler(async (req, res) => {
   
   const transactions = await Transaction.find(filter)
     .populate('category', 'name color icon')
+    .select('amount type category description date currency')
     .sort(sortOption)
     .limit(parseInt(limit))
     .skip(skip);
@@ -80,10 +83,9 @@ const getTransactions = asyncHandler(async (req, res) => {
 // @route   GET /api/transactions/:id
 // @access  Private
 const getTransactionById = asyncHandler(async (req, res) => {
-  const transaction = await Transaction.findById(req.params.id).populate(
-    'category',
-    'name color icon'
-  );
+  const transaction = await Transaction.findById(req.params.id)
+    .populate('category', 'name color icon')
+    .select('amount type category description date currency');
 
   if (transaction && transaction.user.toString() === req.user._id.toString()) {
     res.json(transaction);
@@ -150,99 +152,68 @@ const getTransactionSummary = asyncHandler(async (req, res) => {
     dateFilter.date = { $lte: new Date(endDate) };
   }
   
-  // Pipeline for aggregation
-  const summaryPipeline = [
-    {
-      $match: {
-        user: req.user._id,
-        ...dateFilter,
-      },
-    },
-    {
-      $group: {
-        _id: '$type',
-        total: { $sum: '$amount' },
-      },
-    },
-  ];
-  
-  // Pipeline for category breakdown
-  const categoryPipeline = [
-    {
-      $match: {
-        user: req.user._id,
-        ...dateFilter,
-      },
-    },
-    {
-      $group: {
-        _id: {
-          type: '$type',
-          category: '$category',
-        },
-        total: { $sum: '$amount' },
-      },
-    },
-    {
-      $lookup: {
-        from: 'categories',
-        localField: '_id.category',
-        foreignField: '_id',
-        as: 'categoryInfo',
-      },
-    },
-    {
-      $unwind: '$categoryInfo',
-    },
-    {
-      $project: {
-        _id: 0,
-        type: '$_id.type',
-        category: '$_id.category',
-        categoryName: '$categoryInfo.name',
-        categoryColor: '$categoryInfo.color',
-        categoryIcon: '$categoryInfo.icon',
-        total: 1,
-      },
-    },
-    {
-      $sort: { total: -1 },
-    },
-  ];
-  
-  const summaryResults = await Transaction.aggregate(summaryPipeline);
-  const categoryResults = await Transaction.aggregate(categoryPipeline);
-  
-  // Format the summary data
-  const summary = summaryResults.reduce((acc, curr) => {
-    acc[curr._id] = curr.total;
-    return acc;
-  }, {});
-  
-  // Calculate balance
-  const income = summary.income || 0;
-  const expense = summary.expense || 0;
-  const balance = income - expense;
-  
-  // Group categories by type
-  const categories = categoryResults.reduce((acc, curr) => {
-    if (!acc[curr.type]) {
-      acc[curr.type] = [];
+  // Get all transactions for the period to handle currency conversion properly
+  const transactions = await Transaction.find({
+    user: req.user._id,
+    ...dateFilter,
+  })
+    .populate('category', 'name color icon')
+    .select('amount type category currency');
+
+  // Group transactions by type and convert to user's currency
+  const summary = { income: 0, expense: 0 };
+  const categories = { income: [], expense: [] };
+  const categoryTotals = {};
+
+  transactions.forEach(transaction => {
+    // Convert amount to user's currency
+    const convertedAmount = convertCurrency(
+      transaction.amount, 
+      transaction.currency || 'INR', 
+      req.user.currency || 'INR'
+    );
+
+    // Add to summary
+    summary[transaction.type] += convertedAmount;
+
+    // Add to category totals
+    const categoryKey = `${transaction.type}_${transaction.category._id}`;
+    if (!categoryTotals[categoryKey]) {
+      categoryTotals[categoryKey] = {
+        type: transaction.type,
+        category: transaction.category,
+        total: 0
+      };
     }
-    acc[curr.type].push({
-      id: curr.category,
-      name: curr.categoryName,
-      color: curr.categoryColor,
-      icon: curr.categoryIcon,
-      total: curr.total,
+    categoryTotals[categoryKey].total += convertedAmount;
+  });
+
+  // Calculate balance
+  const balance = summary.income - summary.expense;
+
+  // Convert category totals to array format
+  Object.values(categoryTotals).forEach(cat => {
+    if (!categories[cat.type]) {
+      categories[cat.type] = [];
+    }
+    categories[cat.type].push({
+      id: cat.category._id,
+      name: cat.category.name,
+      color: cat.category.color,
+      icon: cat.category.icon,
+      total: cat.total,
     });
-    return acc;
-  }, {});
-  
+  });
+
+  // Sort categories by total
+  Object.keys(categories).forEach(type => {
+    categories[type].sort((a, b) => b.total - a.total);
+  });
+
   res.json({
     summary: {
-      income,
-      expense,
+      income: summary.income,
+      expense: summary.expense,
       balance,
     },
     categories,

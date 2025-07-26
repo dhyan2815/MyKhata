@@ -8,9 +8,14 @@ import DashboardChart from '../components/DashboardChart';
 import toast from 'react-hot-toast';
 import { Helmet } from 'react-helmet-async';
 import { safeArray } from '../utils/safeArray';
+import { useAuth } from '../context/AuthContext';
+import { formatCurrency } from '../utils/currencyFormatter';
 
 // Main Dashboard component
 const Dashboard = () => {
+  // Get user from AuthContext to access currency preference
+  const { user } = useAuth();
+  
   // State for loading indicator
   const [loading, setLoading] = useState(true);
   // State for summary data (balance, income, expense)
@@ -218,7 +223,7 @@ const Dashboard = () => {
                     </div>
                   </div>
                   <p className="text-2xl font-bold text-gray-900 dark:text-white mt-2">
-                    ₹{summaryData?.summary?.[key].toFixed(2) || '0.00'}
+                    {formatCurrency(summaryData?.summary?.[key] || 0, user?.currency || 'INR')}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {dateRange.startDate === dateRange.endDate

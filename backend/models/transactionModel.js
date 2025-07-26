@@ -30,6 +30,11 @@ const transactionSchema = mongoose.Schema(
       required: [true, 'Please add a date'],
       default: Date.now,
     },
+    currency: {
+      type: String,
+      default: 'INR',
+      enum: ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'INR', 'CNY'],
+    },
   },
   {
     timestamps: true,

@@ -10,6 +10,8 @@ import {
   Legend,
   ArcElement,
 } from 'chart.js';
+import { useAuth } from '../context/AuthContext';
+import { formatCurrency } from '../utils/currencyFormatter';
 
 // Register necessary Chart.js components
 ChartJS.register(
@@ -23,6 +25,9 @@ ChartJS.register(
 );
 
 const DashboardChart = ({ transactionData, isLoading }) => {
+  // Get user from AuthContext to access currency preference
+  const { user } = useAuth();
+  
   // State to control which chart type is shown
   const [chartType, setChartType] = useState('doughnut');
   // State to hold chart data for both chart types
@@ -105,7 +110,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
             const value = context.raw || 0;
             const total = context.dataset.data.reduce((a, b) => a + b, 0);
             const percentage = total ? Math.round((value / total) * 100) : 0;
-            return `${label}: ₹${value.toFixed(2)} (${percentage}%)`;
+            return `${label}: ${formatCurrency(value, user?.currency || 'INR')} (${percentage}%)`;
           },
         },
       },
@@ -122,7 +127,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
       },
       tooltip: {
         callbacks: {
-          label: (context) => `₹${context.raw.toFixed(2)}`,
+          label: (context) => formatCurrency(context.raw, user?.currency || 'INR'),
         },
       },
     },
@@ -130,7 +135,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: (value) => '₹' + value,
+          callback: (value) => formatCurrency(value, user?.currency || 'INR'),
         },
       },
     },

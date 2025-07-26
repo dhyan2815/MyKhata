@@ -5,6 +5,8 @@ import { format } from 'date-fns';
 import { deleteTransaction } from '../api/transactions';
 import toast from 'react-hot-toast';
 import { safeArray } from '../utils/safeArray';
+import { useAuth } from '../context/AuthContext';
+import { formatTransactionAmount } from '../utils/currencyFormatter';
 
 // TransactionList component displays a list of transactions with sorting, searching, and pagination
 const TransactionList = ({
@@ -15,6 +17,9 @@ const TransactionList = ({
   onPageChange = () => {},
   showActions = true,
 }) => {
+  // Get user from AuthContext to access currency preference
+  const { user } = useAuth();
+  
   // State for search input
   const [searchTerm, setSearchTerm] = useState("");
   // State for sorting field and direction
@@ -251,8 +256,7 @@ const TransactionList = ({
                         : "text-green-600"
                     }`}
                   >
-                    {transaction.type === "expense" ? "-" : "+"}₹
-                    {transaction.amount.toFixed(2)}
+                    {formatTransactionAmount(transaction.amount, transaction.type, user?.currency || 'INR', { fromCurrency: transaction.currency || 'INR' })}
                   </td>
                   {showActions && (
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -317,8 +321,7 @@ const TransactionList = ({
                         : "text-green-600"
                     }`}
                   >
-                    {transaction.type === "expense" ? "-" : "+"}₹
-                    {transaction.amount.toFixed(2)}
+                    {formatTransactionAmount(transaction.amount, transaction.type, user?.currency || 'INR', { fromCurrency: transaction.currency || 'INR' })}
                   </span>
                 </div>
                 <div className="text-sm text-gray-900 dark:text-gray-100 font-semibold">

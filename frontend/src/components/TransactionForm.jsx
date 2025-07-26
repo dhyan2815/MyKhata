@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { 
   ChevronDown, 
   Calendar,
-  IndianRupee,
   Tag,
   AlignLeft,
   Plus
 } from 'lucide-react';
 import { getCategories } from '../api/categories';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
+import { getCurrencySymbol } from '../utils/currencyFormatter';
 
 // TransactionForm component for adding or editing a transaction
 const TransactionForm = ({ 
@@ -18,6 +19,8 @@ const TransactionForm = ({
   isLoading = false 
 }) => {
   const navigate = useNavigate();
+  // Get user from AuthContext to access currency preference
+  const { user } = useAuth();
 
   // State for form fields, initialized with initialData if provided
   const [formData, setFormData] = useState({
@@ -132,9 +135,11 @@ const TransactionForm = ({
               Amount
             </label>
             <div className="relative rounded-md shadow-sm">
-              {/* Rupee icon */}
+              {/* Currency symbol */}
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <IndianRupee size={16} className="text-gray-400 dark:text-gray-500" />
+                <span className="text-gray-400 dark:text-gray-500 text-sm font-medium">
+                  {getCurrencySymbol(user?.currency || 'INR')}
+                </span>
               </div>
               <input
                 type="number"
