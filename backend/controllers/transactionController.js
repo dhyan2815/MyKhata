@@ -85,9 +85,10 @@ const getTransactions = asyncHandler(async (req, res) => {
 const getTransactionById = asyncHandler(async (req, res) => {
   const transaction = await Transaction.findById(req.params.id)
     .populate('category', 'name color icon')
-    .select('amount type category description date currency');
+    .select('amount type category description date currency user');
 
   if (transaction && transaction.user.toString() === req.user._id.toString()) {
+    const { user, ...transactionData } = transaction.toObject();
     res.json(transaction);
   } else {
     res.status(404);
@@ -101,7 +102,8 @@ const getTransactionById = asyncHandler(async (req, res) => {
 const updateTransaction = asyncHandler(async (req, res) => {
   const { amount, type, category, description, date } = req.body;
 
-  const transaction = await Transaction.findById(req.params.id);
+  const transaction = await Transaction.findById(req.params.id)
+    .select('amount type category description date user');
 
   if (transaction && transaction.user.toString() === req.user._id.toString()) {
     transaction.amount = amount || transaction.amount;
@@ -111,6 +113,10 @@ const updateTransaction = asyncHandler(async (req, res) => {
     transaction.date = date || transaction.date;
 
     const updatedTransaction = await transaction.save();
+
+    // Populate category for the response
+    await updatedTransaction.populate('category', 'name color icon');
+
     res.json(updatedTransaction);
   } else {
     res.status(404);

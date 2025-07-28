@@ -26,8 +26,10 @@ const EditTransaction = () => {
         const data = await getTransactionById(id);
         setTransaction(data);
       } catch (error) {
-        // Show error toast and redirect if fetching fails
-        toast.error(error.response?.data?.message || 'Failed to load transaction');
+        // Show error toast and redirect if fetching fails        
+        toast.error('Failed to load transaction');
+        // toast.error(error.response?.data?.message || 'Failed to load transaction');
+        console.log(error.response?.data?.message || 'Failed to load transaction');
         navigate('/transactions');
       } finally {
         setIsLoading(false);
