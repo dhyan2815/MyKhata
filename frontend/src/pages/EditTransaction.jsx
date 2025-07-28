@@ -72,8 +72,8 @@ const EditTransaction = () => {
         <title>Edit Transaction · MyKhata</title>
       </Helmet>
       <div>
-        <h1 className="text-2xl font-bold text-white">Edit Transaction</h1>
-        <p className="text-gray-400 mt-1">
+        <h1 className="text-2xl font-bold text-black dark:text-white">Edit Transaction</h1>
+        <p className="text-gray-400 mt-1 mb-4">
           Update your transaction details
         </p>
       </div>
