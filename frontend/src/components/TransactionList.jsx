@@ -345,7 +345,7 @@ const TransactionList = ({
                     {formatTransactionAmount(transaction.amount, transaction.type, user?.currency || 'INR', { fromCurrency: transaction.currency || 'INR' })}
                   </span>
                 </div>
-                <div className="text-sm text-gray-900 dark:text-gray-100 font-semibold max-w-[180px] overflow-hidden text-ellipsis whitespace-nowrap" title={transaction.description}>
+                <div className="text-sm text-gray-900 dark:text-gray-100 font-semibold" title={transaction.description}>
                   {transaction.description}
                 </div>
                 {/* Show category on all mobile sizes */}
