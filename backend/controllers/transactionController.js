@@ -50,11 +50,17 @@ const getTransactions = asyncHandler(async (req, res) => {
   }
   
   // Build sort object
-  let sortOption = { date: -1 }; // Default: newest first
-  if (sort) {
-    const [field, order] = sort.split(':');
+  let sortOption = { createdAt: -1 }; // Default: newest first by creation time
+if (sort) {
+  const [field, order] = sort.split(':');
+  if (field === 'createdAt' || field === 'updatedAt') {
     sortOption = { [field]: order === 'asc' ? 1 : -1 };
+  } else if (field === 'date') {
+    sortOption = { date: order === 'asc' ? 1 : -1 };
+  } else if (field === 'amount') {
+    sortOption = { amount: order === 'asc' ? 1 : -1 };
   }
+}
   
   // Calculate pagination
   const skip = (parseInt(page) - 1) * parseInt(limit);

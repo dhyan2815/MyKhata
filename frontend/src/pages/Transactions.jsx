@@ -25,6 +25,8 @@ const Transactions = () => {
     endDate: '',
     page: 1,
     limit: 10,
+    sortBy: 'createdAt',
+    sortOrder: 'desc'
   });
   // State for pagination info
   const [pagination, setPagination] = useState(null);

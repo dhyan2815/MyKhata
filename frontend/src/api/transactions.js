@@ -2,7 +2,22 @@ import api from './axios';
 
 // Get all transactions with optional filters
 export const getTransactions = async (filters = {}) => {
-  const response = await api.get('/transactions', { params: filters });
+  const params = new URLSearchParams();
+  
+  // Add existing filter parameters
+  if (filters.type) params.append('type', filters.type);
+  if (filters.category) params.append('category', filters.category);
+  if (filters.startDate) params.append('startDate', filters.startDate);
+  if (filters.endDate) params.append('endDate', filters.endDate);
+  if (filters.page) params.append('page', filters.page);
+  if (filters.limit) params.append('limit', filters.limit);
+  
+  // Add sort parameters
+  if (filters.sortBy && filters.sortOrder) {
+    params.append('sort', `${filters.sortBy}:${filters.sortOrder}`);
+  }
+  
+  const response = await api.get(`/transactions?${params}`);
   return response.data;
 };
 
