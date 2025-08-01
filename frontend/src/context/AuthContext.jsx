@@ -22,19 +22,33 @@ export const AuthProvider = ({ children }) => {
     // Function to verify user by checking token validity
     const verifyUser = async () => {
       if (storedUser && token) {
+        // Set user immediately from cache for faster initial render
         try {
-          // Verify token validity by fetching user profile
-          const userData = await getUserProfile();
-          setUser(userData);
+          const cachedUser = JSON.parse(storedUser);
+          setUser(cachedUser);
+          setLoading(false); // Stop blocking the app immediately
+          
+          // Verify token in background
+          try {
+            const userData = await getUserProfile();
+            setUser(userData);
+            localStorage.setItem('wealthflow_user', JSON.stringify(userData));
+          } catch (error) {
+            // If token is invalid, clear localStorage and reset user
+            localStorage.removeItem('wealthflow_user');
+            localStorage.removeItem('wealthflow_token');
+            setUser(null);
+          }
         } catch (error) {
-          // If token is invalid, clear localStorage and reset user
+          // Invalid cached data
           localStorage.removeItem('wealthflow_user');
           localStorage.removeItem('wealthflow_token');
           setUser(null);
+          setLoading(false);
         }
+      } else {
+        setLoading(false);
       }
-      // Set loading to false after verification
-      setLoading(false);
     };
 
     verifyUser();

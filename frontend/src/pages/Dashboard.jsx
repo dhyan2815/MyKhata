@@ -24,9 +24,11 @@ const Dashboard = () => {
   // State for recent transactions list
   const [recentTransactions, setRecentTransactions] = useState([]);
   // State for selected date range
-  const [dateRange, setDateRange] = useState({
-    startDate: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
-    endDate: format(endOfMonth(new Date()), 'yyyy-MM-dd'),
+  const [dateRange, setDateRange] = useState(() => {
+    const now = new Date();
+    const startDate = format(startOfMonth(now), 'yyyy-MM-dd');
+    const endDate = format(endOfMonth(now), 'yyyy-MM-dd');
+    return { startDate, endDate };
   });
   
   // Fetch dashboard data whenever dateRange changes
@@ -48,7 +50,6 @@ const Dashboard = () => {
       } catch (error) {
         // Show error toast if fetching fails
         toast.error('Failed to load dashboard data');
-        console.error(error);
       } finally {
         setLoading(false);
       }
