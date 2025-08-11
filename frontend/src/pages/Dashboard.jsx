@@ -26,8 +26,8 @@ const Dashboard = () => {
   // State for selected date range
   const [dateRange, setDateRange] = useState(() => {
     const now = new Date();
-    const startDate = format(startOfMonth(now), 'yyyy-MM-dd');
-    const endDate = format(endOfMonth(now), 'yyyy-MM-dd');
+    const startDate = format(subDays(now, 7), 'yyyy-MM-dd');
+    const endDate = format(now, 'yyyy-MM-dd');
     return { startDate, endDate };
   });
   
