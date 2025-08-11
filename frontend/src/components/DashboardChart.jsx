@@ -168,7 +168,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
       {/* Chart Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          {chartType === 'doughnut' ? 'Expense Breakdown' : 'Income vs Expense'}
+          Income & Expense Overview
         </h3>
         
         {/* Chart Type Toggle */}
@@ -197,7 +197,7 @@ const DashboardChart = ({ transactionData, isLoading }) => {
       </div>
 
       {/* Chart Container */}
-      <div className="h-64">
+      <div className="h-64 mt-[64px]">
         {chartType === 'doughnut' ? (
           <Doughnut data={chartData.doughnut} options={doughnutOptions} />
         ) : (
