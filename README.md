@@ -48,32 +48,44 @@ MyKhata is a full-stack personal finance management system designed to provide u
 - **Error Handling**: Comprehensive error boundaries and fallback UI
 - **Performance Optimization**: Code splitting and lazy loading
 
-## 📁 Project Structure
+## 🏗️ System Architecture
 
+```mermaid
+graph TB
+    %% User Entry Point
+    User((👤 User)) --> Login[🔐 Login/Register]
+    Login --> Dashboard[📊 Dashboard]
+    
+    %% Main Feature Categories
+    subgraph "💰 Financial Management"
+        Transactions[💳 Transactions]
+        Categories[🏷️ Categories]
+    end
+    
+    subgraph "📈 Analytics & Insights"
+        Charts[📊 Charts & Reports]
+        Insights[💡 Financial Insights]
+    end
+    
+    %% Feature Connections
+    Dashboard --> Transactions
+    Dashboard --> Charts
+    Dashboard --> Insights
+    
+    Transactions --> Categories
+    
+    %% Styling for dark theme visibility
+    classDef user fill:#0891b2,stroke:#06b6d4,stroke-width:2px,color:#ffffff
+    classDef core fill:#1e40af,stroke:#3b82f6,stroke-width:2px,color:#ffffff
+    classDef financial fill:#059669,stroke:#10b981,stroke-width:2px,color:#ffffff
+    classDef analytics fill:#dc2626,stroke:#ef4444,stroke-width:2px,color:#ffffff
+
+    class User user
+    class Login,Dashboard core
+    class Transactions,Categories financial
+    class Charts,Insights analytics
 ```
-mykhata/
-├── backend/                 # Backend API server
-│   ├── config/             # Database and configuration
-│   ├── controllers/        # Business logic handlers
-│   ├── middleware/         # Custom middleware
-│   ├── models/             # MongoDB schemas
-│   ├── routes/             # API route definitions
-│   ├── utils/              # Utility functions
-│   └── server.js           # Main server file
-├── frontend/               # React frontend application
-│   ├── public/             # Static assets
-│   ├── src/
-│   │   ├── api/            # API service functions
-│   │   ├── components/     # Reusable UI components
-│   │   ├── context/        # React context providers
-│   │   ├── pages/          # Route components
-│   │   ├── utils/          # Utility functions
-│   │   ├── App.jsx         # Main application component
-│   │   └── main.jsx        # Application entry point
-│   ├── package.json        # Frontend dependencies
-│   └── vite.config.js      # Vite configuration
-└── README.md               # Project documentation
-```
+
 ## 🙏 Acknowledgments
 
 - [React](https://reactjs.org/) for the amazing frontend framework
