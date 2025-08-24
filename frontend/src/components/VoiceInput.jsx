@@ -13,14 +13,14 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
   useEffect(() => {
     const initializeSpeechRecognition = () => {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      
+
       if (SpeechRecognition) {
         try {
           recognitionRef.current = new SpeechRecognition();
           recognitionRef.current.continuous = false;
           recognitionRef.current.interimResults = false;
           recognitionRef.current.lang = 'en-US';
-          
+
           // Event handlers
           recognitionRef.current.onstart = () => {
             console.log('🎤 Voice recognition started');
@@ -28,7 +28,7 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
             setError('');
             setTranscript('');
           };
-          
+
           recognitionRef.current.onresult = (event) => {
             if (event.results && event.results.length > 0) {
               const result = event.results[0][0].transcript;
@@ -37,11 +37,11 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
               handleVoiceCommand(result);
             }
           };
-          
+
           recognitionRef.current.onerror = (event) => {
             console.error('❌ Voice recognition error:', event.error);
             let errorMessage = 'Voice recognition failed';
-            
+
             switch (event.error) {
               case 'no-speech':
                 errorMessage = 'No speech detected. Please try again.';
@@ -55,17 +55,17 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
               default:
                 errorMessage = `Voice recognition error: ${event.error}`;
             }
-            
+
             setError(errorMessage);
             setIsListening(false);
             toast.error(errorMessage);
           };
-          
+
           recognitionRef.current.onend = () => {
             console.log('🛑 Voice recognition ended');
             setIsListening(false);
           };
-          
+
           setIsInitializing(false);
           console.log('✅ Speech recognition initialized successfully');
         } catch (error) {
@@ -81,27 +81,27 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
 
     // Add a small delay to ensure the API is fully loaded
     const timer = setTimeout(initializeSpeechRecognition, 100);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
   // Handle voice command parsing
   const handleVoiceCommand = (command) => {
     const lowerCommand = command.toLowerCase();
-    
+
     // Parse amount
     const amountMatch = lowerCommand.match(/(?:₹|rs|rupees?|inr|dollars?|usd|euros?|eur)?\s*(\d+(?:\.\d{1,2})?)/i);
     const amount = amountMatch ? parseFloat(amountMatch[1]) : null;
-    
+
     // Parse transaction type
     const isExpense = lowerCommand.includes('expense') || lowerCommand.includes('spent') || lowerCommand.includes('paid');
     const isIncome = lowerCommand.includes('income') || lowerCommand.includes('earned') || lowerCommand.includes('received');
     const type = isExpense ? 'expense' : isIncome ? 'income' : null;
-    
+
     // Parse category
     let detectedCategory = null;
     let detectedCategoryId = null;
-    
+
     if (Array.isArray(categories) && categories.length > 0) {
       for (const cat of categories) {
         if (cat && cat.name && cat._id) {
@@ -114,7 +114,7 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
         }
       }
     }
-    
+
     // Parse date
     const dateKeywords = {
       'yesterday': () => {
@@ -124,7 +124,7 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
       },
       'today': () => new Date().toISOString().split('T')[0]
     };
-    
+
     let detectedDate = null;
     for (const [keyword, dateFn] of Object.entries(dateKeywords)) {
       if (lowerCommand.includes(keyword)) {
@@ -132,7 +132,7 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
         break;
       }
     }
-    
+
     // Parse description (simplified)
     let description = command;
     if (amount) description = description.replace(amountMatch[0], '').trim();
@@ -143,7 +143,7 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
       });
     }
     description = description.replace(/\s+/g, ' ').trim();
-    
+
     // Pass parsed data to parent
     onVoiceResult({
       amount,
@@ -162,12 +162,12 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
       toast.error('Voice recognition not available. Please refresh the page.');
       return;
     }
-    
+
     if (isListening) {
       stopListening();
       return;
     }
-    
+
     try {
       recognitionRef.current.start();
     } catch (error) {
@@ -224,11 +224,10 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
           type="button"
           onClick={startListening}
           disabled={disabled}
-          className={`relative p-3 rounded-full transition-all duration-200 ${
-            isListening
+          className={`relative p-3 rounded-full transition-all duration-200 ${isListening
               ? 'bg-red-500 text-white shadow-lg scale-110 animate-pulse'
-              : 'bg-blue-500 text-white hover:bg-blue-600 hover:scale-105'
-          } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              : 'bg-gray-500 text-white hover:bg-gray-600 hover:scale-105'
+            } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           title={isListening ? 'Click to stop listening' : 'Click to start voice input'}
         >
           {isListening ? (
