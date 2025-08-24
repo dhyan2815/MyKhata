@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { getCurrencySymbol } from '../utils/currencyFormatter';
 import { motion } from 'framer-motion';
+import VoiceInput from './VoiceInput';
 
 // TransactionForm component for adding or editing a transaction
 const TransactionForm = ({ 
@@ -37,6 +38,10 @@ const TransactionForm = ({
   // State for categories and loading state for categories
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
+  
+  // State for voice input
+  const [voiceResult, setVoiceResult] = useState(null);
+  const [showVoiceConfirmation, setShowVoiceConfirmation] = useState(false);
   
   // Load categories whenever the transaction type changes
   useEffect(() => {
@@ -64,6 +69,70 @@ const TransactionForm = ({
   // Handle transaction type change (expense/income)
   const handleTypeChange = (type) => {
     setFormData({ ...formData, type, category: '' });
+  };
+  
+  // Handle voice input result
+  const handleVoiceResult = (result) => {
+    setVoiceResult(result);
+    
+    // Auto-fill form with voice data
+    const updates = {};
+    
+    if (result.amount) {
+      updates.amount = result.amount.toString();
+    }
+    
+    if (result.type) {
+      updates.type = result.type;
+    }
+    
+    if (result.date) {
+      updates.date = result.date;
+    }
+    
+    if (result.description) {
+      updates.description = result.description;
+    }
+    
+    // Handle category ID if available
+    if (result.categoryId) {
+      updates.category = result.categoryId;
+    }
+    
+    // Update form data
+    setFormData(prev => ({ ...prev, ...updates }));
+    
+    // Show voice confirmation dialog
+    setShowVoiceConfirmation(true);
+    
+    // Show success message
+    toast.success('Voice input processed! Please review and adjust if needed.');
+    
+    // Clear voice result after a delay
+    setTimeout(() => setVoiceResult(null), 5000);
+  };
+  
+  // Handle voice confirmation
+  const handleVoiceConfirmation = () => {
+    setShowVoiceConfirmation(false);
+    // Speak confirmation
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance('Transaction details confirmed. You can now save the transaction.');
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+  
+  // Handle voice confirmation cancel
+  const handleVoiceConfirmationCancel = () => {
+    setShowVoiceConfirmation(false);
+    setVoiceResult(null);
+    // Speak cancellation
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance('Voice input cancelled. Please fill the form manually.');
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
   };
   
   // Handle form submission
@@ -101,6 +170,58 @@ const TransactionForm = ({
       onSubmit={handleSubmit} 
       className="space-y-4 sm:space-y-6 dark:bg-gray-900 dark:text-white"
     >
+      {/* Voice Input Section */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.05 }}
+        className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
+      >
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 text-center">
+          🎤 Voice Input
+        </h3>
+        <VoiceInput 
+          onVoiceResult={handleVoiceResult}
+          disabled={isLoading}
+          categories={categories}
+        />
+        
+        {/* Voice Confirmation Modal */}
+        {showVoiceConfirmation && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg"
+          >
+            <div className="text-center space-y-3">
+              <div className="flex items-center justify-center space-x-2 text-blue-600 dark:text-blue-400">
+                <span className="text-lg">🎯</span>
+                <span className="font-medium">Voice Input Detected!</span>
+              </div>
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                Please review the details below and confirm if they are correct.
+              </p>
+              <div className="flex space-x-3 justify-center">
+                <button
+                  type="button"
+                  onClick={handleVoiceConfirmation}
+                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                >
+                  ✓ Confirm Details
+                </button>
+                <button
+                  type="button"
+                  onClick={handleVoiceConfirmationCancel}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                >
+                  ✗ Cancel & Clear
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </motion.div>
+
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -108,6 +229,26 @@ const TransactionForm = ({
         className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
       >
         <div className="flex flex-col space-y-3 sm:space-y-4">
+          {/* Voice Result Display */}
+          {voiceResult && (
+            <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+              <div className="flex items-center space-x-2 mb-2">
+                <span className="text-green-600 dark:text-green-400">🎯</span>
+                <span className="text-sm font-medium text-green-800 dark:text-green-300">
+                  Voice Input Detected
+                </span>
+              </div>
+              <div className="text-xs text-green-700 dark:text-green-400 space-y-1">
+                {voiceResult.amount && <p>Amount: ₹{voiceResult.amount}</p>}
+                {voiceResult.type && <p>Type: {voiceResult.type}</p>}
+                {voiceResult.category && <p>Category: {voiceResult.category}</p>}
+                {voiceResult.date && <p>Date: {voiceResult.date}</p>}
+                {voiceResult.description && <p>Description: {voiceResult.description}</p>}
+                {voiceResult.categoryId && <p className="text-green-600">✓ Category matched automatically</p>}
+              </div>
+            </div>
+          )}
+          
           {/* Transaction Type */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
