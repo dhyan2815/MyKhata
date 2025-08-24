@@ -179,14 +179,30 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
   }
 
   return (
-    <div className="space-y-3">
-      {/* Voice Input Button */}
-      <div className="flex items-center justify-center">
+    <div className="space-y-2">
+      {/* Voice Input Section - Text on left, Mic on right */}
+      <div className="flex items-center justify-between space-x-4">
+        {/* Left side - Text content */}
+        <div className="flex-1 space-y-2">
+          {isListening ? (
+            <div className="flex items-center space-x-2 text-blue-600 dark:text-blue-400">
+              <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium">Listening... Speak now!</span>
+            </div>
+          ) : (
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              <p>Click the microphone and say something like:</p>
+              <p className="mt-1 text-xs font-medium">"Add ₹500 to groceries for vegetables"</p>
+            </div>
+          )}
+        </div>
+
+        {/* Right side - Mic button */}
         <button
           type="button"
           onClick={startListening}
           disabled={disabled}
-          className={`relative p-4 rounded-full transition-all duration-200 ${
+          className={`relative p-3 rounded-full transition-all duration-200 flex-shrink-0 ${
             isListening
               ? 'bg-red-500 text-white shadow-lg scale-110 animate-pulse'
               : 'bg-blue-500 text-white hover:bg-blue-600 hover:scale-105'
@@ -194,28 +210,11 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
           title={isListening ? 'Click to stop listening' : 'Click to start voice input'}
         >
           {isListening ? (
-            <MicOff size={24} className="animate-pulse" />
+            <MicOff size={20} className="animate-pulse" />
           ) : (
-            <Mic size={24} />
+            <Mic size={20} />
           )}
         </button>
-      </div>
-
-      {/* Status */}
-      <div className="text-center space-y-2">
-        {isListening && (
-          <div className="flex items-center justify-center space-x-2 text-blue-600 dark:text-blue-400">
-            <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium">Listening... Speak now!</span>
-          </div>
-        )}
-        
-        {!isListening && (
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            <p>Click the microphone and say something like:</p>
-            <p className="mt-2 text-xs font-medium">"Add ₹500 to groceries for vegetables"</p>
-          </div>
-        )}
       </div>
 
       {/* Error Display */}
