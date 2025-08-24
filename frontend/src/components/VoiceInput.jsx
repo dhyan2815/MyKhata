@@ -167,7 +167,6 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
   if (!recognitionRef.current) {
     return (
       <div className="text-center p-4">
-        <div className="text-2xl">🎤</div>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Voice recognition is not supported in this browser.
         </p>
@@ -191,8 +190,8 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
             </div>
           ) : (
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              <p>Click the microphone and say something like:</p>
-              <p className="mt-1 text-xs font-medium">"Add ₹500 to groceries for vegetables"</p>
+              <p className="text-lg font-semibold text-gray-800 dark:text-gray-200">Directly add a transaction by voice</p>
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Example: Add ₹500 to groceries for vegetables</p>
             </div>
           )}
         </div>
@@ -221,14 +220,6 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
       {error && (
         <div className="text-center p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
           <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-        </div>
-      )}
-
-      {/* Transcript Display */}
-      {transcript && (
-        <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <p className="text-xs text-blue-600 dark:text-blue-400 mb-1">You said:</p>
-          <p className="text-sm font-medium text-blue-800 dark:text-blue-300">"{transcript}"</p>
         </div>
       )}
     </div>
