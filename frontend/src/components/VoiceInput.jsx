@@ -6,63 +6,83 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [error, setError] = useState('');
+  const [isInitializing, setIsInitializing] = useState(true);
   const recognitionRef = useRef(null);
 
   // Initialize speech recognition
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const initializeSpeechRecognition = () => {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      
+      if (SpeechRecognition) {
+        try {
+          recognitionRef.current = new SpeechRecognition();
+          recognitionRef.current.continuous = false;
+          recognitionRef.current.interimResults = false;
+          recognitionRef.current.lang = 'en-US';
+          
+          // Event handlers
+          recognitionRef.current.onstart = () => {
+            console.log('🎤 Voice recognition started');
+            setIsListening(true);
+            setError('');
+            setTranscript('');
+          };
+          
+          recognitionRef.current.onresult = (event) => {
+            if (event.results && event.results.length > 0) {
+              const result = event.results[0][0].transcript;
+              console.log('🎯 Transcript:', result);
+              setTranscript(result);
+              handleVoiceCommand(result);
+            }
+          };
+          
+          recognitionRef.current.onerror = (event) => {
+            console.error('❌ Voice recognition error:', event.error);
+            let errorMessage = 'Voice recognition failed';
+            
+            switch (event.error) {
+              case 'no-speech':
+                errorMessage = 'No speech detected. Please try again.';
+                break;
+              case 'audio-capture':
+                errorMessage = 'Microphone access denied. Please check permissions.';
+                break;
+              case 'not-allowed':
+                errorMessage = 'Microphone permission denied. Please allow access.';
+                break;
+              default:
+                errorMessage = `Voice recognition error: ${event.error}`;
+            }
+            
+            setError(errorMessage);
+            setIsListening(false);
+            toast.error(errorMessage);
+          };
+          
+          recognitionRef.current.onend = () => {
+            console.log('🛑 Voice recognition ended');
+            setIsListening(false);
+          };
+          
+          setIsInitializing(false);
+          console.log('✅ Speech recognition initialized successfully');
+        } catch (error) {
+          console.error('Failed to initialize speech recognition:', error);
+          setIsInitializing(false);
+          setError('Failed to initialize voice recognition');
+        }
+      } else {
+        setIsInitializing(false);
+        setError('Voice recognition not supported in this browser');
+      }
+    };
+
+    // Add a small delay to ensure the API is fully loaded
+    const timer = setTimeout(initializeSpeechRecognition, 100);
     
-    if (SpeechRecognition) {
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
-      recognitionRef.current.lang = 'en-US';
-      
-      // Event handlers
-      recognitionRef.current.onstart = () => {
-        console.log('🎤 Voice recognition started');
-        setIsListening(true);
-        setError('');
-        setTranscript('');
-      };
-      
-      recognitionRef.current.onresult = (event) => {
-        if (event.results && event.results.length > 0) {
-          const result = event.results[0][0].transcript;
-          console.log('🎯 Transcript:', result);
-          setTranscript(result);
-          handleVoiceCommand(result);
-        }
-      };
-      
-      recognitionRef.current.onerror = (event) => {
-        console.error('❌ Voice recognition error:', event.error);
-        let errorMessage = 'Voice recognition failed';
-        
-        switch (event.error) {
-          case 'no-speech':
-            errorMessage = 'No speech detected. Please try again.';
-            break;
-          case 'audio-capture':
-            errorMessage = 'Microphone access denied. Please check permissions.';
-            break;
-          case 'not-allowed':
-            errorMessage = 'Microphone permission denied. Please allow access.';
-            break;
-          default:
-            errorMessage = `Voice recognition error: ${event.error}`;
-        }
-        
-        setError(errorMessage);
-        setIsListening(false);
-        toast.error(errorMessage);
-      };
-      
-      recognitionRef.current.onend = () => {
-        console.log('🛑 Voice recognition ended');
-        setIsListening(false);
-      };
-    }
+    return () => clearTimeout(timer);
   }, []);
 
   // Handle voice command parsing
@@ -163,45 +183,48 @@ const VoiceInput = ({ onVoiceResult, disabled = false, categories = [] }) => {
     }
   };
 
+  // Show loading state while initializing
+  if (isInitializing) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center justify-center">
+          <div className="relative p-3 rounded-full bg-gray-300 dark:bg-gray-600 animate-pulse">
+            <div className="w-5 h-5 bg-gray-400 dark:bg-gray-500 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Check if supported
   if (!recognitionRef.current) {
     return (
-      <div className="text-center p-4">
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Voice recognition is not supported in this browser.
-        </p>
-        <p className="text-xs text-gray-400 dark:text-gray-500">
-          Please use Chrome, Edge, or Safari for voice features.
-        </p>
+      <div className="space-y-2">
+        <div className="flex items-center justify-center">
+          <div className="text-center p-3">
+            <div className="text-2xl">🎤</div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Voice recognition is not supported in this browser.
+            </p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              Please use Chrome, Edge, or Safari for voice features.
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-2">
-      {/* Voice Input Section - Text on left, Mic on right */}
-      <div className="flex items-center justify-between space-x-4">
-        {/* Left side - Text content */}
-        <div className="flex-1 space-y-2">
-          {isListening ? (
-            <div className="flex items-center space-x-2 text-blue-600 dark:text-blue-400">
-              <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium">Listening... Speak now!</span>
-            </div>
-          ) : (
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              <p className="text-lg font-semibold text-gray-800 dark:text-gray-200">Directly add a transaction by voice</p>
-              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">Example: Add ₹500 to groceries for vegetables</p>
-            </div>
-          )}
-        </div>
-
-        {/* Right side - Mic button */}
+      {/* Voice Input Section - Only Mic Button */}
+      <div className="flex gap-x-3 items-center justify-center">
+        <p className="text-lg font-bold text-gray-800 dark:text-gray-200">Voice Transaction</p>
         <button
           type="button"
           onClick={startListening}
           disabled={disabled}
-          className={`relative p-3 rounded-full transition-all duration-200 flex-shrink-0 ${
+          className={`relative p-3 rounded-full transition-all duration-200 ${
             isListening
               ? 'bg-red-500 text-white shadow-lg scale-110 animate-pulse'
               : 'bg-blue-500 text-white hover:bg-blue-600 hover:scale-105'
