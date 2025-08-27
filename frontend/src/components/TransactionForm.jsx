@@ -17,7 +17,8 @@ import { motion } from 'framer-motion';
 const TransactionForm = ({ 
   initialData = null, 
   onSubmit, 
-  isLoading = false 
+  isLoading = false,
+  voiceResult = null
 }) => {
   const navigate = useNavigate();
   // Get user from AuthContext to access currency preference
@@ -37,6 +38,37 @@ const TransactionForm = ({
   // State for categories and loading state for categories
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
+  
+  // Auto-fill form when voiceResult changes
+  useEffect(() => {
+    if (voiceResult) {
+      const updates = {};
+      
+      if (voiceResult.amount) {
+        updates.amount = voiceResult.amount.toString();
+      }
+      
+      if (voiceResult.type) {
+        updates.type = voiceResult.type;
+      }
+      
+      if (voiceResult.date) {
+        updates.date = voiceResult.date;
+      }
+      
+      if (voiceResult.description) {
+        updates.description = voiceResult.description;
+      }
+      
+      // Handle category ID if available
+      if (voiceResult.categoryId) {
+        updates.category = voiceResult.categoryId;
+      }
+      
+      // Update form data
+      setFormData(prev => ({ ...prev, ...updates }));
+    }
+  }, [voiceResult]);
   
   // Load categories whenever the transaction type changes
   useEffect(() => {
