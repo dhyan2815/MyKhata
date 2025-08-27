@@ -1,3 +1,4 @@
+// /pages/ReceiptHistory.jsx
 import React, { useState, useEffect } from 'react';
 import { getReceiptHistory } from '../api/receipts';
 import { useAuth } from '../context/AuthContext';
@@ -32,20 +33,93 @@ const ReceiptHistory = () => {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
   const formatAmount = (amount) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'INR'
+      currency: 'INR',
     }).format(amount);
+  };
+
+  const getStatusBadge = (status, hasTransaction) => {
+    if (hasTransaction) {
+      return (
+        <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+          ✅ Processed
+        </span>
+      );
+    }
+
+    switch (status) {
+      case 'scanned':
+        return (
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            📷 Scanned
+          </span>
+        );
+      case 'failed':
+        return (
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            ❌ Failed
+          </span>
+        );
+      default:
+        return (
+          <span className="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+            ⏳ Pending
+          </span>
+        );
+    }
+  };
+
+  const getAmountDisplay = (receipt) => {
+    if (receipt.transactionId) {
+      return formatAmount(receipt.transactionId.amount);
+    }
+    const amount =
+      receipt.extractedData?.amount ||
+      receipt.extractedData?.total ||
+      receipt.extractedData?.subtotal;
+    return formatAmount(amount);
+  };
+
+  const getMerchantDisplay = (receipt) => {
+    if (receipt.transactionId) {
+      return receipt.transactionId.merchant;
+    }
+    return receipt.extractedData?.merchant || 'Not detected';
+  };
+
+  const getTypeDisplay = (receipt) => {
+    if (receipt.transactionId) {
+      return receipt.transactionId.type;
+    }
+    return receipt.extractedData?.type || 'expense';
+  };
+
+  const getCategoryDisplay = (receipt) => {
+    if (receipt.transactionId?.category?.name) {
+      return receipt.transactionId.category.name;
+    }
+    return 'Uncategorized';
+  };
+
+  const getDescriptionDisplay = (receipt) => {
+    if (receipt.transactionId) {
+      return receipt.transactionId.description;
+    }
+    return receipt.extractedData?.description || 'No description';
   };
 
   if (loading) {
     return (
-      <div className={`min-h-screen p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+      <div
+        className={`min-h-screen p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
+          }`}
+      >
         <div className="max-w-6xl mx-auto">
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
@@ -58,7 +132,10 @@ const ReceiptHistory = () => {
 
   if (error) {
     return (
-      <div className={`min-h-screen p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+      <div
+        className={`min-h-screen p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
+          }`}
+      >
         <div className="max-w-6xl mx-auto">
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
             <strong>Error:</strong> {error}
@@ -69,11 +146,16 @@ const ReceiptHistory = () => {
   }
 
   return (
-    <div className={`min-h-screen p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+    <div
+      className={`min-h-screen p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'
+        }`}
+    >
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Receipt History</h1>
-          <div className="text-sm text-gray-500">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Receipt History
+          </h1>
+          <div className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
             Total Scanned: {receipts.length}
           </div>
         </div>
@@ -81,19 +163,20 @@ const ReceiptHistory = () => {
         {receipts.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">📄</div>
-            <h3 className="text-xl font-semibold mb-2">No Receipts Yet</h3>
-            <p className="text-gray-500">
+            <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
+              No Receipts Yet
+            </h3>
+            <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
               Start scanning receipts to see them appear here
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {receipts.map((receipt) => (
               <div
                 key={receipt._id}
-                className={`bg-white rounded-lg shadow-lg overflow-hidden ${
-                  isDark ? 'border border-gray-700' : ''
-                }`}
+                className={`rounded-lg shadow-lg overflow-hidden ${isDark ? 'bg-gray-800 border border-gray-700' : 'bg-white'
+                  }`}
               >
                 {/* Receipt Image Preview */}
                 {receipt.receiptImage && (
@@ -107,7 +190,7 @@ const ReceiptHistory = () => {
                         e.target.nextSibling.style.display = 'flex';
                       }}
                     />
-                    <div className="hidden items-center justify-center text-gray-500">
+                    <div className="hidden items-center justify-center text-white dark:text-gray-900">
                       <span>📄 Receipt Image</span>
                     </div>
                   </div>
@@ -116,92 +199,157 @@ const ReceiptHistory = () => {
                 {/* Receipt Details */}
                 <div className="p-4">
                   <div className="flex justify-between items-start mb-3">
-                    <h3 className="font-semibold text-lg text-gray-900">
-                      {receipt.merchant || 'Unknown Merchant'}
-                    </h3>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        receipt.type === 'income'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}
+                    <h3
+                      className={`font-semibold text-lg ${isDark ? 'text-white' : 'text-gray-900'
+                        }`}
                     >
-                      {receipt.type === 'income' ? '💰 Income' : '💸 Expense'}
-                    </span>
+                      {getMerchantDisplay(receipt)}
+                    </h3>
+                    <div className="flex flex-col items-end gap-2">
+                      {getStatusBadge(receipt.status, !!receipt.transactionId)}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeDisplay(receipt) === 'income'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                          }`}
+                      >
+                        {getTypeDisplay(receipt) === 'income'
+                          ? '💰 Income'
+                          : '💸 Expense'}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Amount:</span>
-                      <span className="font-semibold text-gray-900">
-                        {formatAmount(receipt.amount)}
+                      <span
+                        className={`${isDark ? 'text-gray-300' : 'text-gray-600'}`}
+                      >
+                        Amount:
+                      </span>
+                      <span
+                        className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'
+                          }`}
+                      >
+                        {getAmountDisplay(receipt)}
                       </span>
                     </div>
-                    
+
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Category:</span>
-                      <span className="text-gray-900">
-                        {receipt.category?.name || receipt.category || 'Uncategorized'}
+                      <span
+                        className={`${isDark ? 'text-gray-300' : 'text-gray-600'}`}
+                      >
+                        Category:
+                      </span>
+                      <span className={`${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        {getCategoryDisplay(receipt)}
                       </span>
                     </div>
-                    
+
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Date:</span>
-                      <span className="text-gray-900">
-                        {formatDate(receipt.date)}
+                      <span
+                        className={`${isDark ? 'text-gray-300' : 'text-gray-600'}`}
+                      >
+                        Date:
+                      </span>
+                      <span className={`${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        {receipt.transactionId?.date
+                          ? formatDate(receipt.transactionId.date)
+                          : 'Not detected'}
                       </span>
                     </div>
                   </div>
 
-                  {receipt.description && (
-                    <div className="mb-4">
-                      <p className="text-sm text-gray-600 line-clamp-2">
-                        {receipt.description}
-                      </p>
+                  <div className="mb-4">
+                    <p
+                      className={`text-sm line-clamp-2 ${isDark ? 'text-gray-300' : 'text-gray-600'
+                        }`}
+                    >
+                      {getDescriptionDisplay(receipt)}
+                    </p>
+                  </div>
+
+                  {/* Receipt Status and Actions */}
+                  <div className="flex justify-between items-center text-xs text-gray-500">
+                    <span>Scanned: {formatDate(receipt.createdAt)}</span>
+                    {!receipt.transactionId && (
+                      <span className="text-blue-600">📝 Ready to process</span>
+                    )}
+                  </div>
+
+                  {/* Action Buttons for Unprocessed Receipts */}
+                  {!receipt.transactionId && (
+                    <div className="mt-4 pt-3 border-t border-gray-200">
+                      <button
+                        onClick={() => {
+                          alert(
+                            'Navigate to ReceiptScanner to process this receipt'
+                          );
+                        }}
+                        className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
+                      >
+                        🔄 Process Receipt
+                      </button>
                     </div>
                   )}
-
-                  {/* Transaction Status */}
-                  <div className="flex justify-between items-center text-xs text-gray-500">
-                    <span>Created: {formatDate(receipt.createdAt)}</span>
-                    <span className="text-green-600">✓ Processed</span>
-                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
-
         {/* Summary Stats */}
         {receipts.length > 0 && (
-          <div className="mt-12 bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Summary</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
+          <div
+            className={`mt-12 rounded-lg p-6 shadow-lg border ${isDark
+                ? 'bg-gray-800 border-gray-700'
+                : 'bg-white border-gray-200'
+              }`}
+          >
+            <h2 className="text-xl text-center font-semibold mb-4">Receipt Summary</h2>
+            <div className="flex flex-wrap justify-center lg:justify-between items-center gap-4 px-2">
+              <div className="flex flex-col items-center min-w-[120px] p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                 <div className="text-2xl font-bold text-blue-600">
                   {receipts.length}
                 </div>
-                <div className="text-sm text-gray-600">Total Receipts</div>
+                <div
+                  className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}
+                >
+                  Total Scanned
+                </div>
               </div>
-              <div className="text-center">
+              <div className="flex flex-col items-center min-w-[120px] p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                 <div className="text-2xl font-bold text-green-600">
-                  {formatAmount(
-                    receipts
-                      .filter(r => r.type === 'income')
-                      .reduce((sum, r) => sum + r.amount, 0)
-                  )}
+                  {receipts.filter((r) => r.transactionId).length}
                 </div>
-                <div className="text-sm text-gray-600">Total Income</div>
+                <div
+                  className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}
+                >
+                  Processed
+                </div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-red-600">
+              <div className="flex flex-col items-center min-w-[120px] p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <div className="text-2xl font-bold text-yellow-600">
+                  {receipts.filter((r) => !r.transactionId).length}
+                </div>
+                <div
+                  className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}
+                >
+                  Pending
+                </div>
+              </div>
+              <div className="flex flex-col items-center min-w-[120px] p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <div className="text-2xl font-bold text-purple-600">
                   {formatAmount(
                     receipts
-                      .filter(r => r.type === 'expense')
-                      .reduce((sum, r) => sum + r.amount, 0)
+                      .filter((r) => r.transactionId)
+                      .reduce((sum, r) => sum + (r.transactionId.amount || 0), 0)
                   )}
                 </div>
-                <div className="text-sm text-gray-600">Total Expenses</div>
+                <div
+                  className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}
+                >
+                  Total Value
+                </div>
               </div>
             </div>
           </div>

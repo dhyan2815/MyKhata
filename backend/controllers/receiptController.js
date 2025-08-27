@@ -1,6 +1,7 @@
 import OCRProcessor from '../utils/ocrProcessor.js';
 import Transaction from '../models/transactionModel.js';
 import Category from '../models/categoryModel.js';
+import Receipt from '../models/receiptModel.js';
 import asyncHandler from 'express-async-handler';
 
 const ocrProcessor = new OCRProcessor();
@@ -18,9 +19,29 @@ const scanReceipt = asyncHandler(async (req, res) => {
     // Process the receipt image
     const extractedData = await ocrProcessor.processReceipt(req.file.buffer);
 
+    // Save the receipt data to the Receipt model
+    const receipt = await Receipt.create({
+      user: req.user.id,
+      receiptImage: `data:image/jpeg;base64,${req.file.buffer.toString('base64')}`, // Store as base64 for now
+      rawText: extractedData.rawText || '',
+      extractedData: {
+        merchant: extractedData.merchant || null,
+        amount: extractedData.amount || extractedData.total || extractedData.subtotal || null,
+        total: extractedData.total || null,
+        subtotal: extractedData.subtotal || null,
+        date: extractedData.date || null,
+        description: extractedData.description || null,
+        type: extractedData.type || 'expense',
+      },
+      status: 'scanned',
+    });
+
     res.status(200).json({
       success: true,
-      data: extractedData,
+      data: {
+        ...extractedData,
+        receiptId: receipt._id,
+      },
       message: 'Receipt scanned successfully'
     });
   } catch (error) {
@@ -42,7 +63,8 @@ const createTransactionFromReceipt = asyncHandler(async (req, res) => {
       category, 
       description, 
       type,
-      receiptImage 
+      receiptImage,
+      receiptId 
     } = req.body;
 
     // Validate required fields
@@ -85,6 +107,15 @@ const createTransactionFromReceipt = asyncHandler(async (req, res) => {
       receiptImage: receiptImage || null
     });
 
+    // Update receipt status if receiptId is provided
+    if (receiptId) {
+      await Receipt.findByIdAndUpdate(receiptId, {
+        status: 'processed',
+        transactionId: transaction._id,
+        processingNotes: 'Successfully converted to transaction'
+      });
+    }
+
     res.status(201).json({
       success: true,
       data: transaction,
@@ -102,15 +133,21 @@ const createTransactionFromReceipt = asyncHandler(async (req, res) => {
 // @access  Private
 const getReceiptHistory = asyncHandler(async (req, res) => {
   try {
-    const transactions = await Transaction.find({
-      user: req.user.id,
-      receiptImage: { $exists: true, $ne: null }
+    // Get all scanned receipts for the user
+    const receipts = await Receipt.find({
+      user: req.user.id
     }).sort({ createdAt: -1 });
+
+    // Populate transaction details for processed receipts
+    const populatedReceipts = await Receipt.populate(receipts, {
+      path: 'transactionId',
+      select: 'amount type category description date merchant'
+    });
 
     res.status(200).json({
       success: true,
-      count: transactions.length,
-      data: transactions
+      count: receipts.length,
+      data: populatedReceipts
     });
   } catch (error) {
     console.error('Receipt history error:', error);

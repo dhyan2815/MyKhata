@@ -10,6 +10,7 @@ const ReceiptScanner = () => {
   const [scanResult, setScanResult] = useState(null);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('camera'); // 'camera' or 'upload'
+  const [receiptId, setReceiptId] = useState(null); // Store receipt ID from scan
   const [transactionData, setTransactionData] = useState({
     merchant: '',
     amount: '',
@@ -62,14 +63,16 @@ const ReceiptScanner = () => {
     try {
       const result = await scanReceipt(imageFile);
       setScanResult(result.data);
+              setReceiptId(result.data.receiptId); // Store receipt ID
       
-      // Pre-fill transaction data
+      // Pre-fill transaction data with scanned values or 'Unspecified' if missing
       setTransactionData(prev => ({
         ...prev,
-        merchant: result.data.merchant || '',
-        amount: result.data.total || result.data.subtotal || '',
+        merchant: result.data.merchant || 'Unspecified',
+        amount: result.data.total || result.data.subtotal || result.data.amount || '',
         date: result.data.date || new Date().toISOString().split('T')[0],
-        description: `Receipt from ${result.data.merchant || 'Unknown Merchant'}`
+        description: result.data.description || `Receipt from ${result.data.merchant || 'Unspecified'}`,
+        type: result.data.type || 'expense'
       }));
       
     } catch (err) {
@@ -83,8 +86,38 @@ const ReceiptScanner = () => {
   // Create transaction from scanned data
   const handleCreateTransaction = async () => {
     try {
-      await createTransactionFromReceipt(transactionData);
-      // Reset form and show success message
+      // Validate required fields before sending
+      if (!transactionData.amount || !transactionData.merchant) {
+        setError('Amount and merchant are required fields');
+        return;
+      }
+
+      // Ensure amount is a valid number
+      const amount = parseFloat(transactionData.amount);
+      if (isNaN(amount) || amount <= 0) {
+        setError('Please enter a valid amount');
+        return;
+      }
+
+      // Prepare data for backend (remove category as backend will handle it)
+      const transactionPayload = {
+        merchant: transactionData.merchant,
+        amount: amount,
+        date: transactionData.date,
+        description: transactionData.description,
+        type: transactionData.type,
+        receiptId: receiptId // Include receiptId
+      };
+
+      console.log('Creating transaction with data:', transactionPayload);
+      
+      const result = await createTransactionFromReceipt(transactionPayload);
+      console.log('Transaction created successfully:', result);
+      
+      // Show success message
+      alert('Transaction created successfully!');
+      
+      // Reset form and state after successful creation
       setTransactionData({
         merchant: '',
         amount: '',
@@ -95,9 +128,11 @@ const ReceiptScanner = () => {
       });
       setScanResult(null);
       setError(null);
-      alert('Transaction created successfully!');
+      setReceiptId(null); // Clear receiptId after successful creation
+      
     } catch (err) {
-      setError(err.message);
+      console.error('Transaction creation failed:', err);
+      setError(err.message || 'Failed to create transaction');
     }
   };
 
@@ -113,7 +148,7 @@ const ReceiptScanner = () => {
   return (
     <div className={`min-h-screen p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-center">Receipt Scanner</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">Receipt Scanner</h1>
         
         {/* Tab Navigation */}
         <div className="flex mb-6 border-b border-gray-300">
@@ -142,8 +177,8 @@ const ReceiptScanner = () => {
         {/* Camera Tab */}
         {activeTab === 'camera' && (
           <div className="mb-8">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Take Photo of Receipt</h2>
+            <div className={`rounded-lg shadow-lg p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Take Photo of Receipt</h2>
               <div className="flex justify-center mb-4">
                 <Webcam
                   ref={webcamRef}
@@ -169,14 +204,16 @@ const ReceiptScanner = () => {
         {/* Upload Tab */}
         {activeTab === 'upload' && (
           <div className="mb-8">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Upload Receipt Image</h2>
+            <div className={`rounded-lg shadow-lg p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Upload Receipt Image</h2>
               <div
                 {...getRootProps()}
                 className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
                   isDragActive
                     ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-300 hover:border-gray-400'
+                    : isDark 
+                      ? 'border-gray-600 hover:border-gray-500 bg-gray-700'
+                      : 'border-gray-300 hover:border-gray-400'
                 }`}
               >
                 <input {...getInputProps()} />
@@ -185,10 +222,10 @@ const ReceiptScanner = () => {
                   <p className="text-blue-600">Drop the receipt image here...</p>
                 ) : (
                   <div>
-                    <p className="text-gray-600 mb-2">
+                    <p className={`mb-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
                       Drag & drop a receipt image here, or click to select
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                       Supports: JPG, PNG, GIF (Max: 5MB)
                     </p>
                   </div>
@@ -216,13 +253,15 @@ const ReceiptScanner = () => {
 
         {/* Scan Results */}
         {scanResult && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className={`rounded-lg shadow-lg p-6 mb-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
             <h2 className="text-xl font-semibold mb-4">Scanned Receipt Data</h2>
             
             {/* Raw OCR Text */}
             <div className="mb-6">
               <h3 className="font-medium mb-2">Raw Text:</h3>
-              <div className="bg-gray-100 p-3 rounded text-sm max-h-32 overflow-y-auto">
+              <div className={`p-3 rounded text-sm max-h-32 overflow-y-auto ${
+                isDark ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-900'
+              }`}>
                 {scanResult.rawText}
               </div>
             </div>
@@ -236,7 +275,12 @@ const ReceiptScanner = () => {
                   name="merchant"
                   value={transactionData.merchant}
                   onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  placeholder="e.g., Walmart, Starbucks"
+                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 ${
+                    isDark 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                 />
               </div>
               <div>
@@ -247,7 +291,13 @@ const ReceiptScanner = () => {
                   value={transactionData.amount}
                   onChange={handleInputChange}
                   step="0.01"
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  min="0.01"
+                  placeholder="0.00"
+                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 ${
+                    isDark 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                 />
               </div>
               <div>
@@ -257,7 +307,11 @@ const ReceiptScanner = () => {
                   name="date"
                   value={transactionData.date}
                   onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 ${
+                    isDark 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                 />
               </div>
               <div>
@@ -266,7 +320,11 @@ const ReceiptScanner = () => {
                   name="type"
                   value={transactionData.type}
                   onChange={handleInputChange}
-                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 ${
+                    isDark 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
                 >
                   <option value="expense">Expense</option>
                   <option value="income">Income</option>
@@ -281,7 +339,12 @@ const ReceiptScanner = () => {
                 value={transactionData.description}
                 onChange={handleInputChange}
                 rows="3"
-                className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter transaction description..."
+                className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 ${
+                  isDark 
+                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                    : 'bg-white border-gray-300 text-gray-900'
+                }`}
               />
             </div>
 
@@ -289,9 +352,9 @@ const ReceiptScanner = () => {
             <div className="flex gap-4">
               <button
                 onClick={handleCreateTransaction}
-                className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-medium"
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium"
               >
-                ✅ Create Transaction
+                Create Transaction
               </button>
               <button
                 onClick={() => {
@@ -304,10 +367,11 @@ const ReceiptScanner = () => {
                     description: '',
                     type: 'expense'
                   });
+                  setReceiptId(null); // Clear receiptId when scanning another receipt
                 }}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium"
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium"
               >
-                🔄 Scan Another
+                Scan Another Receipt
               </button>
             </div>
           </div>
