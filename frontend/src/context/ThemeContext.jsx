@@ -1,4 +1,4 @@
-import {createContext} from 'react'
+import {createContext, useContext} from 'react'
 import { useState, useEffect } from 'react'
 
 // create context for theme
@@ -24,8 +24,17 @@ export const ThemeProvider = ({children}) => {
 
     // provide theme and toggleTheme to children components
     return (
-        <ThemeContext.Provider value={{theme, toggleTheme}}>
+        <ThemeContext.Provider value={{theme, toggleTheme, isDark: theme === 'dark'}}>
             {children} {/* wrap children with context provider */}
         </ThemeContext.Provider>
     )
+};
+
+// Custom hook to use theme context
+export const useTheme = () => {
+    const context = useContext(ThemeContext);
+    if (!context) {
+        throw new Error('useTheme must be used within a ThemeProvider');
+    }
+    return context;
 };

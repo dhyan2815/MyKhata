@@ -1,5 +1,6 @@
 import OCRProcessor from '../utils/ocrProcessor.js';
 import Transaction from '../models/transactionModel.js';
+import Category from '../models/categoryModel.js';
 import asyncHandler from 'express-async-handler';
 
 const ocrProcessor = new OCRProcessor();
@@ -59,12 +60,25 @@ const createTransactionFromReceipt = asyncHandler(async (req, res) => {
       }
     }
 
+    // Find a default category for the transaction type
+    let categoryId = category;
+    if (!categoryId) {
+      const defaultCategory = await Category.findOne({
+        user: req.user.id,
+        type: type || 'expense',
+        isDefault: true
+      });
+      if (defaultCategory) {
+        categoryId = defaultCategory._id;
+      }
+    }
+
     // Create transaction
     const transaction = await Transaction.create({
       user: req.user.id,
       type: type || 'expense',
       amount: parseFloat(amount),
-      category: category || 'Uncategorized',
+      category: categoryId,
       description: description || `Receipt from ${merchant}`,
       date: transactionDate,
       merchant: merchant,

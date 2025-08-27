@@ -9,9 +9,7 @@ class OCRProcessor {
   // Initialize Tesseract worker
   async initialize() {
     try {
-      this.worker = await Tesseract.createWorker();
-      await this.worker.loadLanguage('eng');
-      await this.worker.initialize('eng');
+      this.worker = await Tesseract.createWorker('eng');
       console.log('OCR Worker initialized successfully');
     } catch (error) {
       console.error('Error initializing OCR worker:', error);
