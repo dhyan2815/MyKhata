@@ -10,6 +10,8 @@ const Transactions = lazy(() => import('./pages/Transactions'));
 const Categories = lazy(() => import('./pages/Categories'));
 const AddTransaction = lazy(() => import('./pages/AddTransaction'));
 const EditTransaction = lazy(() => import('./pages/EditTransaction'));
+const ReceiptScannerPage = lazy(() => import('./pages/ReceiptScannerPage'));
+const ReceiptHistoryPage = lazy(() => import('./pages/ReceiptHistoryPage'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 const Profile = lazy(() => import('./pages/Profile'));
@@ -92,6 +94,18 @@ function App() {
           <Route path="/profile" element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          } />
+          {/* Receipt scanner route */}
+          <Route path="/receipt-scanner" element={
+            <ProtectedRoute>
+              <ReceiptScannerPage />
+            </ProtectedRoute>
+          } />
+          {/* Receipt history route */}
+          <Route path="/receipt-history" element={
+            <ProtectedRoute>
+              <ReceiptHistoryPage />
             </ProtectedRoute>
           } />
         </Route>

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { X, LayoutDashboard, ListOrdered, Tag, User, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { X, LayoutDashboard, ListOrdered, Tag, User, ChevronsLeft, ChevronsRight, Camera, FileText } from 'lucide-react';
 
 // Sidebar component for navigation
 const Sidebar = ({ isOpen, closeSidebar, collapsed = false, toggleCollapsed }) => {
@@ -21,6 +21,16 @@ const Sidebar = ({ isOpen, closeSidebar, collapsed = false, toggleCollapsed }) =
       name: 'Categories',
       icon: <Tag size={23} />,
       path: '/categories',
+    },
+    {
+      name: 'Receipt Scanner',
+      icon: <Camera size={23} />,
+      path: '/receipt-scanner',
+    },
+    {
+      name: 'Receipt History',
+      icon: <FileText size={23} />,
+      path: '/receipt-history',
     },
     {
       name: 'Profile',
