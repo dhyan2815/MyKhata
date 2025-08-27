@@ -1,11 +1,11 @@
-const express = require('express');
-const multer = require('multer');
-const { protect } = require('../middleware/authMiddleware');
-const {
+import express from 'express';
+import multer from 'multer';
+import { protect } from '../middleware/authMiddleware.js';
+import {
   scanReceipt,
   createTransactionFromReceipt,
   getReceiptHistory
-} = require('../controllers/receiptController');
+} from '../controllers/receiptController.js';
 
 const router = express.Router();
 
@@ -37,4 +37,4 @@ router.post('/create-transaction', createTransactionFromReceipt);
 // Route to get receipt scanning history
 router.get('/history', getReceiptHistory);
 
-module.exports = router;
+export default router;

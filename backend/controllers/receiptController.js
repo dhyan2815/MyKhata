@@ -1,6 +1,6 @@
-const OCRProcessor = require('../utils/ocrProcessor');
-const Transaction = require('../models/transactionModel');
-const asyncHandler = require('express-async-handler');
+import OCRProcessor from '../utils/ocrProcessor.js';
+import Transaction from '../models/transactionModel.js';
+import asyncHandler from 'express-async-handler';
 
 const ocrProcessor = new OCRProcessor();
 
@@ -105,7 +105,7 @@ const getReceiptHistory = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = {
+export {
   scanReceipt,
   createTransactionFromReceipt,
   getReceiptHistory

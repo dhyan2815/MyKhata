@@ -1,5 +1,5 @@
-const Tesseract = require('tesseract.js');
-const sharp = require('sharp');
+import Tesseract from 'tesseract.js';
+import sharp from 'sharp';
 
 class OCRProcessor {
   constructor() {
@@ -142,4 +142,4 @@ class OCRProcessor {
   }
 }
 
-module.exports = OCRProcessor;
+export default OCRProcessor;
