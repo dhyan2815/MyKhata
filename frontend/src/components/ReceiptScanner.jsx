@@ -147,8 +147,9 @@ const ReceiptScanner = () => {
 
   return (
     <div className={`min-h-screen p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8 text-center text-gray-900 dark:text-white">Receipt Scanner</h1>
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Receipt Scanner</h1>
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 mb-8">Scan receipts to create transactions seamlessly</p>
         
         {/* Tab Navigation */}
         <div className="flex mb-6 border-b border-gray-300">
@@ -160,7 +161,7 @@ const ReceiptScanner = () => {
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            📷 Camera
+            Camera
           </button>
           <button
             onClick={() => setActiveTab('upload')}
@@ -170,7 +171,7 @@ const ReceiptScanner = () => {
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            📁 Upload File
+            Upload File
           </button>
         </div>
 
