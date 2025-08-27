@@ -2,6 +2,7 @@ import OCRProcessor from '../utils/ocrProcessor.js';
 import Transaction from '../models/transactionModel.js';
 import Category from '../models/categoryModel.js';
 import Receipt from '../models/receiptModel.js';
+import { getOrCreateDefaultCategory } from '../utils/categoryInitializer.js';
 import asyncHandler from 'express-async-handler';
 
 const ocrProcessor = new OCRProcessor();
@@ -85,14 +86,9 @@ const createTransactionFromReceipt = asyncHandler(async (req, res) => {
     // Find a default category for the transaction type
     let categoryId = category;
     if (!categoryId) {
-      const defaultCategory = await Category.findOne({
-        user: req.user.id,
-        type: type || 'expense',
-        isDefault: true
-      });
-      if (defaultCategory) {
-        categoryId = defaultCategory._id;
-      }
+      // Use utility function to get or create default category
+      const defaultCategory = await getOrCreateDefaultCategory(req.user.id, type || 'expense');
+      categoryId = defaultCategory._id;
     }
 
     // Create transaction
@@ -138,11 +134,17 @@ const getReceiptHistory = asyncHandler(async (req, res) => {
       user: req.user.id
     }).sort({ createdAt: -1 });
 
-    // Populate transaction details for processed receipts
-    const populatedReceipts = await Receipt.populate(receipts, {
-      path: 'transactionId',
-      select: 'amount type category description date merchant'
-    });
+    // Populate transaction details for processed receipts with full category information
+    const populatedReceipts = await Receipt.populate(receipts, [
+      {
+        path: 'transactionId',
+        select: 'amount type category description date merchant',
+        populate: {
+          path: 'category',
+          select: 'name color icon'
+        }
+      }
+    ]);
 
     res.status(200).json({
       success: true,
@@ -156,8 +158,107 @@ const getReceiptHistory = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Update receipt data
+// @route   PUT /api/receipts/:id
+// @access  Private
+const updateReceipt = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { merchant, amount, description, type } = req.body;
+
+    // Find the receipt and ensure it belongs to the user
+    const receipt = await Receipt.findOne({
+      _id: id,
+      user: req.user.id
+    });
+
+    if (!receipt) {
+      res.status(404);
+      throw new Error('Receipt not found');
+    }
+
+    // Update the extracted data
+    const updateData = {};
+    if (merchant !== undefined) updateData['extractedData.merchant'] = merchant;
+    if (amount !== undefined) updateData['extractedData.amount'] = parseFloat(amount);
+    if (description !== undefined) updateData['extractedData.description'] = description;
+    if (type !== undefined) updateData['extractedData.type'] = type;
+
+    // Update the receipt
+    const updatedReceipt = await Receipt.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    // If this receipt has a transaction, also update the transaction
+    if (receipt.transactionId) {
+      const transactionUpdate = {};
+      if (merchant !== undefined) transactionUpdate.merchant = merchant;
+      if (amount !== undefined) transactionUpdate.amount = parseFloat(amount);
+      if (description !== undefined) transactionUpdate.description = description;
+      if (type !== undefined) transactionUpdate.type = type;
+
+      await Transaction.findByIdAndUpdate(
+        receipt.transactionId,
+        { $set: transactionUpdate },
+        { new: true, runValidators: true }
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      data: updatedReceipt,
+      message: 'Receipt updated successfully'
+    });
+  } catch (error) {
+    console.error('Receipt update error:', error);
+    res.status(500);
+    throw new Error(`Failed to update receipt: ${error.message}`);
+  }
+});
+
+// @desc    Delete receipt
+// @route   DELETE /api/receipts/:id
+// @access  Private
+const deleteReceipt = asyncHandler(async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the receipt and ensure it belongs to the user
+    const receipt = await Receipt.findOne({
+      _id: id,
+      user: req.user.id
+    });
+
+    if (!receipt) {
+      res.status(404);
+      throw new Error('Receipt not found');
+    }
+
+    // If this receipt has a transaction, delete it too
+    if (receipt.transactionId) {
+      await Transaction.findByIdAndDelete(receipt.transactionId);
+    }
+
+    // Delete the receipt
+    await Receipt.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Receipt deleted successfully'
+    });
+  } catch (error) {
+    console.error('Receipt deletion error:', error);
+    res.status(500);
+    throw new Error(`Failed to delete receipt: ${error.message}`);
+  }
+});
+
 export {
   scanReceipt,
   createTransactionFromReceipt,
-  getReceiptHistory
+  getReceiptHistory,
+  updateReceipt,
+  deleteReceipt
 };

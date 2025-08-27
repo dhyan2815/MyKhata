@@ -37,3 +37,23 @@ export const getReceiptHistory = async () => {
     throw error.response?.data?.message || error.message || 'Failed to fetch receipt history';
   }
 };
+
+// Update receipt data
+export const updateReceipt = async (receiptId, updateData) => {
+  try {
+    const response = await axios.put(`/receipts/${receiptId}`, updateData);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.message || error.message || 'Failed to update receipt';
+  }
+};
+
+// Delete receipt
+export const deleteReceipt = async (receiptId) => {
+  try {
+    const response = await axios.delete(`/receipts/${receiptId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.message || error.message || 'Failed to delete receipt';
+  }
+};

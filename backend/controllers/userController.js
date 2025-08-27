@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import generateToken from '../utils/generateToken.js';
 import User from '../models/userModel.js';
 import Category from '../models/categoryModel.js';
+import { initializeDefaultCategories } from '../utils/categoryInitializer.js';
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -12,6 +13,9 @@ const authUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ email }).select('+password');
 
   if (user && (await user.matchPassword(password))) {
+    // Ensure user has default categories
+    await initializeDefaultCategories(user._id);
+    
     res.json({
       _id: user._id,
       name: user.name,
@@ -46,7 +50,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (user) {
     // Create default categories for the new user
-    await createDefaultCategories(user._id);
+    await initializeDefaultCategories(user._id);
 
     res.status(201).json({
       _id: user._id,
@@ -68,6 +72,9 @@ const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
 
   if (user) {
+    // Ensure user has default categories
+    await initializeDefaultCategories(user._id);
+    
     res.json({
       _id: user._id,
       name: user.name,
@@ -110,35 +117,21 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-// Helper function to create default categories for new users
-const createDefaultCategories = async (userId) => {
-  const defaultExpenseCategories = [
-    { name: 'Food & Dining', type: 'expense', color: '#F59E0B', icon: 'utensils', isDefault: true },
-    { name: 'Transportation', type: 'expense', color: '#3B82F6', icon: 'car', isDefault: true },
-    { name: 'Housing', type: 'expense', color: '#10B981', icon: 'home', isDefault: true },
-    { name: 'Entertainment', type: 'expense', color: '#8B5CF6', icon: 'film', isDefault: true },
-    { name: 'Shopping', type: 'expense', color: '#EC4899', icon: 'shopping-bag', isDefault: true },
-    { name: 'Utilities', type: 'expense', color: '#6366F1', icon: 'bolt', isDefault: true },
-    { name: 'Health', type: 'expense', color: '#EF4444', icon: 'heart', isDefault: true },
-    { name: 'Other Expenses', type: 'expense', color: '#6B7280', icon: 'ellipsis-h', isDefault: true },
-  ];
-
-  const defaultIncomeCategories = [
-    { name: 'Groceries', type: 'income', color: '#10B981', icon: 'bag', isDefault: true },
-    { name: 'Freelance', type: 'income', color: '#3B82F6', icon: 'laptop', isDefault: true },
-    { name: 'Investments', type: 'income', color: '#8B5CF6', icon: 'chart-line', isDefault: true },
-    { name: 'Allowance', type: 'income', color: '#F59E0B', icon: 'coins', isDefault: true },
-    { name: 'Other Income', type: 'income', color: '#6B7280', icon: 'ellipsis-h', isDefault: true },
-  ];
-
-  const allCategories = [...defaultExpenseCategories, ...defaultIncomeCategories];
-  
-  for (const category of allCategories) {
-    await Category.create({
-      ...category,
-      user: userId,
+// @desc    Initialize default categories for existing users
+// @route   POST /api/users/initialize-categories
+// @access  Private
+const initializeUserCategories = asyncHandler(async (req, res) => {
+  try {
+    await initializeDefaultCategories(req.user._id);
+    
+    res.json({
+      success: true,
+      message: 'Default categories initialized successfully'
     });
+  } catch (error) {
+    res.status(500);
+    throw new Error(`Failed to initialize categories: ${error.message}`);
   }
-};
+});
 
-export { authUser, registerUser, getUserProfile, updateUserProfile };
+export { authUser, registerUser, getUserProfile, updateUserProfile, initializeUserCategories };

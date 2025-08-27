@@ -23,3 +23,9 @@ export const deleteCategory = async (id) => {
   const response = await api.delete(`/categories/${id}`);
   return response.data;
 };
+
+// Initialize default categories for the current user
+export const initializeDefaultCategories = async () => {
+  const response = await api.post('/users/initialize-categories');
+  return response.data;
+};

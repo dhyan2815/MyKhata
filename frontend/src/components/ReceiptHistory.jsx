@@ -1,13 +1,16 @@
 // /pages/ReceiptHistory.jsx
 import React, { useState, useEffect } from 'react';
-import { getReceiptHistory } from '../api/receipts';
+import { getReceiptHistory, updateReceipt, deleteReceipt } from '../api/receipts';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import toast from 'react-hot-toast';
 
 const ReceiptHistory = () => {
   const [receipts, setReceipts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editingReceipt, setEditingReceipt] = useState(null);
+  const [editForm, setEditForm] = useState({});
   const { user } = useAuth();
   const { isDark } = useTheme();
 
@@ -22,8 +25,90 @@ const ReceiptHistory = () => {
       setReceipts(result.data);
     } catch (err) {
       setError(err.message);
+      toast.error(`Failed to fetch receipt history: ${err.message}`, {
+        duration: 5000,
+        icon: '❌',
+      });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEdit = (receipt) => {
+    setEditingReceipt(receipt._id);
+    setEditForm({
+      merchant: receipt.extractedData?.merchant || receipt.transactionId?.merchant || '',
+      amount: receipt.extractedData?.amount || receipt.extractedData?.total || receipt.extractedData?.subtotal || receipt.transactionId?.amount || '',
+      description: receipt.extractedData?.description || receipt.transactionId?.description || '',
+      type: receipt.extractedData?.type || receipt.transactionId?.type || 'expense'
+    });
+    
+    toast.success('Edit mode activated', {
+      duration: 2000,
+      icon: '✏️',
+    });
+  };
+
+  const handleSave = async (receiptId) => {
+    try {
+      // Show loading toast
+      const loadingToast = toast.loading('Saving changes...', {
+        duration: Infinity,
+      });
+      
+      await updateReceipt(receiptId, editForm);
+      setEditingReceipt(null);
+      setEditForm({});
+      
+      // Dismiss loading toast and show success
+      toast.dismiss(loadingToast);
+      toast.success('Receipt updated successfully!', {
+        duration: 3000,
+        icon: '✅',
+      });
+      
+      fetchReceiptHistory(); // Refresh the list
+    } catch (err) {
+      toast.error(`Failed to update receipt: ${err.message}`, {
+        duration: 5000,
+        icon: '❌',
+      });
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingReceipt(null);
+    setEditForm({});
+    toast.success('Changes cancelled', {
+      duration: 2000,
+      icon: '🔄',
+    });
+  };
+
+  const handleDelete = async (receiptId) => {
+    if (window.confirm('Are you sure you want to delete this receipt? This action cannot be undone.')) {
+      try {
+        // Show loading toast
+        const loadingToast = toast.loading('Deleting receipt...', {
+          duration: Infinity,
+        });
+        
+        await deleteReceipt(receiptId);
+        
+        // Dismiss loading toast and show success
+        toast.dismiss(loadingToast);
+        toast.success('Receipt deleted successfully!', {
+          duration: 3000,
+          icon: '🗑️',
+        });
+        
+        fetchReceiptHistory(); // Refresh the list
+      } catch (err) {
+        toast.error(`Failed to delete receipt: ${err.message}`, {
+          duration: 5000,
+          icon: '❌',
+        });
+      }
     }
   };
 
@@ -101,8 +186,13 @@ const ReceiptHistory = () => {
   };
 
   const getCategoryDisplay = (receipt) => {
-    if (receipt.transactionId?.category?.name) {
-      return receipt.transactionId.category.name;
+    if (receipt.transactionId?.category) {
+      // If category is populated with full object
+      if (typeof receipt.transactionId.category === 'object' && receipt.transactionId.category.name) {
+        return receipt.transactionId.category.name;
+      }
+      // If category is just an ID, show a placeholder
+      return 'Category Assigned';
     }
     return 'Not detected';
   };
@@ -185,7 +275,7 @@ const ReceiptHistory = () => {
               >
                 {/* Receipt Image Preview */}
                 {receipt.receiptImage && (
-                  <div className="h-48 bg-gray-100 flex items-center justify-center">
+                  <div className="h-48 bg-gray-100 flex items-center justify-center relative">
                     <img
                       src={receipt.receiptImage}
                       alt="Receipt"
@@ -198,6 +288,36 @@ const ReceiptHistory = () => {
                     <div className="hidden items-center justify-center text-white dark:text-gray-900">
                       <span>📄 Receipt Image</span>
                     </div>
+                    
+                    {/* Edit and Delete Icons - Positioned at top-right of image */}
+                    <div className="absolute top-2 right-2 flex gap-2">
+                      <button
+                        onClick={() => handleEdit(receipt)}
+                        className={`p-2 rounded-full shadow-lg transition-all hover:scale-110 ${
+                          isDark 
+                            ? 'bg-gray-800 text-blue-400 hover:bg-gray-700' 
+                            : 'bg-white text-blue-600 hover:bg-blue-50'
+                        }`}
+                        title="Edit Receipt"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(receipt._id)}
+                        className={`p-2 rounded-full shadow-lg transition-all hover:scale-110 ${
+                          isDark 
+                            ? 'bg-gray-800 text-red-400 hover:bg-gray-700' 
+                            : 'bg-white text-red-600 hover:bg-red-50'
+                        }`}
+                        title="Delete Receipt"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -208,20 +328,48 @@ const ReceiptHistory = () => {
                       className={`font-semibold text-lg ${isDark ? 'text-white' : 'text-gray-900'
                         }`}
                     >
-                      {getMerchantDisplay(receipt)}
-                    </h3>
-                    <div className="flex flex-col items-end gap-2">
-                      {getStatusBadge(receipt.status, !!receipt.transactionId)}
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeDisplay(receipt) === 'income'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
+                      {editingReceipt === receipt._id ? (
+                        <input
+                          type="text"
+                          value={editForm.merchant}
+                          onChange={(e) => setEditForm({...editForm, merchant: e.target.value})}
+                          className={`w-full px-2 py-1 rounded border ${
+                            isDark 
+                              ? 'bg-gray-700 border-gray-600 text-white' 
+                              : 'bg-white border-gray-300 text-gray-900'
                           }`}
-                      >
-                        {getTypeDisplay(receipt) === 'income'
-                          ? 'Income'
-                          : 'Expense'}
-                      </span>
+                        />
+                      ) : (
+                        getMerchantDisplay(receipt)
+                      )}
+                    </h3>
+                    <div className="flex items-center gap-2">
+                      {getStatusBadge(receipt.status, !!receipt.transactionId)}
+                      {editingReceipt === receipt._id ? (
+                        <select
+                          value={editForm.type}
+                          onChange={(e) => setEditForm({...editForm, type: e.target.value})}
+                          className={`px-2 py-1 rounded border text-xs font-medium ${
+                            isDark 
+                              ? 'bg-gray-700 border-gray-600 text-white' 
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        >
+                          <option value="expense">Expense</option>
+                          <option value="income">Income</option>
+                        </select>
+                      ) : (
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeDisplay(receipt) === 'income'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                            }`}
+                        >
+                          {getTypeDisplay(receipt) === 'income'
+                            ? 'Income'
+                            : 'Expense'}
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -236,7 +384,22 @@ const ReceiptHistory = () => {
                         className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'
                           }`}
                       >
-                        {getAmountDisplay(receipt)}
+                        {editingReceipt === receipt._id ? (
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={editForm.amount}
+                            onChange={(e) => setEditForm({...editForm, amount: e.target.value})}
+                            className={`w-24 px-2 py-1 rounded border text-right ${
+                              isDark 
+                                ? 'bg-gray-700 border-gray-600 text-white' 
+                                : 'bg-white border-gray-300 text-gray-900'
+                            }`}
+                          />
+                        ) : (
+                          getAmountDisplay(receipt)
+                        )}
                       </span>
                     </div>
 
@@ -250,21 +413,35 @@ const ReceiptHistory = () => {
                         {getCategoryDisplay(receipt)}
                       </span>
                     </div>
-
                   </div>
 
-                  <div className="mb-4 flex justify-between">
-                  <span
+                  <div className="mb-4">
+                    <div className="flex justify-between items-start">
+                      <span
                         className={`${isDark ? 'text-gray-300' : 'text-gray-600'}`}
                       >
                         Description:
                       </span>
-                    <span
-                      className={`line-clamp-2 ${isDark ? 'text-white' : 'text-gray-900'
-                        }`}
-                    >
-                      {getDescriptionDisplay(receipt)}
-                    </span>
+                      <span
+                        className={`line-clamp-2 ${isDark ? 'text-white' : 'text-gray-900'
+                          }`}
+                      >
+                        {editingReceipt === receipt._id ? (
+                          <textarea
+                            value={editForm.description}
+                            onChange={(e) => setEditForm({...editForm, description: e.target.value})}
+                            rows="2"
+                            className={`w-32 px-2 py-1 rounded border text-sm ${
+                              isDark 
+                                ? 'bg-gray-700 border-gray-600 text-white' 
+                                : 'bg-white border-gray-300 text-gray-900'
+                            }`}
+                          />
+                        ) : (
+                          getDescriptionDisplay(receipt)
+                        )}
+                      </span>
+                    </div>
                   </div>
 
                   {/* Receipt Status and Actions */}
@@ -275,21 +452,45 @@ const ReceiptHistory = () => {
                     )}
                   </div>
 
-                  {/* Action Buttons for Unprocessed Receipts */}
-                  {!receipt.transactionId && (
-                    <div className="mt-4 pt-3 border-t border-gray-200">
-                      <button
-                        onClick={() => {
-                          alert(
-                            'Navigate to ReceiptScanner to process this receipt'
-                          );
-                        }}
-                        className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
-                      >
-                        Process Receipt
-                      </button>
-                    </div>
-                  )}
+                  {/* Action Buttons for Receipts */}
+                  <div className="mt-4 pt-3 border-t border-gray-200">
+                    {editingReceipt === receipt._id ? (
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleSave(receipt._id)}
+                          className="flex-1 bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
+                        >
+                          Save Changes
+                        </button>
+                        <button
+                          onClick={handleCancel}
+                          className="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        {!receipt.transactionId ? (
+                          <button
+                            onClick={() => {
+                              toast.info('Navigate to ReceiptScanner to process this receipt', {
+                                duration: 4000,
+                                icon: 'ℹ️',
+                              });
+                            }}
+                            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
+                          >
+                            Process Receipt
+                          </button>
+                        ) : (
+                          <div className="w-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-2 rounded text-sm font-medium text-center">
+                            Receipt Processed
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

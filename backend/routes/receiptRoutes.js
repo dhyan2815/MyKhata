@@ -4,7 +4,9 @@ import { protect } from '../middleware/authMiddleware.js';
 import {
   scanReceipt,
   createTransactionFromReceipt,
-  getReceiptHistory
+  getReceiptHistory,
+  updateReceipt,
+  deleteReceipt
 } from '../controllers/receiptController.js';
 
 const router = express.Router();
@@ -36,5 +38,11 @@ router.post('/create-transaction', createTransactionFromReceipt);
 
 // Route to get receipt scanning history
 router.get('/history', getReceiptHistory);
+
+// Route to update receipt data
+router.put('/:id', updateReceipt);
+
+// Route to delete receipt
+router.delete('/:id', deleteReceipt);
 
 export default router;

@@ -4,12 +4,13 @@ import { useDropzone } from 'react-dropzone';
 import { scanReceipt, createTransactionFromReceipt } from '../api/receipts';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import toast from 'react-hot-toast';
 
 const ReceiptScanner = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [scanResult, setScanResult] = useState(null);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('camera'); // 'camera' or 'upload'
+  const [activeTab, setActiveTab] = useState('upload'); // 'camera' or 'upload'
   const [receiptId, setReceiptId] = useState(null); // Store receipt ID from scan
   const [transactionData, setTransactionData] = useState({
     merchant: '',
@@ -60,10 +61,15 @@ const ReceiptScanner = () => {
     setIsScanning(true);
     setError(null);
     
+    // Show loading toast
+    const loadingToast = toast.loading('Scanning receipt...', {
+      duration: Infinity,
+    });
+    
     try {
       const result = await scanReceipt(imageFile);
       setScanResult(result.data);
-              setReceiptId(result.data.receiptId); // Store receipt ID
+      setReceiptId(result.data.receiptId); // Store receipt ID
       
       // Pre-fill transaction data with scanned values or 'Unspecified' if missing
       setTransactionData(prev => ({
@@ -75,9 +81,23 @@ const ReceiptScanner = () => {
         type: result.data.type || 'expense'
       }));
       
+      // Dismiss loading toast and show success
+      toast.dismiss(loadingToast);
+      toast.success('Receipt scanned successfully!', {
+        duration: 3000,
+        icon: '📄',
+      });
+      
     } catch (err) {
       setError(err.message);
       setScanResult(null);
+      
+      // Dismiss loading toast and show error
+      toast.dismiss(loadingToast);
+      toast.error(`Failed to scan receipt: ${err.message}`, {
+        duration: 5000,
+        icon: '❌',
+      });
     } finally {
       setIsScanning(false);
     }
@@ -88,14 +108,20 @@ const ReceiptScanner = () => {
     try {
       // Validate required fields before sending
       if (!transactionData.amount || !transactionData.merchant) {
-        setError('Amount and merchant are required fields');
+        toast.error('Amount and merchant are required fields', {
+          duration: 4000,
+          icon: '⚠️',
+        });
         return;
       }
 
       // Ensure amount is a valid number
       const amount = parseFloat(transactionData.amount);
       if (isNaN(amount) || amount <= 0) {
-        setError('Please enter a valid amount');
+        toast.error('Please enter a valid amount', {
+          duration: 4000,
+          icon: '⚠️',
+        });
         return;
       }
 
@@ -111,11 +137,20 @@ const ReceiptScanner = () => {
 
       console.log('Creating transaction with data:', transactionPayload);
       
+      // Show loading toast
+      const loadingToast = toast.loading('Creating transaction...', {
+        duration: Infinity,
+      });
+      
       const result = await createTransactionFromReceipt(transactionPayload);
       console.log('Transaction created successfully:', result);
       
-      // Show success message
-      alert('Transaction created successfully!');
+      // Dismiss loading toast and show success
+      toast.dismiss(loadingToast);
+      toast.success('Transaction created successfully!', {
+        duration: 4000,
+        icon: '✅',
+      });
       
       // Reset form and state after successful creation
       setTransactionData({
@@ -133,6 +168,11 @@ const ReceiptScanner = () => {
     } catch (err) {
       console.error('Transaction creation failed:', err);
       setError(err.message || 'Failed to create transaction');
+      
+      toast.error(`Failed to create transaction: ${err.message}`, {
+        duration: 5000,
+        icon: '❌',
+      });
     }
   };
 
@@ -195,7 +235,7 @@ const ReceiptScanner = () => {
                   disabled={isScanning}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium disabled:opacity-50"
                 >
-                  {isScanning ? 'Processing...' : '📸 Capture Photo'}
+                  {isScanning ? 'Processing...' : 'Capture Photo 📸'}
                 </button>
               </div>
             </div>
@@ -218,16 +258,16 @@ const ReceiptScanner = () => {
                 }`}
               >
                 <input {...getInputProps()} />
-                <div className="text-4xl mb-4">📁</div>
+                <div className="text-4xl mb-4">📄</div>
                 {isDragActive ? (
                   <p className="text-blue-600">Drop the receipt image here...</p>
                 ) : (
                   <div>
                     <p className={`mb-2 ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                      Drag & drop a receipt image here, or click to select
+                      Click here to choose a file or drag and drop a receipt here
                     </p>
                     <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      Supports: JPG, PNG, GIF (Max: 5MB)
+                      JPG, JPEG & PNG formats are supported
                     </p>
                   </div>
                 )}
@@ -255,11 +295,11 @@ const ReceiptScanner = () => {
         {/* Scan Results */}
         {scanResult && (
           <div className={`rounded-lg shadow-lg p-6 mb-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
-            <h2 className="text-xl font-semibold mb-4">Scanned Receipt Data</h2>
+            <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Scanned Receipt Data</h2>
             
             {/* Raw OCR Text */}
             <div className="mb-6">
-              <h3 className="font-medium mb-2">Raw Text:</h3>
+              <h3 className="font-medium mb-2 text-gray-900 dark:text-white">Raw Text:</h3>
               <div className={`p-3 rounded text-sm max-h-32 overflow-y-auto ${
                 isDark ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-900'
               }`}>
@@ -369,6 +409,10 @@ const ReceiptScanner = () => {
                     type: 'expense'
                   });
                   setReceiptId(null); // Clear receiptId when scanning another receipt
+                  toast.success('Ready to scan another receipt!', {
+                    duration: 2000,
+                    icon: '🔄',
+                  });
                 }}
                 className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium"
               >
