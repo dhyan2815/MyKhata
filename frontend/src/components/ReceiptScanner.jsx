@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import { useDropzone } from 'react-dropzone';
 import { scanReceipt, createTransactionFromReceipt } from '../api/receipts';
@@ -21,12 +21,141 @@ const ReceiptScanner = () => {
     type: 'expense'
   });
   
+  // Device detection and camera states
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileCameraStream, setMobileCameraStream] = useState(null);
+  const [mobileCameraError, setMobileCameraError] = useState(null);
+  const [isMobileCameraActive, setIsMobileCameraActive] = useState(false);
+  
   const webcamRef = useRef(null);
+  const mobileVideoRef = useRef(null);
+  const mobileCanvasRef = useRef(null);
   const { user } = useAuth();
   const { isDark } = useTheme();
 
-  // Camera capture function
+  // Device detection on component mount
+  useEffect(() => {
+    const checkDevice = () => {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent) || 
+                            window.innerWidth <= 768;
+      setIsMobile(isMobileDevice);
+    };
+    
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
+
+  // Initialize mobile camera when camera tab is selected
+  useEffect(() => {
+    if (activeTab === 'camera' && isMobile && !mobileCameraStream) {
+      startMobileCamera();
+    }
+    
+    return () => {
+      if (mobileCameraStream) {
+        stopMobileCamera();
+      }
+    };
+  }, [activeTab, isMobile]);
+
+  // Start mobile camera with front camera as default
+  const startMobileCamera = async () => {
+    try {
+      setMobileCameraError(null);
+      
+      // Try to get front camera first (environment-facing camera)
+      const constraints = {
+        video: {
+          facingMode: 'environment', // Front camera (back-facing on mobile)
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        }
+      };
+      
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      setMobileCameraStream(stream);
+      setIsMobileCameraActive(true);
+      
+      if (mobileVideoRef.current) {
+        mobileVideoRef.current.srcObject = stream;
+      }
+    } catch (error) {
+      console.error('Mobile camera error:', error);
+      setMobileCameraError('Failed to access camera. Please check permissions.');
+      
+      // Fallback to any available camera
+      try {
+        const fallbackStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        setMobileCameraStream(fallbackStream);
+        setIsMobileCameraActive(true);
+        
+        if (mobileVideoRef.current) {
+          mobileVideoRef.current.srcObject = fallbackStream;
+        }
+      } catch (fallbackError) {
+        setMobileCameraError('No camera access available. Please use file upload instead.');
+      }
+    }
+  };
+
+  // Stop mobile camera
+  const stopMobileCamera = () => {
+    if (mobileCameraStream) {
+      mobileCameraStream.getTracks().forEach(track => track.stop());
+      setMobileCameraStream(null);
+      setIsMobileCameraActive(false);
+    }
+  };
+
+  // Switch between front and back camera on mobile
+  const switchMobileCamera = async () => {
+    if (mobileCameraStream) {
+      stopMobileCamera();
+      await new Promise(resolve => setTimeout(resolve, 100)); // Small delay
+      await startMobileCamera();
+    }
+  };
+
+  // Camera capture function - handles both webcam and mobile camera
   const capturePhoto = useCallback(() => {
+    if (isMobile && mobileCameraStream) {
+      // Mobile camera capture
+      captureMobilePhoto();
+    } else if (webcamRef.current) {
+      // Desktop webcam capture
+      captureWebcamPhoto();
+    }
+  }, [isMobile, mobileCameraStream]);
+
+  // Capture photo from mobile camera
+  const captureMobilePhoto = () => {
+    if (mobileVideoRef.current && mobileCanvasRef.current) {
+      const video = mobileVideoRef.current;
+      const canvas = mobileCanvasRef.current;
+      const context = canvas.getContext('2d');
+      
+      // Set canvas dimensions to match video
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      
+      // Draw video frame to canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Convert canvas to blob
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const file = new File([blob], 'receipt.jpg', { type: 'image/jpeg' });
+          processReceipt(file);
+        }
+      }, 'image/jpeg', 0.9);
+    }
+  };
+
+  // Capture photo from webcam
+  const captureWebcamPhoto = () => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
       if (imageSrc) {
@@ -39,7 +168,7 @@ const ReceiptScanner = () => {
           });
       }
     }
-  }, []);
+  };
 
   // File drop handling
   const onDrop = useCallback((acceptedFiles) => {
@@ -219,25 +348,67 @@ const ReceiptScanner = () => {
         {activeTab === 'camera' && (
           <div className="mb-8">
             <div className={`rounded-lg shadow-lg p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
-              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Take Photo of Receipt</h2>
-              <div className="flex justify-center mb-4">
-                <Webcam
-                  ref={webcamRef}
-                  screenshotFormat="image/jpeg"
-                  className="rounded-lg max-w-full"
-                  width={400}
-                  height={300}
-                />
-              </div>
+              <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+                {isMobile ? 'Take Photo with Mobile Camera' : 'Take Photo with Webcam'}
+              </h2>
+              
+              {/* Mobile Camera Interface */}
+              {isMobile && (
+                <div className="mb-4">
+                  {mobileCameraError ? (
+                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                      <strong>Camera Error:</strong> {mobileCameraError}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center">
+                      <video
+                        ref={mobileVideoRef}
+                        autoPlay
+                        playsInline
+                        muted
+                        className="rounded-lg max-w-full mb-4"
+                        style={{ width: '400px', height: '300px', objectFit: 'cover' }}
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Hidden canvas for mobile photo capture */}
+                  <canvas
+                    ref={mobileCanvasRef}
+                    style={{ display: 'none' }}
+                  />
+                </div>
+              )}
+              
+              {/* Desktop Webcam Interface */}
+              {!isMobile && (
+                <div className="flex justify-center mb-4">
+                  <Webcam
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    className="rounded-lg max-w-full"
+                    width={400}
+                    height={300}
+                  />
+                </div>
+              )}
+              
               <div className="flex justify-center">
                 <button
                   onClick={capturePhoto}
-                  disabled={isScanning}
+                  disabled={isScanning || (isMobile && !isMobileCameraActive)}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium disabled:opacity-50"
                 >
                   {isScanning ? 'Processing...' : 'Capture Photo 📸'}
                 </button>
               </div>
+              
+              {/* Mobile camera instructions */}
+              {isMobile && (
+                <div className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+                  <p>Tap "Capture Photo" to change to take the photo of your receipt</p>
+                </div>
+              )}
             </div>
           </div>
         )}

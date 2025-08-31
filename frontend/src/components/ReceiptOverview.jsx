@@ -83,7 +83,7 @@ const ReceiptOverview = ({ receipts }) => {
         <StatCard
           value={stats.formattedAmount}
           label="Total Processed Amount"
-          color="purple"
+          color="yellow"
           isDark={isDark}
         />
       </div>
