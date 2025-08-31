@@ -15,16 +15,33 @@ import { getReceiptStatistics } from '../utils/receiptUtils';
 /**
  * Individual statistic card component
  */
-const StatCard = ({ value, label, color, isDark }) => (
-  <div className="flex flex-col items-center min-w-[120px] p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-    <div className={`text-4xl font-bold text-${color}-600`}>
-      {value}
+const StatCard = ({ value, label, color, isDark }) => {
+  // Define explicit color classes to ensure Tailwind includes them in build
+  const getColorClass = (color) => {
+    switch (color) {
+      case 'blue': return 'text-blue-600';
+      case 'green': return 'text-green-600';
+      case 'yellow': return 'text-yellow-600';
+      case 'purple': return 'text-purple-600';
+      case 'red': return 'text-red-600';
+      case 'indigo': return 'text-indigo-600';
+      case 'pink': return 'text-pink-600';
+      case 'gray': return 'text-gray-600';
+      default: return 'text-blue-600';
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center min-w-[120px] p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+      <div className={`text-4xl font-bold ${getColorClass(color)}`}>
+        {value}
+      </div>
+      <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+        {label}
+      </div>
     </div>
-    <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-      {label}
-    </div>
-  </div>
-);
+  );
+};
 
 /**
  * Main ReceiptOverview component
@@ -83,7 +100,7 @@ const ReceiptOverview = ({ receipts }) => {
         <StatCard
           value={stats.formattedAmount}
           label="Total Processed Amount"
-          color="yellow"
+          color="purple"
           isDark={isDark}
         />
       </div>
