@@ -119,10 +119,30 @@ export const prepareEditFormData = (receipt) => {
  * @returns {object} Transaction data for API call
  */
 export const prepareTransactionData = (receipt) => {
+  // Get merchant with fallback
+  const merchant = receipt.extractedData?.merchant || 'Unknown Merchant';
+  
+  // Get amount with validation
+  const amount = receipt.extractedData?.amount || 
+                receipt.extractedData?.total || 
+                receipt.extractedData?.subtotal;
+  
+  // Ensure amount is a valid number
+  const validAmount = amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : 0;
+  
+  // Validate required fields
+  if (!merchant || merchant === 'Unknown Merchant' || merchant.trim() === '') {
+    throw new Error('Merchant information was not detected from receipt. Please edit the receipt to add merchant details before processing.');
+  }
+  
+  if (!validAmount || validAmount <= 0) {
+    throw new Error('Amount was not detected from receipt. Please edit the receipt to add a valid amount before processing.');
+  }
+  
   return {
-    merchant: receipt.extractedData?.merchant || 'Unknown Merchant',
-    amount: receipt.extractedData?.amount || receipt.extractedData?.total || receipt.extractedData?.subtotal || 0,
-    description: receipt.extractedData?.description || `Receipt from ${receipt.extractedData?.merchant || 'Unknown'}`,
+    merchant: merchant,
+    amount: validAmount,
+    description: receipt.extractedData?.description || `Receipt from ${merchant}`,
     type: receipt.extractedData?.type || 'expense',
     date: receipt.extractedData?.date || receipt.createdAt,
     receiptId: receipt._id

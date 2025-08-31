@@ -162,7 +162,9 @@ export const useReceiptOperations = () => {
       });
 
       // Prepare and create transaction
+      console.log('Processing receipt:', receipt);
       const transactionData = prepareTransactionData(receipt);
+      console.log('Prepared transaction data:', transactionData);
       await createTransactionFromReceipt(transactionData);
       
       // Dismiss loading toast and show success
@@ -176,10 +178,18 @@ export const useReceiptOperations = () => {
       await fetchReceiptHistory();
       
     } catch (err) {
-      toast.error(`Failed to process receipt: ${err.message}`, {
+      // Ensure we have a proper error message
+      const errorMessage = err.message || err || 'Unknown error occurred while processing receipt';
+      
+      // Dismiss loading toast first
+      toast.dismiss();
+      
+      toast.error(`Failed to process receipt: ${errorMessage}`, {
         duration: 5000,
         icon: '❌',
       });
+      
+      console.error('Receipt processing error:', err);
     } finally {
       setProcessingReceipt(null);
     }

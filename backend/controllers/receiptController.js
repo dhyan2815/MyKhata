@@ -19,6 +19,12 @@ const scanReceipt = asyncHandler(async (req, res) => {
 
     // Process the receipt image
     const extractedData = await ocrProcessor.processReceipt(req.file.buffer);
+    
+    console.log('OCR Extracted Data:', extractedData);
+
+    // Prepare extracted data with better validation
+    const amount = extractedData.amount || extractedData.total || extractedData.subtotal;
+    const numericAmount = amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : null;
 
     // Save the receipt data to the Receipt model
     const receipt = await Receipt.create({
@@ -26,12 +32,12 @@ const scanReceipt = asyncHandler(async (req, res) => {
       receiptImage: `data:image/jpeg;base64,${req.file.buffer.toString('base64')}`, // Store as base64 for now
       rawText: extractedData.rawText || '',
       extractedData: {
-        merchant: extractedData.merchant || null,
-        amount: extractedData.amount || extractedData.total || extractedData.subtotal || null,
-        total: extractedData.total || null,
-        subtotal: extractedData.subtotal || null,
+        merchant: extractedData.merchant?.trim() || null,
+        amount: numericAmount,
+        total: extractedData.total && !isNaN(parseFloat(extractedData.total)) ? parseFloat(extractedData.total) : null,
+        subtotal: extractedData.subtotal && !isNaN(parseFloat(extractedData.subtotal)) ? parseFloat(extractedData.subtotal) : null,
         date: extractedData.date || null,
-        description: extractedData.description || null,
+        description: extractedData.description?.trim() || null,
         type: extractedData.type || 'expense',
       },
       status: 'scanned',
@@ -57,6 +63,8 @@ const scanReceipt = asyncHandler(async (req, res) => {
 // @access  Private
 const createTransactionFromReceipt = asyncHandler(async (req, res) => {
   try {
+    console.log('Received transaction data:', req.body);
+    
     const { 
       merchant, 
       amount, 
@@ -69,9 +77,14 @@ const createTransactionFromReceipt = asyncHandler(async (req, res) => {
     } = req.body;
 
     // Validate required fields
-    if (!merchant || !amount) {
+    if (!merchant || merchant.trim() === '') {
       res.status(400);
-      throw new Error('Merchant and amount are required');
+      throw new Error('Merchant information is required to create transaction');
+    }
+    
+    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+      res.status(400);
+      throw new Error('Valid amount (greater than 0) is required to create transaction');
     }
 
     // Parse date if provided

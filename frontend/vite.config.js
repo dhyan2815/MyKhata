@@ -27,10 +27,16 @@ export default defineConfig({
         },
       },
     },
-    // Enable source maps for debugging
+    // Disable source maps for production
     sourcemap: false,
-    // Use default minification (esbuild)
-    minify: 'esbuild',
+    // Use terser for better compression in production
+    minify: 'terser',
+    // Optimize assets
+    assetsInlineLimit: 4096,
+    // Enable CSS code splitting
+    cssCodeSplit: true,
+    // Optimize for smaller bundle size
+    target: 'es2015',
   },
   // Optimize dependencies
   optimizeDeps: {

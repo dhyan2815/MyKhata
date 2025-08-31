@@ -4,16 +4,37 @@ import sharp from 'sharp';
 class OCRProcessor {
   constructor() {
     this.worker = null;
+    this.isInitializing = false;
   }
 
-  // Initialize Tesseract worker
+  // Initialize Tesseract worker with optimization
   async initialize() {
+    if (this.isInitializing) {
+      // Wait for existing initialization to complete
+      while (this.isInitializing) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      return;
+    }
+    
     try {
-      this.worker = await Tesseract.createWorker('eng');
+      this.isInitializing = true;
+      this.worker = await Tesseract.createWorker('eng', 1, {
+        logger: m => console.log('OCR:', m)
+      });
+      
+      // Configure worker for better performance
+      await this.worker.setParameters({
+        tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
+        tessedit_char_whitelist: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz .,/$-:',
+      });
+      
       console.log('OCR Worker initialized successfully');
     } catch (error) {
       console.error('Error initializing OCR worker:', error);
       throw error;
+    } finally {
+      this.isInitializing = false;
     }
   }
 
@@ -44,14 +65,29 @@ class OCRProcessor {
   async preprocessImage(imageBuffer) {
     try {
       return await sharp(imageBuffer)
-        .resize(1200, null, { withoutEnlargement: true }) // Resize for optimal OCR
-        .sharpen() // Enhance edges
-        .threshold(128) // Convert to black and white
-        .png() // Convert to PNG format
+        .resize(1200, null, { withoutEnlargement: true, fit: 'inside' }) // Resize for optimal OCR
+        .grayscale() // Convert to grayscale first
+        .normalize() // Normalize contrast
+        .sharpen({ sigma: 1, flat: 1, jagged: 2 }) // Enhanced sharpening
+        .gamma(1.2) // Adjust gamma for better contrast
+        .jpeg({ quality: 95 }) // High quality JPEG
         .toBuffer();
     } catch (error) {
       console.error('Error preprocessing image:', error);
-      throw error;
+      return imageBuffer; // Return original if preprocessing fails
+    }
+  }
+
+  // Cleanup worker when done
+  async cleanup() {
+    if (this.worker) {
+      try {
+        await this.worker.terminate();
+        this.worker = null;
+        console.log('OCR Worker terminated successfully');
+      } catch (error) {
+        console.error('Error terminating OCR worker:', error);
+      }
     }
   }
 
