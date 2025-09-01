@@ -21,7 +21,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useScannerOperations } from '../../hooks/useScannerOperations';
 import CameraCapture from './CameraCapture';
-import FileUpload from './FileUpload';
+import FileUpload from '../common/FileUpload';
 import ScanResults from './ScanResults';
 
 const ReceiptScanner = () => {

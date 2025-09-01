@@ -17,7 +17,7 @@ import {
   getTypeDisplay,
   getCategoryDisplay,
   getDescriptionDisplay
-} from '../utils/receiptUtils';
+} from '../../utils/receiptUtils';
 
 /**
  * Status badge component for receipt status display
