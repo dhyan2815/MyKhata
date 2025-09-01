@@ -7,10 +7,10 @@ import {
   AlignLeft,
   Plus
 } from 'lucide-react';
-import { getCategories } from '../api/categories';
+import { getCategories } from '../../api/categories';
 import toast from 'react-hot-toast';
-import { useAuth } from '../context/AuthContext';
-import { getCurrencySymbol } from '../utils/currencyFormatter';
+import { useAuth } from '../../context/AuthContext';
+import { getCurrencySymbol } from '../../utils/currencyFormatter';
 import { motion } from 'framer-motion';
 
 // TransactionForm component for adding or editing a transaction

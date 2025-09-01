@@ -1,5 +1,5 @@
 import React from 'react';
-import ReceiptScanner from '../components/ReceiptScanner';
+import ReceiptScanner from '../components/receipts/ReceiptScanner';
 
 const ReceiptScannerPage = () => {
   return (

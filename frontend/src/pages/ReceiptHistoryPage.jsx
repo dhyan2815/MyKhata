@@ -1,5 +1,5 @@
 import React from 'react';
-import ReceiptHistory from '../components/ReceiptHistory';
+import ReceiptHistory from '../components/receipts/ReceiptHistory';
 
 const ReceiptHistoryPage = () => {
   return (

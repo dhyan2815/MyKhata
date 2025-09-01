@@ -10,8 +10,8 @@ import {
   Legend,
   ArcElement,
 } from 'chart.js';
-import { useAuth } from '../context/AuthContext';
-import { formatCurrency } from '../utils/currencyFormatter';
+import { useAuth } from '../../context/AuthContext';
+import { formatCurrency } from '../../utils/currencyFormatter';
 import { motion } from 'framer-motion';
 
 // Register necessary Chart.js components

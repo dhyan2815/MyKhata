@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Edit, Trash2, ChevronDown, ChevronUp, Search } from 'lucide-react';
 import { format } from 'date-fns';
-import { deleteTransaction } from '../api/transactions';
+import { deleteTransaction } from '../../api/transactions';
 import toast from 'react-hot-toast';
-import { safeArray } from '../utils/safeArray';
-import { useAuth } from '../context/AuthContext';
-import { formatTransactionAmount } from '../utils/currencyFormatter';
+import { safeArray } from '../../utils/safeArray';
+import { useAuth } from '../../context/AuthContext';
+import { formatTransactionAmount } from '../../utils/currencyFormatter';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // TransactionList component displays a list of transactions with sorting, searching, and pagination

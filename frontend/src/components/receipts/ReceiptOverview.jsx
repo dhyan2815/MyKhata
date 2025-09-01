@@ -9,8 +9,8 @@
  * - Responsive grid layout with hover effects
  */
 import React from 'react';
-import { useTheme } from '../context/ThemeContext';
-import { getReceiptStatistics } from '../utils/receiptUtils';
+import { useTheme } from '../../context/ThemeContext';
+import { getReceiptStatistics } from '../../utils/receiptUtils';
 
 /**
  * Individual statistic card component

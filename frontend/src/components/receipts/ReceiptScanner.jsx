@@ -17,9 +17,9 @@
  * - scannerUtils: Utility functions for validation and data processing
  */
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
-import { useScannerOperations } from '../hooks/useScannerOperations';
+import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import { useScannerOperations } from '../../hooks/useScannerOperations';
 import CameraCapture from './CameraCapture';
 import FileUpload from './FileUpload';
 import ScanResults from './ScanResults';

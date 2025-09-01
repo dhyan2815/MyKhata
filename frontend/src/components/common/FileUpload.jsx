@@ -11,8 +11,8 @@
  */
 import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useTheme } from '../context/ThemeContext';
-import { validateReceiptFile, formatFileSize } from '../utils/scannerUtils';
+import { useTheme } from '../../context/ThemeContext';
+import { validateReceiptFile, formatFileSize } from '../../utils/scannerUtils';
 import toast from 'react-hot-toast';
 
 /**

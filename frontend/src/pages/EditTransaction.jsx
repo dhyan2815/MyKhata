@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import TransactionForm from '../components/TransactionForm';
+import TransactionForm from '../components/transactions/TransactionForm';
 import { getTransactionById, updateTransaction } from '../api/transactions';
 import toast from 'react-hot-toast';
 import { Helmet } from 'react-helmet-async';

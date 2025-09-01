@@ -15,9 +15,9 @@
  * - receiptUtils: Utility functions for data processing
  */
 import React, { useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
-import { useTheme } from '../context/ThemeContext';
-import { useReceiptOperations } from '../hooks/useReceiptOperations';
+import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
+import { useReceiptOperations } from '../../hooks/useReceiptOperations';
 import ReceiptCard from './ReceiptCard';
 import ReceiptOverview from './ReceiptOverview';
 

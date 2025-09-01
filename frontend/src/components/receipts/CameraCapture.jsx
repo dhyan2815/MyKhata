@@ -10,8 +10,8 @@
  */
 import React, { useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
-import { useTheme } from '../context/ThemeContext';
-import { useCameraOperations } from '../hooks/useCameraOperations';
+import { useTheme } from '../../context/ThemeContext';
+import { useCameraOperations } from '../../hooks/useCameraOperations';
 
 /**
  * Camera error display component

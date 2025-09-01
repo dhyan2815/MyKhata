@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, UserCircle, LogOut, Settings, ChevronDown, ChevronsLeft, ChevronsRight, Lightbulb } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { fetchInsights } from '../api/insights';
+import { useAuth } from '../../context/AuthContext';
+import { fetchInsights } from '../../api/insights';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Navbar component for the top navigation bar
