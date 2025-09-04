@@ -6,7 +6,8 @@ import {
   createTransactionFromReceipt,
   getReceiptHistory,
   updateReceipt,
-  deleteReceipt
+  deleteReceipt,
+  getCacheStats
 } from '../controllers/receiptController.js';
 
 const router = express.Router();
@@ -44,5 +45,8 @@ router.put('/:id', updateReceipt);
 
 // Route to delete receipt
 router.delete('/:id', deleteReceipt);
+
+// Route to get cache statistics
+router.get('/cache-stats', getCacheStats);
 
 export default router;

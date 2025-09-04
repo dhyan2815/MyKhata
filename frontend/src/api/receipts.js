@@ -1,4 +1,5 @@
 import axios from './axios';
+import errorHandler from '../utils/errorHandler';
 
 // Scan receipt image and extract data
 export const scanReceipt = async (imageFile) => {
@@ -14,7 +15,8 @@ export const scanReceipt = async (imageFile) => {
 
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || error.message || 'Failed to scan receipt';
+    // Enhanced error handling with retry mechanism
+    return errorHandler.handleApiError(error, () => scanReceipt(imageFile));
   }
 };
 
@@ -24,7 +26,7 @@ export const createTransactionFromReceipt = async (receiptData) => {
     const response = await axios.post('/receipts/create-transaction', receiptData);
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || error.message || 'Failed to create transaction from receipt';
+    return errorHandler.handleApiError(error, () => createTransactionFromReceipt(receiptData));
   }
 };
 
@@ -34,7 +36,7 @@ export const getReceiptHistory = async () => {
     const response = await axios.get('/receipts/history');
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || error.message || 'Failed to fetch receipt history';
+    return errorHandler.handleApiError(error, () => getReceiptHistory());
   }
 };
 
@@ -44,7 +46,7 @@ export const updateReceipt = async (receiptId, updateData) => {
     const response = await axios.put(`/receipts/${receiptId}`, updateData);
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || error.message || 'Failed to update receipt';
+    return errorHandler.handleApiError(error, () => updateReceipt(receiptId, updateData));
   }
 };
 
@@ -54,6 +56,16 @@ export const deleteReceipt = async (receiptId) => {
     const response = await axios.delete(`/receipts/${receiptId}`);
     return response.data;
   } catch (error) {
-    throw error.response?.data?.message || error.message || 'Failed to delete receipt';
+    return errorHandler.handleApiError(error, () => deleteReceipt(receiptId));
+  }
+};
+
+// Get cache statistics
+export const getCacheStats = async () => {
+  try {
+    const response = await axios.get('/receipts/cache-stats');
+    return response.data;
+  } catch (error) {
+    return errorHandler.handleApiError(error, () => getCacheStats());
   }
 };

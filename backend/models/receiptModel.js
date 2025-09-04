@@ -12,6 +12,10 @@ const receiptSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    cloudinaryPublicId: {
+      type: String, // Cloudinary public ID for cloud storage
+      trim: true,
+    },
     rawText: {
       type: String,
       required: true,

@@ -1,4 +1,6 @@
 import OCRProcessor from '../utils/ocrProcessor.js';
+import cloudStorageService from '../utils/cloudStorage.js';
+import cacheService from '../utils/cacheService.js';
 import Transaction from '../models/transactionModel.js';
 import Category from '../models/categoryModel.js';
 import Receipt from '../models/receiptModel.js';
@@ -26,17 +28,68 @@ const scanReceipt = asyncHandler(async (req, res) => {
     const amount = extractedData.amount || extractedData.total || extractedData.subtotal;
     const numericAmount = amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : null;
 
+    // Upload image to cloud storage
+    let imageUrl = null;
+    let cloudinaryPublicId = null;
+    
+    try {
+      console.log('🚀 Starting Cloudinary upload...');
+      const uploadResult = await cloudStorageService.uploadImage(req.file.buffer, {
+        folder: `mykhata/receipts/${req.user.id}`,
+        tags: ['receipt', 'mykhata', `user_${req.user.id}`],
+        optimize: {
+          maxWidth: 1200,
+          maxHeight: 1200,
+          quality: 85
+        }
+      });
+      
+      console.log('✅ Cloudinary upload successful:', {
+        publicId: uploadResult.publicId,
+        secureUrl: uploadResult.secureUrl,
+        folder: `mykhata/receipts/${req.user.id}`
+      });
+      
+      imageUrl = uploadResult.secureUrl;
+      cloudinaryPublicId = uploadResult.publicId;
+    } catch (cloudError) {
+      console.warn('❌ Cloud storage upload failed, falling back to base64:', cloudError.message);
+      console.error('Full error:', cloudError);
+      // Fallback to base64 storage if cloud upload fails
+      imageUrl = `data:image/jpeg;base64,${req.file.buffer.toString('base64')}`;
+    }
+
+    // Parse date if provided
+    let parsedDate = null;
+    if (extractedData.date) {
+      // Try to parse the date in DD/MM/YYYY format
+      const dateParts = extractedData.date.split('/');
+      if (dateParts.length === 3) {
+        // Convert DD/MM/YYYY to MM/DD/YYYY for JavaScript Date parsing
+        const day = dateParts[0];
+        const month = dateParts[1];
+        const year = dateParts[2];
+        parsedDate = new Date(`${month}/${day}/${year}`);
+        
+        // Check if date is valid
+        if (isNaN(parsedDate.getTime())) {
+          parsedDate = null;
+        }
+      }
+    }
+
     // Save the receipt data to the Receipt model
     const receipt = await Receipt.create({
       user: req.user.id,
-      receiptImage: `data:image/jpeg;base64,${req.file.buffer.toString('base64')}`, // Store as base64 for now
+      receiptImage: imageUrl,
+      cloudinaryPublicId: cloudinaryPublicId,
       rawText: extractedData.rawText || '',
       extractedData: {
         merchant: extractedData.merchant?.trim() || null,
         amount: numericAmount,
         total: extractedData.total && !isNaN(parseFloat(extractedData.total)) ? parseFloat(extractedData.total) : null,
         subtotal: extractedData.subtotal && !isNaN(parseFloat(extractedData.subtotal)) ? parseFloat(extractedData.subtotal) : null,
-        date: extractedData.date || null,
+        date: parsedDate,
         description: extractedData.description?.trim() || null,
         type: extractedData.type || 'expense',
       },
@@ -48,6 +101,8 @@ const scanReceipt = asyncHandler(async (req, res) => {
       data: {
         ...extractedData,
         receiptId: receipt._id,
+        imageUrl: imageUrl,
+        isCloudStorage: !!cloudinaryPublicId
       },
       message: 'Receipt scanned successfully'
     });
@@ -142,27 +197,37 @@ const createTransactionFromReceipt = asyncHandler(async (req, res) => {
 // @access  Private
 const getReceiptHistory = asyncHandler(async (req, res) => {
   try {
-    // Get all scanned receipts for the user
-    const receipts = await Receipt.find({
-      user: req.user.id
-    }).sort({ createdAt: -1 });
+    const cacheKey = `receipts_${req.user.id}`;
+    
+    // Check cache first
+    let receipts = cacheService.getReceiptData(cacheKey);
+    
+    if (!receipts) {
+      // Get all scanned receipts for the user
+      receipts = await Receipt.find({
+        user: req.user.id
+      }).sort({ createdAt: -1 });
 
-    // Populate transaction details for processed receipts with full category information
-    const populatedReceipts = await Receipt.populate(receipts, [
-      {
-        path: 'transactionId',
-        select: 'amount type category description date merchant',
-        populate: {
-          path: 'category',
-          select: 'name color icon'
+      // Populate transaction details for processed receipts with full category information
+      receipts = await Receipt.populate(receipts, [
+        {
+          path: 'transactionId',
+          select: 'amount type category description date merchant',
+          populate: {
+            path: 'category',
+            select: 'name color icon'
+          }
         }
-      }
-    ]);
+      ]);
+
+      // Cache the result
+      cacheService.setReceiptData(cacheKey, receipts);
+    }
 
     res.status(200).json({
       success: true,
       count: receipts.length,
-      data: populatedReceipts
+      data: receipts
     });
   } catch (error) {
     console.error('Receipt history error:', error);
@@ -219,6 +284,9 @@ const updateReceipt = asyncHandler(async (req, res) => {
       );
     }
 
+    // Invalidate cache
+    cacheService.deleteReceiptData(`receipts_${req.user.id}`);
+
     res.status(200).json({
       success: true,
       data: updatedReceipt,
@@ -249,6 +317,17 @@ const deleteReceipt = asyncHandler(async (req, res) => {
       throw new Error('Receipt not found');
     }
 
+    // Delete image from cloud storage if it exists
+    if (receipt.cloudinaryPublicId) {
+      try {
+        await cloudStorageService.deleteImage(receipt.cloudinaryPublicId);
+        console.log('Image deleted from cloud storage:', receipt.cloudinaryPublicId);
+      } catch (cloudError) {
+        console.warn('Failed to delete image from cloud storage:', cloudError.message);
+        // Continue with receipt deletion even if cloud deletion fails
+      }
+    }
+
     // If this receipt has a transaction, delete it too
     if (receipt.transactionId) {
       await Transaction.findByIdAndDelete(receipt.transactionId);
@@ -256,6 +335,9 @@ const deleteReceipt = asyncHandler(async (req, res) => {
 
     // Delete the receipt
     await Receipt.findByIdAndDelete(id);
+
+    // Invalidate cache
+    cacheService.deleteReceiptData(`receipts_${req.user.id}`);
 
     res.status(200).json({
       success: true,
@@ -268,10 +350,29 @@ const deleteReceipt = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get cache statistics
+// @route   GET /api/receipts/cache-stats
+// @access  Private
+const getCacheStats = asyncHandler(async (req, res) => {
+  try {
+    const stats = cacheService.getStats();
+    
+    res.status(200).json({
+      success: true,
+      data: stats
+    });
+  } catch (error) {
+    console.error('Cache stats error:', error);
+    res.status(500);
+    throw new Error(`Failed to fetch cache statistics: ${error.message}`);
+  }
+});
+
 export {
   scanReceipt,
   createTransactionFromReceipt,
   getReceiptHistory,
   updateReceipt,
-  deleteReceipt
+  deleteReceipt,
+  getCacheStats
 };
