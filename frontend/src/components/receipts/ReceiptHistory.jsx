@@ -15,6 +15,7 @@
  * - receiptUtils: Utility functions for data processing
  */
 import React, { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useReceiptOperations } from '../../hooks/useReceiptOperations';
@@ -96,6 +97,10 @@ const ReceiptHistory = () => {
   // Main render - simplified with extracted components
   return (
     <div className={`min-h-screen p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+      <Helmet>
+        <title>Receipt History · MyKhata</title>
+        <meta name="description" content="View and manage all your scanned receipts with MyKhata's receipt history dashboard" />
+      </Helmet>
       <div className="max-w-6xl mx-auto">
         {/* Page Header */}
         <div className="flex justify-between mb-3">

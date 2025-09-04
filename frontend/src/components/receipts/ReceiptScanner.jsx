@@ -17,6 +17,7 @@
  * - scannerUtils: Utility functions for validation and data processing
  */
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useScannerOperations } from '../../hooks/useScannerOperations';
@@ -102,6 +103,10 @@ const ReceiptScanner = () => {
   // Main render - simplified with extracted components
   return (
     <div className={`min-h-screen p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+      <Helmet>
+        <title>Receipt Scanner · MyKhata</title>
+        <meta name="description" content="Scan receipts and extract transaction data automatically with MyKhata's intelligent receipt scanner" />
+      </Helmet>
       <div className="max-w-6xl mx-auto">
         {/* Page Header */}
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Receipt Scanner</h1>
