@@ -11,6 +11,8 @@ import transactionRoutes from './routes/transactionRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import insightRoutes from './routes/insightRoutes.js';
 import receiptRoutes from './routes/receiptRoutes.js';
+import analyticsRoutes from './routes/analyticsRoutes.js';
+import exportRoutes from './routes/exportRoutes.js';
 import cors from 'cors';
 
 // Load env vars
@@ -46,6 +48,8 @@ app.use('/api/transactions', transactionRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/insights', insightRoutes);
 app.use('/api/receipts', receiptRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/export', exportRoutes);
 
 // Welcome ROOT route
 app.get('/', (req, res) => {

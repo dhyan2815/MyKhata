@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { X, LayoutDashboard, ListOrdered, Tag, ChevronsLeft, ChevronsRight, Camera, FileText } from 'lucide-react';
+import { X, LayoutDashboard, ListOrdered, Tag, ChevronsLeft, ChevronsRight, Camera, FileText, Zap } from 'lucide-react';
 
 // Sidebar component for navigation
 const Sidebar = ({ isOpen, closeSidebar, collapsed = false, toggleCollapsed }) => {
@@ -26,6 +26,11 @@ const Sidebar = ({ isOpen, closeSidebar, collapsed = false, toggleCollapsed }) =
       name: 'Receipt History',
       icon: <FileText size={23} />,
       path: '/receipt-history',
+    },
+    {
+      name: 'Advanced Features',
+      icon: <Zap size={23} />,
+      path: '/advanced-features',
     },
     {
       name: 'Categories',

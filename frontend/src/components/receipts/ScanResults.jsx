@@ -10,6 +10,7 @@
  */
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
+import SmartCategorySelector from './SmartCategorySelector';
 
 /**
  * Raw text display component
@@ -258,6 +259,20 @@ const ScanResults = ({
             options={typeOptions}
             required
             isDark={isDark}
+          />
+        </div>
+
+        {/* Smart Category Selection */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+            Category
+          </label>
+          <SmartCategorySelector
+            merchant={transactionData.merchant}
+            transactionType={transactionData.type}
+            selectedCategoryId={transactionData.category}
+            onCategoryChange={(categoryId) => onInputChange({ target: { name: 'category', value: categoryId } })}
+            transactionId={transactionData.transactionId}
           />
         </div>
 

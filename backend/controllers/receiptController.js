@@ -1,6 +1,7 @@
 import OCRProcessor from '../utils/ocrProcessor.js';
 import cloudStorageService from '../utils/cloudStorage.js';
 import cacheService from '../utils/cacheService.js';
+import SmartCategorizer from '../utils/smartCategorizer.js';
 import Transaction from '../models/transactionModel.js';
 import Category from '../models/categoryModel.js';
 import Receipt from '../models/receiptModel.js';
@@ -8,6 +9,10 @@ import { getOrCreateDefaultCategory } from '../utils/categoryInitializer.js';
 import asyncHandler from 'express-async-handler';
 
 const ocrProcessor = new OCRProcessor();
+const smartCategorizer = new SmartCategorizer();
+
+// Initialize smart categorizer
+smartCategorizer.initialize().catch(console.error);
 
 // @desc    Scan receipt and extract data
 // @route   POST /api/receipts/scan
@@ -350,6 +355,422 @@ const deleteReceipt = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Batch process multiple receipts
+// @route   POST /api/receipts/batch-scan
+// @access  Private
+const batchScanReceipts = asyncHandler(async (req, res) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      res.status(400);
+      throw new Error('No image files provided');
+    }
+
+    if (req.files.length > 10) {
+      res.status(400);
+      throw new Error('Maximum 10 receipts can be processed at once');
+    }
+
+    const results = [];
+    const errors = [];
+    let processedCount = 0;
+
+    // Process receipts in parallel with concurrency limit
+    const concurrencyLimit = 3;
+    const processBatch = async (files) => {
+      const promises = files.map(async (file, index) => {
+        try {
+          console.log(`Processing receipt ${index + 1}/${files.length}`);
+          
+          // Process the receipt image
+          const extractedData = await ocrProcessor.processReceipt(file.buffer);
+          
+          // Prepare extracted data with better validation
+          const amount = extractedData.amount || extractedData.total || extractedData.subtotal;
+          const numericAmount = amount && !isNaN(parseFloat(amount)) ? parseFloat(amount) : null;
+
+          // Upload image to cloud storage
+          let imageUrl = null;
+          let cloudinaryPublicId = null;
+          
+          try {
+            const uploadResult = await cloudStorageService.uploadImage(file.buffer, {
+              folder: `mykhata/receipts/${req.user.id}/batch`,
+              tags: ['receipt', 'mykhata', `user_${req.user.id}`, 'batch'],
+              optimize: {
+                maxWidth: 1200,
+                maxHeight: 1200,
+                quality: 85
+              }
+            });
+            
+            imageUrl = uploadResult.secureUrl;
+            cloudinaryPublicId = uploadResult.publicId;
+          } catch (cloudError) {
+            console.warn(`Cloud storage upload failed for receipt ${index + 1}:`, cloudError.message);
+            imageUrl = `data:image/jpeg;base64,${file.buffer.toString('base64')}`;
+          }
+
+          // Parse date if provided
+          let parsedDate = null;
+          if (extractedData.date) {
+            const dateParts = extractedData.date.split('/');
+            if (dateParts.length === 3) {
+              const day = dateParts[0];
+              const month = dateParts[1];
+              const year = dateParts[2];
+              parsedDate = new Date(`${month}/${day}/${year}`);
+              
+              if (isNaN(parsedDate.getTime())) {
+                parsedDate = null;
+              }
+            }
+          }
+
+          // Save the receipt data to the Receipt model
+          const receipt = await Receipt.create({
+            user: req.user.id,
+            receiptImage: imageUrl,
+            cloudinaryPublicId: cloudinaryPublicId,
+            rawText: extractedData.rawText || '',
+            extractedData: {
+              merchant: extractedData.merchant?.trim() || null,
+              amount: numericAmount,
+              total: extractedData.total && !isNaN(parseFloat(extractedData.total)) ? parseFloat(extractedData.total) : null,
+              subtotal: extractedData.subtotal && !isNaN(parseFloat(extractedData.subtotal)) ? parseFloat(extractedData.subtotal) : null,
+              date: parsedDate,
+              description: extractedData.description?.trim() || null,
+              type: extractedData.type || 'expense',
+            },
+            status: 'scanned',
+            processingNotes: `Batch processed - Receipt ${index + 1}`
+          });
+
+          processedCount++;
+          
+          return {
+            success: true,
+            index: index + 1,
+            receiptId: receipt._id,
+            data: {
+              ...extractedData,
+              receiptId: receipt._id,
+              imageUrl: imageUrl,
+              isCloudStorage: !!cloudinaryPublicId
+            }
+          };
+        } catch (error) {
+          console.error(`Error processing receipt ${index + 1}:`, error);
+          return {
+            success: false,
+            index: index + 1,
+            error: error.message
+          };
+        }
+      });
+
+      // Process in batches to limit concurrency
+      const batchResults = [];
+      for (let i = 0; i < promises.length; i += concurrencyLimit) {
+        const batch = promises.slice(i, i + concurrencyLimit);
+        const batchResult = await Promise.all(batch);
+        batchResults.push(...batchResult);
+      }
+      
+      return batchResults;
+    };
+
+    const batchResults = await processBatch(req.files);
+
+    // Separate successful and failed results
+    batchResults.forEach(result => {
+      if (result.success) {
+        results.push(result);
+      } else {
+        errors.push(result);
+      }
+    });
+
+    // Invalidate cache
+    cacheService.deleteReceiptData(`receipts_${req.user.id}`);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        processed: processedCount,
+        total: req.files.length,
+        successful: results.length,
+        failed: errors.length,
+        results: results,
+        errors: errors
+      },
+      message: `Batch processing completed: ${processedCount}/${req.files.length} receipts processed successfully`
+    });
+  } catch (error) {
+    console.error('Batch receipt scanning error:', error);
+    res.status(500);
+    throw new Error(`Batch receipt scanning failed: ${error.message}`);
+  }
+});
+
+// @desc    Batch create transactions from receipts
+// @route   POST /api/receipts/batch-create-transactions
+// @access  Private
+const batchCreateTransactions = asyncHandler(async (req, res) => {
+  try {
+    const { receiptIds, categoryMappings } = req.body;
+
+    if (!receiptIds || !Array.isArray(receiptIds) || receiptIds.length === 0) {
+      res.status(400);
+      throw new Error('Receipt IDs array is required');
+    }
+
+    if (receiptIds.length > 20) {
+      res.status(400);
+      throw new Error('Maximum 20 receipts can be processed at once');
+    }
+
+    const results = [];
+    const errors = [];
+    let createdCount = 0;
+
+    // Process receipts in parallel
+    const processReceipts = async (ids) => {
+      const promises = ids.map(async (receiptId, index) => {
+        try {
+          // Find the receipt
+          const receipt = await Receipt.findOne({
+            _id: receiptId,
+            user: req.user.id
+          });
+
+          if (!receipt) {
+            throw new Error(`Receipt not found: ${receiptId}`);
+          }
+
+          if (receipt.status === 'processed') {
+            throw new Error(`Receipt already processed: ${receiptId}`);
+          }
+
+          const extractedData = receipt.extractedData;
+          
+          // Validate required fields
+          if (!extractedData.merchant || extractedData.merchant.trim() === '') {
+            throw new Error('Merchant information is required');
+          }
+          
+          if (!extractedData.amount || isNaN(parseFloat(extractedData.amount)) || parseFloat(extractedData.amount) <= 0) {
+            throw new Error('Valid amount is required');
+          }
+
+          // Parse date
+          let transactionDate = new Date();
+          if (extractedData.date) {
+            const parsedDate = new Date(extractedData.date);
+            if (!isNaN(parsedDate.getTime())) {
+              transactionDate = parsedDate;
+            }
+          }
+
+          // Get category mapping if provided
+          let categoryId = categoryMappings?.[receiptId];
+          if (!categoryId) {
+            const defaultCategory = await getOrCreateDefaultCategory(req.user.id, extractedData.type || 'expense');
+            categoryId = defaultCategory._id;
+          }
+
+          // Create transaction
+          const transaction = await Transaction.create({
+            user: req.user.id,
+            type: extractedData.type || 'expense',
+            amount: parseFloat(extractedData.amount),
+            category: categoryId,
+            description: extractedData.description || `Receipt from ${extractedData.merchant}`,
+            date: transactionDate,
+            merchant: extractedData.merchant,
+            receiptImage: receipt.receiptImage
+          });
+
+          // Update receipt status
+          await Receipt.findByIdAndUpdate(receiptId, {
+            status: 'processed',
+            transactionId: transaction._id,
+            processingNotes: 'Successfully converted to transaction via batch processing'
+          });
+
+          createdCount++;
+
+          return {
+            success: true,
+            index: index + 1,
+            receiptId: receiptId,
+            transactionId: transaction._id,
+            data: transaction
+          };
+        } catch (error) {
+          console.error(`Error creating transaction for receipt ${receiptId}:`, error);
+          return {
+            success: false,
+            index: index + 1,
+            receiptId: receiptId,
+            error: error.message
+          };
+        }
+      });
+
+      return await Promise.all(promises);
+    };
+
+    const batchResults = await processReceipts(receiptIds);
+
+    // Separate successful and failed results
+    batchResults.forEach(result => {
+      if (result.success) {
+        results.push(result);
+      } else {
+        errors.push(result);
+      }
+    });
+
+    // Invalidate cache
+    cacheService.deleteReceiptData(`receipts_${req.user.id}`);
+
+    res.status(201).json({
+      success: true,
+      data: {
+        created: createdCount,
+        total: receiptIds.length,
+        successful: results.length,
+        failed: errors.length,
+        results: results,
+        errors: errors
+      },
+      message: `Batch transaction creation completed: ${createdCount}/${receiptIds.length} transactions created successfully`
+    });
+  } catch (error) {
+    console.error('Batch transaction creation error:', error);
+    res.status(500);
+    throw new Error(`Batch transaction creation failed: ${error.message}`);
+  }
+});
+
+// @desc    Get smart category suggestions for merchant
+// @route   POST /api/receipts/smart-categorize
+// @access  Private
+const getSmartCategorySuggestions = asyncHandler(async (req, res) => {
+  try {
+    const { merchant, transactionType = 'expense' } = req.body;
+
+    if (!merchant || merchant.trim() === '') {
+      res.status(400);
+      throw new Error('Merchant name is required');
+    }
+
+    // Get smart category suggestions
+    const suggestions = await smartCategorizer.getCategorySuggestions(
+      merchant.trim(),
+      req.user.id,
+      5
+    );
+
+    res.status(200).json({
+      success: true,
+      data: {
+        merchant: merchant.trim(),
+        suggestions: suggestions,
+        count: suggestions.length
+      },
+      message: 'Category suggestions retrieved successfully'
+    });
+  } catch (error) {
+    console.error('Smart categorization error:', error);
+    res.status(500);
+    throw new Error(`Failed to get category suggestions: ${error.message}`);
+  }
+});
+
+// @desc    Learn from user's categorization decision
+// @route   POST /api/receipts/learn-categorization
+// @access  Private
+const learnFromCategorization = asyncHandler(async (req, res) => {
+  try {
+    const { merchant, categoryId, transactionId } = req.body;
+
+    if (!merchant || !categoryId) {
+      res.status(400);
+      throw new Error('Merchant and category ID are required');
+    }
+
+    // Learn from user's decision
+    await smartCategorizer.learnFromUserDecision(
+      merchant.trim(),
+      categoryId,
+      req.user.id
+    );
+
+    // Clear user cache to force refresh
+    smartCategorizer.clearUserCache(req.user.id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Categorization learning updated successfully'
+    });
+  } catch (error) {
+    console.error('Learning categorization error:', error);
+    res.status(500);
+    throw new Error(`Failed to learn from categorization: ${error.message}`);
+  }
+});
+
+// @desc    Auto-categorize receipt during scan
+// @route   POST /api/receipts/auto-categorize
+// @access  Private
+const autoCategorizeReceipt = asyncHandler(async (req, res) => {
+  try {
+    const { merchant, transactionType = 'expense' } = req.body;
+
+    if (!merchant || merchant.trim() === '') {
+      res.status(400);
+      throw new Error('Merchant name is required');
+    }
+
+    // Get smart category prediction
+    const prediction = await smartCategorizer.predictCategory(
+      merchant.trim(),
+      req.user.id,
+      transactionType
+    );
+
+    let suggestedCategory = null;
+    if (prediction.categoryId) {
+      suggestedCategory = await Category.findById(prediction.categoryId);
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        merchant: merchant.trim(),
+        prediction: {
+          categoryId: prediction.categoryId,
+          confidence: prediction.confidence,
+          isConfident: prediction.isConfident,
+          suggestedCategory: suggestedCategory ? {
+            _id: suggestedCategory._id,
+            name: suggestedCategory.name,
+            color: suggestedCategory.color,
+            icon: suggestedCategory.icon
+          } : null,
+          alternatives: prediction.alternatives
+        }
+      },
+      message: 'Auto-categorization completed successfully'
+    });
+  } catch (error) {
+    console.error('Auto-categorization error:', error);
+    res.status(500);
+    throw new Error(`Failed to auto-categorize: ${error.message}`);
+  }
+});
+
 // @desc    Get cache statistics
 // @route   GET /api/receipts/cache-stats
 // @access  Private
@@ -374,5 +795,10 @@ export {
   getReceiptHistory,
   updateReceipt,
   deleteReceipt,
-  getCacheStats
+  getCacheStats,
+  batchScanReceipts,
+  batchCreateTransactions,
+  getSmartCategorySuggestions,
+  learnFromCategorization,
+  autoCategorizeReceipt
 };
