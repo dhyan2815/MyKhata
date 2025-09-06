@@ -24,10 +24,12 @@ import { useScannerOperations } from '../../hooks/useScannerOperations';
 import CameraCapture from './CameraCapture';
 import FileUpload from '../common/FileUpload';
 import ScanResults from './ScanResults';
+import BatchProcessor from './BatchProcessor';
 
 const ReceiptScanner = () => {
   const [activeTab, setActiveTab] = useState('upload'); // 'camera' or 'upload'
   const [selectedFile, setSelectedFile] = useState(null);
+  const [activeMode, setActiveMode] = useState('single'); // 'single' or 'batch'
   
   const { user } = useAuth();
   const { isDark } = useTheme();
@@ -58,6 +60,17 @@ const ReceiptScanner = () => {
     scanAnotherReceipt();
   };
 
+  // Handle batch processing completion
+  const handleBatchComplete = (data) => {
+    console.log('Batch processing completed:', data);
+    // Could refresh data or show success message
+  };
+
+  // Handle batch processing cancellation
+  const handleBatchCancel = () => {
+    setActiveMode('single');
+  };
+
   // Loading state component
   const LoadingState = () => (
     <div className="text-center py-8">
@@ -76,7 +89,7 @@ const ReceiptScanner = () => {
 
   // Tab navigation component
   const TabNavigation = () => (
-    <div className="flex mb-6 border-b border-gray-300">
+    <div className="flex mb-6 border-gray-300">
       <button
         onClick={() => setActiveTab('camera')}
         className={`px-4 py-2 font-medium ${
@@ -109,51 +122,90 @@ const ReceiptScanner = () => {
       </Helmet>
       <div className="max-w-6xl mx-auto">
         {/* Page Header */}
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Receipt Scanner</h1>
-        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1 mb-8">
-          Scan receipts to create transactions seamlessly
-        </p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Receipt Scanner</h1>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
+              Scan receipts to create transactions seamlessly
+            </p>
+          </div>
+          
+          {/* Mode Toggle */}
+          <div className="flex space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+            <button
+              onClick={() => setActiveMode('single')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeMode === 'single'
+                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              Single Receipt
+            </button>
+            <button
+              onClick={() => setActiveMode('batch')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeMode === 'batch'
+                  ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+              }`}
+            >
+              Batch Processing
+            </button>
+          </div>
+        </div>
         
-        {/* Tab Navigation */}
-        <TabNavigation />
+        {/* Mode-based content rendering */}
+        {activeMode === 'single' ? (
+          <>
+            {/* Tab Navigation */}
+            <TabNavigation />
 
-        {/* Camera Tab */}
-        {activeTab === 'camera' && (
-          <div className="mb-8">
-            <CameraCapture 
-              onCapture={processReceipt}
-              isScanning={isScanning}
+            {/* Camera Tab */}
+            {activeTab === 'camera' && (
+              <div className="mb-8">
+                <CameraCapture 
+                  onCapture={processReceipt}
+                  isScanning={isScanning}
+                />
+              </div>
+            )}
+
+            {/* Upload Tab */}
+            {activeTab === 'upload' && (
+              <div className="mb-8">
+                <FileUpload 
+                  onFileSelect={handleFileSelect}
+                  isProcessing={isScanning}
+                  selectedFile={selectedFile}
+                />
+              </div>
+            )}
+
+            {/* Loading State */}
+            {isScanning && <LoadingState />}
+
+            {/* Error Display */}
+            {error && <ErrorDisplay />}
+
+            {/* Scan Results */}
+            <ScanResults
+              scanResult={scanResult}
+              transactionData={transactionData}
+              onInputChange={handleInputChange}
+              onCreateTransaction={createTransaction}
+              onScanAnother={handleScanAnother}
+              isCreating={isCreatingTransaction}
+              validationError={validationError}
             />
-          </div>
+          </>
+        ) : (
+          /* Batch Processing Mode */
+          <BatchProcessor 
+            onComplete={handleBatchComplete}
+            onCancel={handleBatchCancel}
+          />
         )}
-
-        {/* Upload Tab */}
-        {activeTab === 'upload' && (
-          <div className="mb-8">
-            <FileUpload 
-              onFileSelect={handleFileSelect}
-              isProcessing={isScanning}
-              selectedFile={selectedFile}
-            />
-          </div>
-        )}
-
-        {/* Loading State */}
-        {isScanning && <LoadingState />}
-
-        {/* Error Display */}
-        {error && <ErrorDisplay />}
-
-        {/* Scan Results */}
-        <ScanResults
-          scanResult={scanResult}
-          transactionData={transactionData}
-          onInputChange={handleInputChange}
-          onCreateTransaction={createTransaction}
-          onScanAnother={handleScanAnother}
-          isCreating={isCreatingTransaction}
-          validationError={validationError}
-        />
       </div>
     </div>
   );
