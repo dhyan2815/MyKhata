@@ -24,34 +24,23 @@ const AdvancedFeatures = () => {
     {
       id: 'batch',
       title: 'Batch Processing',
-      description: 'Process multiple receipts simultaneously with intelligent OCR and automated categorization',
+      description: 'Batch scan and auto-categorize multiple receipts.',
       icon: '📦',
       color: 'blue',
-      status: 'completed'
-    },
-    {
-      id: 'smart',
-      title: 'Smart Categorization',
-      description: 'ML-powered merchant recognition and automatic category suggestions based on your spending patterns',
-      icon: '🧠',
-      color: 'green',
-      status: 'completed'
     },
     {
       id: 'analytics',
       title: 'Receipt Analytics',
-      description: 'Comprehensive analytics with spending patterns, merchant insights, and time-based trends',
+      description: 'Analytics for spending, merchants, and trends.',
       icon: '📊',
-      color: 'purple',
-      status: 'completed'
+      color: 'red',
     },
     {
       id: 'export',
       title: 'Export & Reports',
-      description: 'Generate PDF reports, export data in multiple formats, and create custom analytics reports',
+      description: 'Export data and generate custom reports.',
       icon: '📄',
       color: 'yellow',
-      status: 'completed'
     }
   ];
 
@@ -60,32 +49,26 @@ const AdvancedFeatures = () => {
     <div className="space-y-8">
 
       {/* Feature Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {features.map(feature => (
           <div
             key={feature.id}
             onClick={() => setActiveFeature(feature.id)}
             className={`p-6 rounded-lg border-2 cursor-pointer transition-all hover:shadow-lg ${feature.color === 'blue' ? 'border-blue-200 hover:border-blue-300 bg-blue-50 dark:bg-blue-900/20' :
               feature.color === 'green' ? 'border-green-200 hover:border-green-300 bg-green-50 dark:bg-green-900/20' :
-                feature.color === 'purple' ? 'border-purple-200 hover:border-purple-300 bg-purple-50 dark:bg-purple-900/20' :
+                feature.color === 'red' ? 'border-red-200 hover:border-red-300 bg-red-50 dark:bg-red-900/20' :
                   'border-yellow-200 hover:border-yellow-300 bg-yellow-50 dark:bg-yellow-900/20'
               }`}
           >
             <div className="flex items-start space-x-4">
-              <div className="text-4xl">{feature.icon}</div>
+              <div className="text-3xl">{feature.icon}</div>
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-2">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                     {feature.title}
                   </h3>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${feature.status === 'completed'
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                    : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
-                    }`}>
-                    {feature.status}
-                  </span>
                 </div>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                <p className="text-gray-600 text-sm dark:text-gray-400 mb-4">
                   {feature.description}
                 </p>
                 <button className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${feature.color === 'blue' ? 'bg-blue-600 text-white hover:bg-blue-700' :
@@ -99,31 +82,6 @@ const AdvancedFeatures = () => {
             </div>
           </div>
         ))}
-      </div>
-
-      {/* Quick Stats */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Feature Overview
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">4</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Advanced Features</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">100%</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Completion Rate</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">10+</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Export Formats</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">∞</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">Possibilities</div>
-          </div>
-        </div>
       </div>
 
       {/* Getting Started */}
@@ -208,10 +166,10 @@ const AdvancedFeatures = () => {
       <div className={`min-h-screen ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Advanced Features
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mx-auto">
+          <p className="text-md text-gray-600 dark:text-gray-400 mx-auto">
             Unlock MyKhata’s advanced features to streamline your financial management.
           </p>
         </div>
