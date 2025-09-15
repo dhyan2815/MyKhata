@@ -9,10 +9,8 @@
  * - Responsive design with theme support
  */
 import React, { useState, useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
 import { useTheme } from '../../context/ThemeContext';
 import { batchScanReceipts, batchCreateTransactions } from '../../api/receipts';
-import { getCategories } from '../../api/categories';
 import toast from 'react-hot-toast';
 
 const BatchProcessor = ({ onComplete, onCancel }) => {
@@ -21,24 +19,7 @@ const BatchProcessor = ({ onComplete, onCancel }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCreatingTransactions, setIsCreatingTransactions] = useState(false);
   const [scanResults, setScanResults] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [categoryMappings, setCategoryMappings] = useState({});
   const [currentStep, setCurrentStep] = useState('upload'); // 'upload', 'review', 'complete'
-
-  // Load categories on component mount
-  React.useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const response = await getCategories();
-        if (response.success) {
-          setCategories(response.data);
-        }
-      } catch (error) {
-        console.error('Error loading categories:', error);
-      }
-    };
-    loadCategories();
-  }, []);
 
   // File drop handler
   const onDrop = useCallback((acceptedFiles) => {
@@ -58,14 +39,8 @@ const BatchProcessor = ({ onComplete, onCancel }) => {
     setFiles(validFiles);
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.bmp', '.webp']
-    },
-    multiple: true,
-    disabled: isProcessing || isCreatingTransactions
-  });
+  // Drag state for visual feedback
+  const [isDragActive, setIsDragActive] = useState(false);
 
   // Process batch scan
   const handleBatchScan = async () => {
@@ -95,15 +70,23 @@ const BatchProcessor = ({ onComplete, onCancel }) => {
 
   // Create transactions from scanned receipts
   const handleCreateTransactions = async () => {
-    if (!scanResults || scanResults.results.length === 0) {
+    if (!scanResults || !scanResults.results || scanResults.results.length === 0) {
       toast.error('No valid receipts to process');
       return;
     }
 
     setIsCreatingTransactions(true);
     try {
-      const receiptIds = scanResults.results.map(result => result.receiptId);
-      const response = await batchCreateTransactions(receiptIds, categoryMappings);
+      const receiptIds = scanResults.results
+        .filter(result => result?.receiptId) // Filter out any invalid results
+        .map(result => result.receiptId);
+      
+      if (receiptIds.length === 0) {
+        toast.error('No valid receipt IDs found');
+        return;
+      }
+      
+      const response = await batchCreateTransactions(receiptIds);
       
       if (response.success) {
         setCurrentStep('complete');
@@ -122,19 +105,10 @@ const BatchProcessor = ({ onComplete, onCancel }) => {
     }
   };
 
-  // Handle category mapping change
-  const handleCategoryChange = (receiptId, categoryId) => {
-    setCategoryMappings(prev => ({
-      ...prev,
-      [receiptId]: categoryId
-    }));
-  };
-
   // Reset component
   const handleReset = () => {
     setFiles([]);
     setScanResults(null);
-    setCategoryMappings({});
     setCurrentStep('upload');
   };
 
@@ -156,66 +130,125 @@ const BatchProcessor = ({ onComplete, onCancel }) => {
   );
 
   // Scan result item component
-  const ScanResultItem = ({ result, index }) => (
-    <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
-            <span className="text-sm font-medium text-blue-600 dark:text-blue-300">
-              {index + 1}
-            </span>
+  const ScanResultItem = ({ result, index }) => {
+    // Safely access result data with fallbacks
+    const merchant = result?.data?.merchant || 'Unknown Merchant';
+    const amount = result?.data?.amount || 'N/A';
+    const date = result?.data?.date || 'No date';
+    const receiptId = result?.receiptId || `receipt-${index}`;
+
+    return (
+      <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+              <span className="text-sm font-medium text-blue-600 dark:text-blue-300">
+                {index + 1}
+              </span>
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900 dark:text-white">
+                {merchant}
+              </h4>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Amount: ${amount}
+              </p>
+            </div>
           </div>
-          <div>
-            <h4 className="font-medium text-gray-900 dark:text-white">
-              {result.data.merchant || 'Unknown Merchant'}
-            </h4>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Amount: ${result.data.amount || 'N/A'}
+          <div className="text-right">
+            <p className="text-sm font-medium text-green-600 dark:text-green-400">
+              ${amount}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {date}
             </p>
           </div>
         </div>
-        <div className="text-right">
-          <p className="text-sm font-medium text-green-600 dark:text-green-400">
-            ${result.data.amount || 'N/A'}
-          </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            {result.data.date || 'No date'}
-          </p>
-        </div>
-      </div>
-      
-      <div className="mb-3">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Category
-        </label>
-        <select
-          value={categoryMappings[result.receiptId] || ''}
-          onChange={(e) => handleCategoryChange(result.receiptId, e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-        >
-          <option value="">Select category</option>
-          {categories.map(category => (
-            <option key={category._id} value={category._id}>
-              {category.name}
-            </option>
-          ))}
-        </select>
-      </div>
     </div>
-  );
+    );
+  };
 
   // Upload step
   const UploadStep = () => (
     <div className="space-y-6">
       <div
-        {...getRootProps()}
         className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
           isDragActive
             ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
             : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
         } ${isProcessing || isCreatingTransactions ? 'opacity-50 cursor-not-allowed' : ''}`}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          if (isProcessing || isCreatingTransactions) {
+            return;
+          }
+          
+          // Create and trigger file input
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.multiple = true;
+          input.accept = 'image/*';
+          input.style.display = 'none';
+          
+          input.onchange = (e) => {
+            if (e.target.files && e.target.files.length > 0) {
+              const fileArray = Array.from(e.target.files);
+              
+              // File validation
+              if (fileArray.length > 10) {
+                toast.error('Maximum 10 files allowed');
+                return;
+              }
+              
+              const validFiles = fileArray.filter(file => 
+                file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024
+              );
+              
+              if (validFiles.length !== fileArray.length) {
+                toast.error('Some files were rejected. Only image files under 5MB are allowed.');
+              }
+              
+              setFiles(validFiles);
+            }
+          };
+          
+          document.body.appendChild(input);
+          input.click();
+          document.body.removeChild(input);
+        }}
+        // Drag and drop functionality
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDragActive(true);
+        }}
+        onDragLeave={(e) => {
+          e.preventDefault();
+          setIsDragActive(false);
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          setIsDragActive(false);
+          const droppedFiles = Array.from(e.dataTransfer.files);
+          
+          // File validation
+          if (droppedFiles.length > 10) {
+            toast.error('Maximum 10 files allowed');
+            return;
+          }
+          
+          const validFiles = droppedFiles.filter(file => 
+            file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024
+          );
+          
+          if (validFiles.length !== droppedFiles.length) {
+            toast.error('Some files were rejected. Only image files under 5MB are allowed.');
+          }
+          
+          setFiles(validFiles);
+        }}
       >
-        <input {...getInputProps()} />
         <div className="space-y-4">
           <div className="mx-auto w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
             <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,17 +306,17 @@ const BatchProcessor = ({ onComplete, onCancel }) => {
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
           </svg>
           <p className="text-green-800 dark:text-green-200">
-            Successfully processed {scanResults.successful}/{scanResults.total} receipts
+            Successfully processed {scanResults?.successful || 0}/{scanResults?.total || 0} receipts
           </p>
         </div>
       </div>
 
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-          Review & Configure Transactions
+          Review Transactions
         </h3>
         <div className="space-y-3">
-          {scanResults.results.map((result, index) => (
+          {scanResults?.results?.map((result, index) => (
             <ScanResultItem key={result.receiptId} result={result} index={index} />
           ))}
         </div>
@@ -380,7 +413,7 @@ const BatchProcessor = ({ onComplete, onCancel }) => {
         </div>
         <div className="flex justify-between mt-2 text-sm text-gray-600 dark:text-gray-400">
           <span>Upload Files</span>
-          <span>Review & Configure</span>
+          <span>Review</span>
           <span>Complete</span>
         </div>
       </div>
