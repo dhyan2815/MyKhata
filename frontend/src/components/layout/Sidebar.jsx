@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { X, LayoutDashboard, ListOrdered, Tag, ChevronsLeft, ChevronsRight, Camera, FileText, Zap } from 'lucide-react';
+import { X, LayoutDashboard, ListOrdered, Tag, ChevronsLeft, ChevronsRight, Camera, FileText, BarChart3 } from 'lucide-react';
 
 // Sidebar component for navigation
 const Sidebar = ({ isOpen, closeSidebar, collapsed = false, toggleCollapsed }) => {
@@ -29,7 +29,7 @@ const Sidebar = ({ isOpen, closeSidebar, collapsed = false, toggleCollapsed }) =
     },
     {
       name: 'Analytics & Exports',
-      icon: <Zap size={23} />,
+      icon: <BarChart3 size={23} />,
       path: '/analytics',
     },
     {
