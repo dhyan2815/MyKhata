@@ -122,7 +122,7 @@ const ReceiptAnalytics = () => {
               : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
           }`}
         >
-          {p === '7d' ? '7 days' : p === '30d' ? '30 days' : p === '90d' ? '90 days' : '1 year'}
+          {p === '7d' ? '7 D' : p === '30d' ? '30 D' : p === '90d' ? '90 D' : '1 Y'}
         </button>
       ))}
     </div>

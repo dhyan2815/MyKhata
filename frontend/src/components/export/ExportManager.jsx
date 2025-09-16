@@ -315,18 +315,18 @@ const ExportManager = ({ onClose }) => {
   }
 
   return (
-    <div className={`max-w-4xl mx-auto p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'}`}>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          Export Data
-        </h2>
-        <p className="text-gray-600 dark:text-gray-400">
-          Export your receipt and transaction data in various formats
-        </p>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Export Data</h2>
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mt-1">
+            Export your receipt and transaction data in various formats
+          </p>
+        </div>
       </div>
 
       {/* Format Selection */}
-      <div className="mb-8">
+      <div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Choose Export Format
         </h3>
@@ -334,7 +334,7 @@ const ExportManager = ({ onClose }) => {
       </div>
 
       {/* Settings */}
-      <div className="mb-8">
+      <div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Export Settings
         </h3>
@@ -342,7 +342,7 @@ const ExportManager = ({ onClose }) => {
       </div>
 
       {/* Preview */}
-      <div className="mb-8">
+      <div>
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Preview
         </h3>
