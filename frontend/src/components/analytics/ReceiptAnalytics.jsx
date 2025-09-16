@@ -175,7 +175,7 @@ const ReceiptAnalytics = () => {
                     <span className="font-medium text-gray-900 dark:text-white">{pattern.categoryName}</span>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-gray-900 dark:text-white">${pattern.totalAmount}</p>
+                    <p className="font-semibold text-gray-900 dark:text-white">₹{pattern.totalAmount}</p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">{pattern.percentage}%</p>
                   </div>
                 </div>
@@ -187,7 +187,7 @@ const ReceiptAnalytics = () => {
         {/* Summary */}
         <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
           <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">Total Spending</h3>
-          <p className="text-3xl font-bold text-blue-900 dark:text-blue-100">${totalSpending}</p>
+          <p className="text-3xl font-bold text-blue-900 dark:text-blue-100">₹{totalSpending}</p>
           <p className="text-sm text-blue-700 dark:text-blue-300">Across {patterns.length} categories</p>
         </div>
       </div>
@@ -210,11 +210,11 @@ const ReceiptAnalytics = () => {
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Total Amount</h3>
-            <p className="text-3xl font-bold text-green-600 dark:text-green-400">${summary.totalAmount}</p>
+            <p className="text-3xl font-bold text-green-600 dark:text-green-400">₹{summary.totalAmount}</p>
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Avg per Merchant</h3>
-            <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">${summary.averagePerMerchant}</p>
+            <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">₹{summary.averagePerMerchant}</p>
           </div>
         </div>
 
@@ -234,8 +234,8 @@ const ReceiptAnalytics = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-gray-900 dark:text-white">${merchant.totalAmount}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Avg: ${merchant.averageAmount}</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">₹{merchant.totalAmount}</p>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">Avg: ₹{merchant.averageAmount}</p>
                 </div>
               </div>
             ))}
@@ -336,7 +336,7 @@ const ReceiptAnalytics = () => {
           </div>
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Total Amount</h3>
-            <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">${summary.totalAmount}</p>
+            <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">₹{summary.totalAmount}</p>
           </div>
         </div>
 
