@@ -28,9 +28,9 @@ const Sidebar = ({ isOpen, closeSidebar, collapsed = false, toggleCollapsed }) =
       path: '/receipt-history',
     },
     {
-      name: 'Advanced Features',
+      name: 'Analytics & Exports',
       icon: <Zap size={23} />,
-      path: '/advanced-features',
+      path: '/analytics',
     },
     {
       name: 'Categories',

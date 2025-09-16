@@ -1,7 +1,7 @@
 /**
- * AdvancedFeatures Page
+ * AnalyticsExports Page
  * 
- * Comprehensive page showcasing all advanced features:
+ * Comprehensive page showcasing analytics and export features:
  * - Batch processing interface
  * - Smart categorization tools
  * - Receipt analytics dashboard
@@ -15,7 +15,7 @@ import BatchProcessor from '../components/receipts/BatchProcessor';
 import ReceiptAnalytics from '../components/analytics/ReceiptAnalytics';
 import ExportManager from '../components/export/ExportManager';
 
-const AdvancedFeatures = () => {
+const AnalyticsExports = () => {
   const { isDark } = useTheme();
   const [activeFeature, setActiveFeature] = useState('overview');
 
@@ -159,18 +159,18 @@ const AdvancedFeatures = () => {
   return (
     <>
       <Helmet>
-        <title>Advanced Features · MyKhata</title>
-        <meta name="description" content="Explore MyKhata's advanced features including batch processing, smart categorization, analytics, and export functionality" />
+        <title>Analytics & Exports · MyKhata</title>
+        <meta name="description" content="Explore MyKhata's analytics and export features including batch processing, smart categorization, analytics, and export functionality" />
       </Helmet>
 
       <div className={`min-h-screen ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Advanced Features
+            Analytics & Exports
           </h1>
           <p className="text-md text-gray-600 dark:text-gray-400 mx-auto">
-            Unlock MyKhata’s advanced features to streamline your financial management.
+            Unlock MyKhata's analytics and export features to streamline your financial management.
           </p>
         </div>
 
@@ -199,4 +199,4 @@ const AdvancedFeatures = () => {
   );
 };
 
-export default AdvancedFeatures;
+export default AnalyticsExports;

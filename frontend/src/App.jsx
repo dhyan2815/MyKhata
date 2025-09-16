@@ -13,7 +13,7 @@ const AddTransaction = lazy(() => import('./pages/AddTransaction'));
 const EditTransaction = lazy(() => import('./pages/EditTransaction'));
 const ReceiptScannerPage = lazy(() => import('./pages/ReceiptScannerPage'));
 const ReceiptHistoryPage = lazy(() => import('./pages/ReceiptHistoryPage'));
-const AdvancedFeatures = lazy(() => import('./pages/AdvancedFeatures'));
+const AnalyticsExports = lazy(() => import('./pages/AnalyticsExports'));
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
 const Profile = lazy(() => import('./pages/Profile'));
@@ -141,10 +141,10 @@ function App() {
                 <ReceiptHistoryPage />
               </ProtectedRoute>
             } />
-            {/* Advanced features route */}
-            <Route path="/advanced-features" element={
+            {/* Analytics & Exports route */}
+            <Route path="/analytics" element={
               <ProtectedRoute>
-                <AdvancedFeatures />
+                <AnalyticsExports />
               </ProtectedRoute>
             } />
           </Route>

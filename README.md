@@ -78,7 +78,7 @@ graph TB
 - **Toast Notifications**: Real-time feedback for user actions
 - **Loading States**: Optimistic UI with skeleton loading components
 
-### 🔍 Advanced Features
+### 🔍 Analytics & Exports
 - **Currency Conversion**: Multi-currency transaction support
 - **Export Capabilities**: Download transaction data in various formats
 - **Data Persistence**: Automatic data saving and synchronization
