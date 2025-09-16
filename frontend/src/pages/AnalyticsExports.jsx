@@ -14,100 +14,13 @@ import ExportManager from '../components/export/ExportManager';
 
 const AnalyticsExports = () => {
   const { isDark } = useTheme();
-  const [activeFeature, setActiveFeature] = useState('overview');
+  const [activeFeature, setActiveFeature] = useState('analytics');
 
-  // Feature cards data
-  const features = [
-    {
-      id: 'analytics',
-      title: 'Receipt Analytics',
-      description: 'Analytics for spending, merchants, and trends.',
-      icon: '📊',
-      color: 'red',
-    },
-    {
-      id: 'export',
-      title: 'Export & Reports',
-      description: 'Export data and generate custom reports.',
-      icon: '📄',
-      color: 'yellow',
-    }
-  ];
 
-  // Feature overview component
-  const FeatureOverview = () => (
-    <div className="space-y-8">
-
-      {/* Feature Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {features.map(feature => (
-          <div
-            key={feature.id}
-            onClick={() => setActiveFeature(feature.id)}
-            className={`p-6 rounded-lg border-2 cursor-pointer transition-all hover:shadow-lg ${feature.color === 'blue' ? 'border-blue-200 hover:border-blue-300 bg-blue-50 dark:bg-blue-900/20' :
-              feature.color === 'green' ? 'border-green-200 hover:border-green-300 bg-green-50 dark:bg-green-900/20' :
-                feature.color === 'red' ? 'border-red-200 hover:border-red-300 bg-red-50 dark:bg-red-900/20' :
-                  'border-yellow-200 hover:border-yellow-300 bg-yellow-50 dark:bg-yellow-900/20'
-              }`}
-          >
-            <div className="flex items-start space-x-4">
-              <div className="text-3xl">{feature.icon}</div>
-              <div className="flex-1">
-                <div className="flex items-center space-x-2 mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    {feature.title}
-                  </h3>
-                </div>
-                <p className="text-gray-600 text-sm dark:text-gray-400 mb-4">
-                  {feature.description}
-                </p>
-                <button className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${feature.color === 'blue' ? 'bg-blue-600 text-white hover:bg-blue-700' :
-                  feature.color === 'green' ? 'bg-green-600 text-white hover:bg-green-700' :
-                    feature.color === 'purple' ? 'bg-purple-600 text-white hover:bg-purple-700' :
-                      'bg-yellow-600 text-white hover:bg-yellow-700'
-                  }`}>
-                  Explore Feature
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Getting Started */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          Getting Started
-        </h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          Ready to explore these powerful features? Here's how to get started:
-        </p>
-        <div className="space-y-2">
-          <div className="flex items-center space-x-2">
-            <span className="w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-medium">1</span>
-            <span className="text-gray-700 dark:text-gray-300">Explore analytics to understand your spending patterns</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-sm font-medium">2</span>
-            <span className="text-gray-700 dark:text-gray-300">Export your data for external analysis</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 
   // Navigation component
   const Navigation = () => (
     <div className="flex space-x-1 border-b border-gray-200 dark:border-gray-700 rounded-lg p-1 mb-6 pb-5">
-      <button
-        onClick={() => setActiveFeature('overview')}
-        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeFeature === 'overview'
-          ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-          : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-          }`}
-      >
-        Overview
-      </button>
       <button
         onClick={() => setActiveFeature('analytics')}
         className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeFeature === 'analytics'
@@ -150,11 +63,10 @@ const AnalyticsExports = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Navigation />
 
-          {activeFeature === 'overview' && <FeatureOverview />}
           {activeFeature === 'analytics' && <ReceiptAnalytics />}
           {activeFeature === 'export' && (
             <ExportManager
-              onClose={() => setActiveFeature('overview')}
+              onClose={() => setActiveFeature('analytics')}
             />
           )}
         </div>
