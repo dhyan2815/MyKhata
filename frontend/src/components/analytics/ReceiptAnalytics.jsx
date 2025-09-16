@@ -6,7 +6,6 @@
  * - Spending patterns by category
  * - Merchant insights and analysis
  * - Time-based trends and charts
- * - Processing statistics
  * - Interactive charts and visualizations
  */
 import React, { useState, useEffect } from 'react';
@@ -15,8 +14,7 @@ import {
   getReceiptAnalyticsOverview,
   getSpendingPatterns,
   getMerchantInsights,
-  getTimeBasedAnalytics,
-  getProcessingStats
+  getTimeBasedAnalytics
 } from '../../api/analytics';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import {
@@ -54,8 +52,7 @@ const ReceiptAnalytics = () => {
     overview: null,
     spendingPatterns: null,
     merchantInsights: null,
-    timeBased: null,
-    processingStats: null
+    timeBased: null
   });
 
   // Load analytics data
@@ -66,20 +63,18 @@ const ReceiptAnalytics = () => {
   const loadAnalyticsData = async () => {
     setLoading(true);
     try {
-      const [overview, spendingPatterns, merchantInsights, timeBased, processingStats] = await Promise.all([
+      const [overview, spendingPatterns, merchantInsights, timeBased] = await Promise.all([
         getReceiptAnalyticsOverview(period),
         getSpendingPatterns(period),
         getMerchantInsights(period),
-        getTimeBasedAnalytics(period, 'daily'),
-        getProcessingStats(period)
+        getTimeBasedAnalytics(period, 'daily')
       ]);
 
       setData({
         overview: overview.success ? overview.data : null,
         spendingPatterns: spendingPatterns.success ? spendingPatterns.data : null,
         merchantInsights: merchantInsights.success ? merchantInsights.data : null,
-        timeBased: timeBased.success ? timeBased.data : null,
-        processingStats: processingStats.success ? processingStats.data : null
+        timeBased: timeBased.success ? timeBased.data : null
       });
     } catch (error) {
       console.error('Error loading analytics data:', error);
@@ -433,89 +428,6 @@ const ReceiptAnalytics = () => {
     );
   };
 
-  // Processing stats tab
-  const ProcessingStatsTab = () => {
-    if (!data.processingStats) return <div>Loading...</div>;
-
-    const { statusBreakdown, dailyStats, summary } = data.processingStats;
-
-    const chartData = {
-      labels: statusBreakdown.map(s => s.status),
-      datasets: [
-        {
-          label: 'Count',
-          data: statusBreakdown.map(s => s.count),
-          backgroundColor: ['#10B981', '#F59E0B', '#EF4444'],
-          borderWidth: 0
-        }
-      ]
-    };
-
-    const dailyChartData = {
-      labels: dailyStats.map(d => d.date),
-      datasets: [
-        {
-          label: 'Processed',
-          data: dailyStats.map(d => d.processed),
-          backgroundColor: '#10B981',
-          borderColor: '#10B981',
-          tension: 0.1
-        },
-        {
-          label: 'Scanned',
-          data: dailyStats.map(d => d.scanned),
-          backgroundColor: '#F59E0B',
-          borderColor: '#F59E0B',
-          tension: 0.1
-        },
-        {
-          label: 'Failed',
-          data: dailyStats.map(d => d.failed),
-          backgroundColor: '#EF4444',
-          borderColor: '#EF4444',
-          tension: 0.1
-        }
-      ]
-    };
-
-    return (
-      <div className="space-y-6">
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Total Receipts</h3>
-            <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{summary.totalReceipts}</p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Processed</h3>
-            <p className="text-3xl font-bold text-green-600 dark:text-green-400">{summary.processedReceipts}</p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Success Rate</h3>
-            <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">85%</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Status Breakdown */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Status Breakdown</h3>
-            <div className="h-64">
-              <Doughnut data={chartData} options={chartOptions} />
-            </div>
-          </div>
-
-          {/* Daily Processing */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Daily Processing</h3>
-            <div className="h-64">
-              <Bar data={dailyChartData} options={chartOptions} />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   // Tab navigation
   const TabNavigation = () => (
@@ -524,8 +436,7 @@ const ReceiptAnalytics = () => {
         { id: 'overview', label: 'Overview' },
         { id: 'spending', label: 'Spending Patterns' },
         { id: 'merchants', label: 'Merchant Insights' },
-        { id: 'time', label: 'Time Trends' },
-        { id: 'processing', label: 'Processing Stats' }
+        { id: 'time', label: 'Time Trends' }
       ].map(tab => (
         <button
           key={tab.id}
@@ -563,7 +474,6 @@ const ReceiptAnalytics = () => {
       {activeTab === 'spending' && <SpendingPatternsTab />}
       {activeTab === 'merchants' && <MerchantInsightsTab />}
       {activeTab === 'time' && <TimeBasedTab />}
-      {activeTab === 'processing' && <ProcessingStatsTab />}
     </div>
   );
 };

@@ -2,8 +2,6 @@
  * AnalyticsExports Page
  * 
  * Comprehensive page showcasing analytics and export features:
- * - Batch processing interface
- * - Smart categorization tools
  * - Receipt analytics dashboard
  * - Export functionality
  * - Feature overview and usage statistics
@@ -11,7 +9,6 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTheme } from '../context/ThemeContext';
-import BatchProcessor from '../components/receipts/BatchProcessor';
 import ReceiptAnalytics from '../components/analytics/ReceiptAnalytics';
 import ExportManager from '../components/export/ExportManager';
 
@@ -21,13 +18,6 @@ const AnalyticsExports = () => {
 
   // Feature cards data
   const features = [
-    {
-      id: 'batch',
-      title: 'Batch Processing',
-      description: 'Batch scan and auto-categorize multiple receipts.',
-      icon: '📦',
-      color: 'blue',
-    },
     {
       id: 'analytics',
       title: 'Receipt Analytics',
@@ -49,7 +39,7 @@ const AnalyticsExports = () => {
     <div className="space-y-8">
 
       {/* Feature Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {features.map(feature => (
           <div
             key={feature.id}
@@ -94,19 +84,11 @@ const AnalyticsExports = () => {
         </p>
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
-            <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">1</span>
-            <span className="text-gray-700 dark:text-gray-300">Try batch processing with multiple receipts</span>
+            <span className="w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-medium">1</span>
+            <span className="text-gray-700 dark:text-gray-300">Explore analytics to understand your spending patterns</span>
           </div>
           <div className="flex items-center space-x-2">
-            <span className="w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-medium">2</span>
-            <span className="text-gray-700 dark:text-gray-300">Let smart categorization learn your preferences</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-6 h-6 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-medium">3</span>
-            <span className="text-gray-700 dark:text-gray-300">Explore analytics to understand your spending</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-sm font-medium">4</span>
+            <span className="w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-sm font-medium">2</span>
             <span className="text-gray-700 dark:text-gray-300">Export your data for external analysis</span>
           </div>
         </div>
@@ -125,15 +107,6 @@ const AnalyticsExports = () => {
           }`}
       >
         Overview
-      </button>
-      <button
-        onClick={() => setActiveFeature('batch')}
-        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeFeature === 'batch'
-          ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
-          : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
-          }`}
-      >
-        Batch Processing
       </button>
       <button
         onClick={() => setActiveFeature('analytics')}
@@ -160,7 +133,7 @@ const AnalyticsExports = () => {
     <>
       <Helmet>
         <title>Analytics & Exports · MyKhata</title>
-        <meta name="description" content="Explore MyKhata's analytics and export features including batch processing, smart categorization, analytics, and export functionality" />
+        <meta name="description" content="Explore MyKhata's analytics and export features including receipt analytics and export functionality" />
       </Helmet>
 
       <div className={`min-h-screen ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
@@ -178,15 +151,6 @@ const AnalyticsExports = () => {
           <Navigation />
 
           {activeFeature === 'overview' && <FeatureOverview />}
-          {activeFeature === 'batch' && (
-            <BatchProcessor
-              onComplete={() => {
-                console.log('Batch processing completed');
-                setActiveFeature('overview');
-              }}
-              onCancel={() => setActiveFeature('overview')}
-            />
-          )}
           {activeFeature === 'analytics' && <ReceiptAnalytics />}
           {activeFeature === 'export' && (
             <ExportManager
