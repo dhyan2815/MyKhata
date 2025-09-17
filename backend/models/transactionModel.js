@@ -35,6 +35,14 @@ const transactionSchema = mongoose.Schema(
       default: 'INR',
       enum: ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'INR', 'CNY'],
     },
+    merchant: {
+      type: String,
+      trim: true,
+    },
+    receiptImage: {
+      type: String, // URL to stored image
+      trim: true,
+    },
   },
   {
     timestamps: true,

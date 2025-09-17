@@ -15,7 +15,7 @@ import './index.css';
 // Import ThemeProvider for theme context
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { HelmetProvider } from 'react-helmet-async';
-import ErrorBoundary from './components/ErrorBoundary.jsx';
+import ErrorBoundary from './components/common/ErrorBoundary.jsx';
 
 // Render the React application into the root DOM node
 ReactDOM.createRoot(document.getElementById('root')).render(

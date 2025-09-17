@@ -25,7 +25,7 @@ const createTransaction = asyncHandler(async (req, res) => {
 // @route   GET /api/transactions
 // @access  Private
 const getTransactions = asyncHandler(async (req, res) => {
-  const { startDate, endDate, type, category, sort, limit = 100, page = 1 } = req.query;
+  const { startDate, endDate, type, category, sort, limit = 50, page = 1 } = req.query;
   
   // Build filter object
   const filter = { user: req.user._id };

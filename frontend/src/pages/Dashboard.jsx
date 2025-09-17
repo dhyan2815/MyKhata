@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
-import { ArrowUpRight, ArrowDownRight, Wallet, TrendingUp, Plus, Calendar } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, Wallet, TrendingUp, Plus, Calendar, Camera } from 'lucide-react';
 import { getTransactionSummary, getTransactions } from '../api/transactions';
-import TransactionList from '../components/TransactionList';
-import DashboardChart from '../components/DashboardChart';
+import TransactionList from '../components/transactions/TransactionList';
+import DashboardChart from '../components/transactions/DashboardChart';
 import toast from 'react-hot-toast';
 import { Helmet } from 'react-helmet-async';
 import { safeArray } from '../utils/safeArray';
@@ -102,6 +102,9 @@ const Dashboard = () => {
         </div>
 
         <div className="flex items-center space-x-3">
+          <Link to="/receipt-scanner" className="btn btn-secondary text-sm sm:text-base">
+            <Camera size={16} className="mr-1" /> Scan Receipt
+          </Link>
           <Link to="/transactions/add" className="btn btn-primary text-sm sm:text-base">
             <Plus size={16} className="mr-1" /> Add Transaction
           </Link>

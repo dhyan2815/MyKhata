@@ -3,7 +3,7 @@ import { getUserProfile, updateUserProfile } from '../api/auth';
 import { useAuth } from '../context/AuthContext';
 import { User, Mail, Save, Sun, IndianRupee } from 'lucide-react';
 import toast from 'react-hot-toast';
-import ToggleMode from '../components/ToggleMode';
+import ToggleMode from '../components/common/ToggleMode';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 

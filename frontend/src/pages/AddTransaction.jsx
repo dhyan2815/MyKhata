@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TransactionForm from '../components/TransactionForm';
-import VoiceInput from '../components/VoiceInput';
+import TransactionForm from '../components/transactions/TransactionForm';
+import VoiceInput from '../components/common/VoiceInput';
 import { createTransaction } from '../api/transactions';
 import toast from 'react-hot-toast';
 import { Helmet } from 'react-helmet-async';

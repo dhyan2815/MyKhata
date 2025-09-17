@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getTransactions } from '../api/transactions';
-import TransactionList from '../components/TransactionList';
+import TransactionList from '../components/transactions/TransactionList';
 import { Plus, Filter } from 'lucide-react';
 import { getCategories } from '../api/categories';
 import toast from 'react-hot-toast';
