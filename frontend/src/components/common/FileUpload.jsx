@@ -157,7 +157,7 @@ const FileUpload = ({
   });
 
   return (
-    <div className={`rounded-lg shadow-lg p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+    <div className={`rounded-lg shadow-lg p-6 ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
       <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
         Upload Receipt Image
       </h2>
@@ -169,7 +169,7 @@ const FileUpload = ({
           isDragActive
             ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
             : isDark 
-              ? 'border-gray-600 hover:border-gray-500 bg-gray-700'
+              ? 'border-gray-600 hover:border-gray-500 bg-gray-900'
               : 'border-gray-300 hover:border-gray-400'
         } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
       >

@@ -98,7 +98,7 @@ const CaptureButton = ({
       disabled={isScanning || isDisabled}
       className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      {isScanning ? 'Processing...' : 'Capture Photo 📸'}
+      {isScanning ? 'Processing...' : 'Capture Photo'}
     </button>
   </div>
 );
@@ -141,7 +141,7 @@ const CameraCapture = ({
   const isCameraDisabled = isMobile && !isMobileCameraActive;
 
   return (
-    <div className={`rounded-lg shadow-lg p-6 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+    <div className={`rounded-lg shadow-lg p-6 ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
       <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
         {isMobile ? 'Take Photo with Mobile Camera' : 'Take Photo with Webcam'}
       </h2>
