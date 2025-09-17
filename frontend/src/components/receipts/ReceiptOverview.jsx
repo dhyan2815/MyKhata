@@ -6,6 +6,7 @@
  * - Total processed receipts count
  * - Total pending receipts count
  * - Total processed amount in currency format
+ * - Total pending amount in currency format
  * - Responsive grid layout with hover effects
  */
 import React from 'react';
@@ -80,6 +81,14 @@ const ReceiptOverview = ({ receipts }) => {
           isDark={isDark}
         />
 
+        {/* Total Processed Amount */}
+        <StatCard
+          value={stats.formattedAmount}
+          label="Total Processed Amount"
+          color="purple"
+          isDark={isDark}
+        />
+
         {/* Total Processed */}
         <StatCard
           value={stats.totalProcessed}
@@ -88,19 +97,19 @@ const ReceiptOverview = ({ receipts }) => {
           isDark={isDark}
         />
 
+        {/* Total Pending Amount */}
+        <StatCard
+          value={stats.formattedPendingAmount}
+          label="Total Pending Amount"
+          color="red"
+          isDark={isDark}
+        />
+
         {/* Total Pending */}
         <StatCard
           value={stats.totalPending}
           label="Pending"
           color="yellow"
-          isDark={isDark}
-        />
-
-        {/* Total Amount */}
-        <StatCard
-          value={stats.formattedAmount}
-          label="Total Processed Amount"
-          color="purple"
           isDark={isDark}
         />
       </div>

@@ -168,6 +168,23 @@ export const calculateTotalProcessedAmount = (receipts) => {
 };
 
 /**
+ * Calculates total pending amount from receipts array
+ * @param {array} receipts - Array of receipt objects
+ * @returns {number} Total pending amount
+ */
+export const calculateTotalPendingAmount = (receipts) => {
+  return receipts
+    .filter((r) => !r.transactionId) // Only pending receipts
+    .reduce((sum, r) => {
+      // Use extractedData amount for pending receipts
+      const amount = r.extractedData?.amount || 
+                   r.extractedData?.total || 
+                   r.extractedData?.subtotal || 0;
+      return sum + amount;
+    }, 0);
+};
+
+/**
  * Gets receipt statistics for overview display
  * @param {array} receipts - Array of receipt objects
  * @returns {object} Statistics object with counts and totals
@@ -177,12 +194,15 @@ export const getReceiptStatistics = (receipts) => {
   const totalProcessed = receipts.filter((r) => r.transactionId).length;
   const totalPending = receipts.filter((r) => !r.transactionId).length;
   const totalAmount = calculateTotalProcessedAmount(receipts);
+  const totalPendingAmount = calculateTotalPendingAmount(receipts);
 
   return {
     totalScanned,
     totalProcessed,
     totalPending,
     totalAmount,
-    formattedAmount: formatAmount(totalAmount)
+    formattedAmount: formatAmount(totalAmount),
+    totalPendingAmount,
+    formattedPendingAmount: formatAmount(totalPendingAmount)
   };
 };
