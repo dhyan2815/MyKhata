@@ -107,81 +107,6 @@ const getReceiptAnalyticsOverview = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get spending patterns by category
-// @route   GET /api/analytics/receipts/spending-patterns
-// @access  Private
-const getSpendingPatterns = asyncHandler(async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { period = '30d', groupBy = 'category' } = req.query;
-
-    // Calculate date range
-    const endDate = new Date();
-    const startDate = moment().subtract(parseInt(period.replace('d', '')), 'days').toDate();
-
-    // Get transactions from processed receipts
-    const transactions = await Transaction.find({
-      user: userId,
-      date: { $gte: startDate, $lte: endDate },
-      receiptImage: { $exists: true, $ne: null }
-    }).populate('category');
-
-    // Group by category
-    const categorySpending = {};
-    transactions.forEach(transaction => {
-      const categoryId = transaction.category._id.toString();
-      const categoryName = transaction.category.name;
-      
-      if (!categorySpending[categoryId]) {
-        categorySpending[categoryId] = {
-          categoryId,
-          categoryName,
-          totalAmount: 0,
-          transactionCount: 0,
-          averageAmount: 0
-        };
-      }
-      
-      categorySpending[categoryId].totalAmount += transaction.amount;
-      categorySpending[categoryId].transactionCount += 1;
-    });
-
-    // Calculate averages and sort
-    const patterns = Object.values(categorySpending).map(pattern => ({
-      ...pattern,
-      averageAmount: Math.round((pattern.totalAmount / pattern.transactionCount) * 100) / 100,
-      totalAmount: Math.round(pattern.totalAmount * 100) / 100
-    })).sort((a, b) => b.totalAmount - a.totalAmount);
-
-    // Calculate total spending
-    const totalSpending = patterns.reduce((sum, pattern) => sum + pattern.totalAmount, 0);
-
-    // Add percentage of total spending
-    patterns.forEach(pattern => {
-      pattern.percentage = totalSpending > 0 
-        ? Math.round((pattern.totalAmount / totalSpending) * 100 * 100) / 100 
-        : 0;
-    });
-
-    res.status(200).json({
-      success: true,
-      data: {
-        patterns,
-        totalSpending: Math.round(totalSpending * 100) / 100,
-        period: {
-          startDate,
-          endDate,
-          label: `${period} days`
-        },
-        groupBy
-      }
-    });
-  } catch (error) {
-    console.error('Spending patterns error:', error);
-    res.status(500);
-    throw new Error(`Failed to fetch spending patterns: ${error.message}`);
-  }
-});
 
 // @desc    Get merchant insights
 // @route   GET /api/analytics/receipts/merchant-insights
@@ -493,7 +418,6 @@ const getProcessingStats = asyncHandler(async (req, res) => {
 
 export {
   getReceiptAnalyticsOverview,
-  getSpendingPatterns,
   getMerchantInsights,
   getTimeBasedAnalytics,
   getProcessingStats

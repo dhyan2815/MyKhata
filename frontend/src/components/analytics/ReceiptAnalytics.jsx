@@ -3,7 +3,6 @@
  * 
  * Comprehensive analytics dashboard for receipts:
  * - Overview statistics and KPIs
- * - Spending patterns by category
  * - Merchant insights and analysis
  * - Time-based trends and charts
  * - Interactive charts and visualizations
@@ -11,7 +10,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import { 
-  getSpendingPatterns,
   getMerchantInsights,
   getTimeBasedAnalytics
 } from '../../api/analytics';
@@ -48,7 +46,6 @@ const ReceiptAnalytics = () => {
   const [period, setPeriod] = useState('30d');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
-    spendingPatterns: null,
     merchantInsights: null,
     timeBased: null
   });
@@ -61,14 +58,12 @@ const ReceiptAnalytics = () => {
   const loadAnalyticsData = async () => {
     setLoading(true);
     try {
-      const [spendingPatterns, merchantInsights, timeBased] = await Promise.all([
-        getSpendingPatterns(period),
+      const [merchantInsights, timeBased] = await Promise.all([
         getMerchantInsights(period),
         getTimeBasedAnalytics(period, 'daily')
       ]);
 
       setData({
-        spendingPatterns: spendingPatterns.success ? spendingPatterns.data : null,
         merchantInsights: merchantInsights.success ? merchantInsights.data : null,
         timeBased: timeBased.success ? timeBased.data : null
       });
@@ -129,70 +124,6 @@ const ReceiptAnalytics = () => {
   );
 
 
-  // Spending patterns tab
-  const SpendingPatternsTab = () => {
-    if (!data.spendingPatterns) return <div>Loading...</div>;
-
-    const { patterns, totalSpending } = data.spendingPatterns;
-
-    const chartData = {
-      labels: patterns.map(p => p.categoryName),
-      datasets: [
-        {
-          label: 'Amount Spent',
-          data: patterns.map(p => p.totalAmount),
-          backgroundColor: [
-            '#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6',
-            '#EC4899', '#06B6D4', '#84CC16', '#F97316', '#6366F1'
-          ],
-          borderWidth: 0
-        }
-      ]
-    };
-
-    return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Doughnut Chart */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Spending by Category</h3>
-            <div className="h-64">
-              <Doughnut data={chartData} options={chartOptions} />
-            </div>
-          </div>
-
-          {/* Category List */}
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Category Breakdown</h3>
-            <div className="space-y-3">
-              {patterns.map((pattern, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div 
-                      className="w-4 h-4 rounded-full"
-                      style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
-                    />
-                    <span className="font-medium text-gray-900 dark:text-white">{pattern.categoryName}</span>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-semibold text-gray-900 dark:text-white">₹{pattern.totalAmount}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{pattern.percentage}%</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Summary */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">Total Spending</h3>
-          <p className="text-3xl font-bold text-blue-900 dark:text-blue-100">₹{totalSpending}</p>
-          <p className="text-sm text-blue-700 dark:text-blue-300">Across {patterns.length} categories</p>
-        </div>
-      </div>
-    );
-  };
 
   // Merchant insights tab
   const MerchantInsightsTab = () => {
@@ -357,7 +288,6 @@ const ReceiptAnalytics = () => {
     <div className="flex space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1 mb-6">
       {[
         { id: 'merchants', label: 'Merchant Insights' },
-        { id: 'spending', label: 'Spending Patterns' },
         { id: 'time', label: 'Time Trends' }
       ].map(tab => (
         <button
@@ -393,7 +323,6 @@ const ReceiptAnalytics = () => {
       <TabNavigation />
 
       {activeTab === 'merchants' && <MerchantInsightsTab />}
-      {activeTab === 'spending' && <SpendingPatternsTab />}
       {activeTab === 'time' && <TimeBasedTab />}
     </div>
   );

@@ -11,15 +11,6 @@ export const getReceiptAnalyticsOverview = async (period = '30d') => {
   }
 };
 
-// Get spending patterns by category
-export const getSpendingPatterns = async (period = '30d', groupBy = 'category') => {
-  try {
-    const response = await axios.get(`/analytics/receipts/spending-patterns?period=${period}&groupBy=${groupBy}`);
-    return response.data;
-  } catch (error) {
-    return errorHandler.handleApiError(error, () => getSpendingPatterns(period, groupBy));
-  }
-};
 
 // Get merchant insights
 export const getMerchantInsights = async (period = '30d') => {
