@@ -23,6 +23,43 @@ const CameraError = ({ error, isDark }) => (
 );
 
 /**
+ * Camera mode toggle component for mobile devices
+ */
+const CameraModeToggle = ({ 
+  cameraMode, 
+  onModeChange, 
+  isDark, 
+  isDisabled 
+}) => (
+  <div className="flex justify-center mb-4">
+    <div className="flex space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+      <button
+        onClick={() => onModeChange('back')}
+        disabled={isDisabled}
+        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          cameraMode === 'back'
+            ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+        } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      >
+        Back Camera
+      </button>
+      <button
+        onClick={() => onModeChange('front')}
+        disabled={isDisabled}
+        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+          cameraMode === 'front'
+            ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
+        } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      >
+        Front Camera
+      </button>
+    </div>
+  </div>
+);
+
+/**
  * Mobile camera interface component
  */
 const MobileCameraInterface = ({ 
@@ -119,9 +156,11 @@ const CameraCapture = ({
     mobileCameraStream,
     mobileCameraError,
     isMobileCameraActive,
+    cameraMode,
     mobileVideoRef,
     mobileCanvasRef,
     startMobileCamera,
+    setCameraModeAndRestart,
     capturePhoto,
   } = useCameraOperations();
 
@@ -137,6 +176,11 @@ const CameraCapture = ({
     capturePhoto(webcamRef, onCapture);
   };
 
+  // Handle camera mode change
+  const handleCameraModeChange = (mode) => {
+    setCameraModeAndRestart(mode);
+  };
+
   // Check if camera is disabled
   const isCameraDisabled = isMobile && !isMobileCameraActive;
 
@@ -145,6 +189,16 @@ const CameraCapture = ({
       <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
         {isMobile ? 'Take Photo with Mobile Camera' : 'Take Photo with Webcam'}
       </h2>
+      
+      {/* Camera Mode Toggle - Mobile Only */}
+      {isMobile && (
+        <CameraModeToggle
+          cameraMode={cameraMode}
+          onModeChange={handleCameraModeChange}
+          isDark={isDark}
+          isDisabled={isScanning}
+        />
+      )}
       
       {/* Mobile Camera Interface */}
       {isMobile && (

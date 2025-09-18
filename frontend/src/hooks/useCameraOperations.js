@@ -18,6 +18,7 @@ export const useCameraOperations = () => {
   const [mobileCameraStream, setMobileCameraStream] = useState(null);
   const [mobileCameraError, setMobileCameraError] = useState(null);
   const [isMobileCameraActive, setIsMobileCameraActive] = useState(false);
+  const [cameraMode, setCameraMode] = useState('back'); // 'front' or 'back'
   
   // Camera refs
   const mobileVideoRef = useRef(null);
@@ -54,17 +55,17 @@ export const useCameraOperations = () => {
   }, [mobileCameraStream]);
 
   /**
-   * Starts the mobile camera with environment-facing preference
-   * Falls back to any available camera if environment camera fails
+   * Starts the mobile camera with specified mode (front/back)
+   * Falls back to any available camera if specified camera fails
    */
-  const startMobileCamera = async () => {
+  const startMobileCamera = async (mode = cameraMode) => {
     try {
       setMobileCameraError(null);
       
-      // Try to get environment-facing camera first (back camera on mobile)
+      // Determine camera constraints based on mode
       const constraints = {
         video: {
-          facingMode: 'environment',
+          facingMode: mode === 'back' ? 'environment' : 'user',
           width: { ideal: 1280 },
           height: { ideal: 720 }
         }
@@ -73,13 +74,14 @@ export const useCameraOperations = () => {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       setMobileCameraStream(stream);
       setIsMobileCameraActive(true);
+      setCameraMode(mode);
       
       if (mobileVideoRef.current) {
         mobileVideoRef.current.srcObject = stream;
       }
     } catch (error) {
       console.error('Mobile camera error:', error);
-      setMobileCameraError('Failed to access camera. Please check permissions.');
+      setMobileCameraError(`Failed to access ${mode} camera. Please check permissions.`);
       
       // Fallback to any available camera
       try {
@@ -114,7 +116,21 @@ export const useCameraOperations = () => {
     if (mobileCameraStream) {
       stopMobileCamera();
       await new Promise(resolve => setTimeout(resolve, 100)); // Small delay
-      await startMobileCamera();
+      const newMode = cameraMode === 'back' ? 'front' : 'back';
+      await startMobileCamera(newMode);
+    }
+  };
+
+  /**
+   * Sets camera mode and restarts camera if active
+   */
+  const setCameraModeAndRestart = async (mode) => {
+    if (mobileCameraStream) {
+      stopMobileCamera();
+      await new Promise(resolve => setTimeout(resolve, 100)); // Small delay
+      await startMobileCamera(mode);
+    } else {
+      setCameraMode(mode);
     }
   };
 
@@ -188,6 +204,7 @@ export const useCameraOperations = () => {
     mobileCameraStream,
     mobileCameraError,
     isMobileCameraActive,
+    cameraMode,
     
     // Camera refs
     mobileVideoRef,
@@ -197,6 +214,7 @@ export const useCameraOperations = () => {
     startMobileCamera,
     stopMobileCamera,
     switchMobileCamera,
+    setCameraModeAndRestart,
     capturePhoto,
     captureMobilePhoto,
     captureWebcamPhoto,
