@@ -6,8 +6,8 @@ import moment from 'moment';
 // Helper: Sum by category
 const sumByCategory = (txns) => {
   return txns.reduce((acc, txn) => {
-    // Use category name if populated, otherwise fallback to ID
-    const cat = txn.category?.name || txn.category;
+    // Use category name if populated, otherwise use "Uncategorized"
+    const cat = txn.category?.name || 'Uncategorized';
     acc[cat] = (acc[cat] || 0) + txn.amount;
     return acc;
   }, {});
@@ -92,13 +92,14 @@ function spendingStreaks(threeMonthsTxns, now, endOfThisMonth) {
   const streaks = {};
   threeMonthsTxns.forEach(txn => {
     const month = moment(txn.date).format('YYYY-MM');
-    if (!streaks[txn.category]) streaks[txn.category] = new Set();
-    streaks[txn.category].add(month);
+    const category = txn.category?.name || 'Uncategorized';
+    if (!streaks[category]) streaks[category] = new Set();
+    streaks[category].add(month);
   });
   const insights = [];
   for (const [category, months] of Object.entries(streaks)) {
     if (months.size >= 3) {
-      insights.push(`You’ve spent on ${category} for 3 consecutive months.`);
+      insights.push(`You've spent on ${category} for 3 consecutive months.`);
     }
   }
   return insights;

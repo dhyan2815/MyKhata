@@ -77,7 +77,7 @@ const Navbar = ({ toggleSidebar, toggleSidebarCollapsed, sidebarCollapsed }) => 
           </Link>
 
           {/* Insights display - hidden on very small screens */}
-          <div className="hidden sm:flex ml-3 md:ml-4 items-center space-x-2 overflow-x-auto hide-scrollbar max-w-xs sm:max-w-md md:max-w-lg">
+          <div className="hidden sm:flex ml-3 md:ml-4 items-center space-x-2 overflow-x-auto hide-scrollbar max-w-xs sm:max-w-lg md:max-w-xl lg:max-w-2xl">
             {insightsLoading ? (
               <span className="inline-flex items-center px-4 py-1.5 rounded-md text-teal-800 dark:text-teal-200 text-sm animate-pulse shadow-sm">
                 <Lightbulb size={16} className="mr-1" /> Loading insights...
