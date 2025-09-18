@@ -10,6 +10,7 @@
  */
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
+import { CheckSquare } from 'lucide-react';
 import {
   formatDate,
   getAmountDisplay,
@@ -110,16 +111,34 @@ const ReceiptCard = ({
   onCancel,
   onDelete,
   onProcess,
-  isProcessing
+  isProcessing,
+  isMultiSelectMode = false,
+  isSelected = false,
+  onToggleSelection
 }) => {
   const { isDark } = useTheme();
 
   return (
     <div
-      className={`rounded-lg shadow-lg overflow-hidden ${
+      className={`rounded-lg shadow-lg overflow-hidden relative ${
         isDark ? 'bg-gray-800 border border-gray-700' : 'bg-white'
+      } ${isSelected ? 'ring-2 ring-teal-500' : ''} ${
+        isMultiSelectMode ? 'cursor-pointer' : ''
       }`}
+      onClick={isMultiSelectMode ? () => onToggleSelection(receipt._id) : undefined}
     >
+      {/* Multi-select checkbox */}
+      {isMultiSelectMode && (
+        <div className="absolute top-2 left-2 z-10">
+          <div className={`w-6 h-6 rounded border-2 flex items-center justify-center ${
+            isSelected 
+              ? 'bg-teal-600 border-teal-600 text-white' 
+              : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+          }`}>
+            {isSelected && <CheckSquare size={16} />}
+          </div>
+        </div>
+      )}
       {/* Receipt Image Preview */}
       {receipt.receiptImage && (
         <div className="h-48 bg-gray-100 flex items-center justify-center relative">

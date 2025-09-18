@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Edit, Trash2, ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { Edit, Trash2, ChevronDown, ChevronUp, Search, CheckSquare, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { deleteTransaction } from '../../api/transactions';
 import toast from 'react-hot-toast';
@@ -26,6 +26,10 @@ const TransactionList = ({
   // State for sorting field and direction
   const [sortField, setSortField] = useState("date");
   const [sortDirection, setSortDirection] = useState("desc");
+  
+  // Multi-select state
+  const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
+  const [selectedTransactions, setSelectedTransactions] = useState(new Set());
 
   // Handles sorting logic when a column header is clicked
   const handleSort = (field) => {
@@ -53,6 +57,63 @@ const TransactionList = ({
       }
     }
   };
+
+  // Multi-select handlers
+  const toggleMultiSelectMode = () => {
+    setIsMultiSelectMode(!isMultiSelectMode);
+    setSelectedTransactions(new Set());
+  };
+
+  const toggleTransactionSelection = (transactionId) => {
+    const newSelected = new Set(selectedTransactions);
+    if (newSelected.has(transactionId)) {
+      newSelected.delete(transactionId);
+    } else {
+      newSelected.add(transactionId);
+    }
+    setSelectedTransactions(newSelected);
+  };
+
+  const selectAllTransactions = () => {
+    setSelectedTransactions(new Set(sortedTransactions.map(transaction => transaction._id)));
+  };
+
+  const clearSelection = () => {
+    setSelectedTransactions(new Set());
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedTransactions.size === 0) return;
+    
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${selectedTransactions.size} transaction(s)? This action cannot be undone.`
+    );
+
+    if (confirmed) {
+      try {
+        // Delete all selected transactions
+        const deletePromises = Array.from(selectedTransactions).map(transactionId => 
+          deleteTransaction(transactionId)
+        );
+        await Promise.all(deletePromises);
+        
+        // Clear selection and exit multi-select mode
+        setSelectedTransactions(new Set());
+        setIsMultiSelectMode(false);
+        
+        toast.success(`${selectedTransactions.size} transaction(s) deleted successfully`);
+        
+        // Refresh the list by calling the callback
+        if (onTransactionDeleted) {
+          selectedTransactions.forEach(id => onTransactionDeleted(id));
+        }
+      } catch (error) {
+        toast.error("Failed to delete some transactions");
+        console.error('Bulk delete error:', error);
+      }
+    }
+  };
+
 
   // Always use a safe array for all array operations
   const safeTransactions = safeArray(transactions);
@@ -94,9 +155,9 @@ const TransactionList = ({
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-      {/* Search bar */}
+      {/* Search bar and multi-select controls */}
       <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center">
+        <div className="flex items-center gap-4">
           <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search size={16} className="text-gray-400 dark:text-gray-500" />
@@ -109,6 +170,49 @@ const TransactionList = ({
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          {showActions && (
+            !isMultiSelectMode ? (
+              <button
+                onClick={toggleMultiSelectMode}
+                className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors"
+              >
+                <CheckSquare size={16} />
+                Multi-Select
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  {selectedTransactions.size} selected
+                </span>
+                <button
+                  onClick={selectAllTransactions}
+                  className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                >
+                  Select All
+                </button>
+                <button
+                  onClick={clearSelection}
+                  className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                >
+                  Clear
+                </button>
+                <button
+                  onClick={handleBulkDelete}
+                  disabled={selectedTransactions.size === 0}
+                  className="flex items-center gap-1 px-3 py-1 text-sm bg-red-600 hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded transition-colors"
+                >
+                  <Trash2 size={14} />
+                  Delete ({selectedTransactions.size})
+                </button>
+                <button
+                  onClick={toggleMultiSelectMode}
+                  className="p-2 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )
+          )}
         </div>
       </div>
       {/* Responsive Table/Card */}
@@ -117,6 +221,18 @@ const TransactionList = ({
         <table className="hidden lg:table min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-800">
             <tr>
+              {isMultiSelectMode && (
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedTransactions.size === sortedTransactions.length && sortedTransactions.length > 0}
+                      onChange={selectedTransactions.size === sortedTransactions.length ? clearSelection : selectAllTransactions}
+                      className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                    />
+                  </div>
+                </th>
+              )}
               <th
                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
                 onClick={() => handleSort("date")}
@@ -208,6 +324,11 @@ const TransactionList = ({
             {isLoading ? (
               Array.from({ length: 3 }).map((_, index) => (
                 <tr key={index} className="animate-pulse">
+                  {isMultiSelectMode && (
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="h-4 w-4 bg-gray-200 dark:bg-gray-600 rounded"></div>
+                    </td>
+                  )}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-24"></div>
                   </td>
@@ -239,8 +360,22 @@ const TransactionList = ({
                     ease: "easeOut"
                   }}
                   exit={{ opacity: 0, x: 20 }}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                  className={`hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                    isMultiSelectMode ? 'cursor-pointer' : ''
+                  } ${selectedTransactions.has(transaction._id) ? 'bg-teal-50 dark:bg-teal-900/20' : ''}`}
+                  onClick={isMultiSelectMode ? () => toggleTransactionSelection(transaction._id) : undefined}
                 >
+                  {isMultiSelectMode && (
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedTransactions.has(transaction._id)}
+                        onChange={() => toggleTransactionSelection(transaction._id)}
+                        className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </td>
+                  )}
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                     {format(new Date(transaction.date), "MMM dd, yyyy")}
                   </td>
@@ -290,7 +425,7 @@ const TransactionList = ({
             ) : (
               <tr>
                 <td
-                  colSpan={showActions ? 5 : 4}
+                  colSpan={showActions ? (isMultiSelectMode ? 6 : 5) : (isMultiSelectMode ? 5 : 4)}
                   className="px-6 py-4 text-center text-gray-500 dark:text-gray-400"
                 >
                   No transactions found
@@ -329,8 +464,23 @@ const TransactionList = ({
                   y: -2,
                   transition: { duration: 0.2 }
                 }}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4 flex flex-col gap-2"
+                className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4 flex flex-col gap-2 relative ${
+                  isMultiSelectMode ? 'cursor-pointer' : ''
+                } ${selectedTransactions.has(transaction._id) ? 'ring-2 ring-teal-500 bg-teal-50 dark:bg-teal-900/20' : ''}`}
+                onClick={isMultiSelectMode ? () => toggleTransactionSelection(transaction._id) : undefined}
               >
+                {/* Multi-select checkbox for mobile */}
+                {isMultiSelectMode && (
+                  <div className="absolute top-2 right-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedTransactions.has(transaction._id)}
+                      onChange={() => toggleTransactionSelection(transaction._id)}
+                      className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                )}
                 <div className="flex justify-between items-center">
                   <span className="text-xs text-gray-500 dark:text-gray-400">
                     {format(new Date(transaction.date), "MMM dd, yyyy")}
