@@ -8,12 +8,12 @@
  * - Custom report templates
  * - Multi-format support (PDF, CSV, JSON)
  */
-import puppeteer from 'puppeteer';
+// import puppeteer from 'puppeteer';
 import Receipt from '../models/receiptModel.js';
 import Transaction from '../models/transactionModel.js';
 import Category from '../models/categoryModel.js';
 import moment from 'moment';
-import memoryManager from './memoryManager.js';
+// import memoryManager from './memoryManager.js';
 
 class ExportService {
   constructor() {
@@ -49,46 +49,11 @@ class ExportService {
   // Generate PDF report
   async generatePDFReport(userId, options = {}) {
     try {
-      // Use memory manager to queue PDF generation
-      return await memoryManager.queueOperation(async () => {
-        await this.initialize();
-        
-        const {
-          period = '30d',
-          includeCharts = true,
-          includeReceipts = true,
-          reportType = 'comprehensive'
-        } = options;
-
-        // Calculate date range
-        const endDate = new Date();
-        const startDate = moment().subtract(parseInt(period.replace('d', '')), 'days').toDate();
-
-        // Gather data
-        const data = await this.gatherReportData(userId, startDate, endDate, reportType);
-
-        // Generate HTML content
-        const htmlContent = this.generateHTMLReport(data, options);
-
-        // Create PDF
-        const page = await this.browser.newPage();
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-        
-        const pdfBuffer = await page.pdf({
-          format: 'A4',
-          printBackground: true,
-          margin: {
-            top: '20mm',
-            right: '20mm',
-            bottom: '20mm',
-            left: '20mm'
-          }
-        });
-
-        await page.close();
-        return pdfBuffer;
-      }, 'low'); // PDF generation has lower priority
-
+      // PDF generation temporarily disabled for deployment
+      // Return a message indicating the feature is temporarily unavailable
+      console.log('PDF generation temporarily disabled for deployment');
+      
+      throw new Error('PDF generation is temporarily unavailable. Please use CSV export instead.');
     } catch (error) {
       console.error('PDF generation error:', error);
       throw error;
