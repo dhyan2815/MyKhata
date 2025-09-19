@@ -1,5 +1,5 @@
 // import Tesseract from 'tesseract.js';
-import sharp from 'sharp';
+// import sharp from 'sharp';
 import cacheService from './cacheService.js';
 // import memoryManager from './memoryManager.js';
 
@@ -83,14 +83,9 @@ class OCRProcessor {
   // Preprocess image for better OCR accuracy
   async preprocessImage(imageBuffer) {
     try {
-      return await sharp(imageBuffer)
-        .resize(1200, null, { withoutEnlargement: true, fit: 'inside' }) // Resize for optimal OCR
-        .grayscale() // Convert to grayscale first
-        .normalize() // Normalize contrast
-        .sharpen({ sigma: 1, flat: 1, jagged: 2 }) // Enhanced sharpening
-        .gamma(1.2) // Adjust gamma for better contrast
-        .jpeg({ quality: 95 }) // High quality JPEG
-        .toBuffer();
+      // Image preprocessing temporarily disabled
+      // Return original buffer
+      return imageBuffer;
     } catch (error) {
       console.error('Error preprocessing image:', error);
       return imageBuffer; // Return original if preprocessing fails
