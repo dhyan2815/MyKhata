@@ -16,7 +16,11 @@ import exportRoutes from './routes/exportRoutes.js';
 import cors from 'cors';
 
 // Load env vars
-dotenv.config();
+if (process.env.NODE_ENV === 'production') {
+  dotenv.config({ path: '.env.production' });
+} else {
+  dotenv.config();
+}
 
 // Connect to database
 connectDB();

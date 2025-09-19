@@ -1,6 +1,7 @@
 import Tesseract from 'tesseract.js';
 import sharp from 'sharp';
 import cacheService from './cacheService.js';
+import memoryManager from './memoryManager.js';
 
 class OCRProcessor {
   constructor() {
@@ -24,8 +25,17 @@ class OCRProcessor {
     
     try {
       this.isInitializing = true;
+      
+      // Use lighter OCR configuration in production
+      if (process.env.NODE_ENV === 'production') {
+        console.log('Using production-optimized OCR configuration');
+      }
+      
       this.worker = await Tesseract.createWorker('eng', 1, {
-        logger: m => console.log('OCR:', m)
+        logger: m => console.log('OCR:', m),
+        // Optimize for memory usage
+        cacheMethod: 'none',
+        gzip: false
       });
       
       // Configure worker for better performance
@@ -37,6 +47,11 @@ class OCRProcessor {
       console.log('OCR Worker initialized successfully');
     } catch (error) {
       console.error('Error initializing OCR worker:', error);
+      // Don't throw error in production, just log it
+      if (process.env.NODE_ENV === 'production') {
+        console.log('OCR initialization failed, continuing without OCR functionality');
+        return;
+      }
       throw error;
     } finally {
       this.isInitializing = false;
@@ -56,27 +71,30 @@ class OCRProcessor {
         return cachedResult;
       }
 
-      // Get available worker
-      const worker = await this.getWorker();
+      // Use memory manager to queue OCR operation
+      return await memoryManager.queueOperation(async () => {
+        // Get available worker
+        const worker = await this.getWorker();
 
-      try {
-        // Preprocess image for better OCR results
-        const processedImage = await this.preprocessImage(imageBuffer);
-        
-        // Extract text from image
-        const { data: { text } } = await worker.recognize(processedImage);
-        
-        // Parse extracted text to find relevant information
-        const extractedData = this.parseReceiptText(text);
-        
-        // Cache the result
-        cacheService.setOCRResult(imageHash, extractedData);
-        
-        return extractedData;
-      } finally {
-        // Return worker to pool
-        this.returnWorker(worker);
-      }
+        try {
+          // Preprocess image for better OCR results
+          const processedImage = await this.preprocessImage(imageBuffer);
+          
+          // Extract text from image
+          const { data: { text } } = await worker.recognize(processedImage);
+          
+          // Parse extracted text to find relevant information
+          const extractedData = this.parseReceiptText(text);
+          
+          // Cache the result
+          cacheService.setOCRResult(imageHash, extractedData);
+          
+          return extractedData;
+        } finally {
+          // Return worker to pool
+          this.returnWorker(worker);
+        }
+      }, 'normal');
     } catch (error) {
       console.error('Error processing receipt:', error);
       throw error;

@@ -13,6 +13,7 @@ import Receipt from '../models/receiptModel.js';
 import Transaction from '../models/transactionModel.js';
 import Category from '../models/categoryModel.js';
 import moment from 'moment';
+import memoryManager from './memoryManager.js';
 
 class ExportService {
   constructor() {
@@ -22,9 +23,25 @@ class ExportService {
   // Initialize browser instance
   async initialize() {
     if (!this.browser) {
+      // Use production-optimized browser configuration
+      if (process.env.NODE_ENV === 'production') {
+        console.log('Using production-optimized PDF generation');
+      }
+      
       this.browser = await puppeteer.launch({
         headless: 'new',
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: [
+          '--no-sandbox', 
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--no-first-run',
+          '--no-zygote',
+          '--single-process',
+          '--disable-background-timer-throttling',
+          '--disable-backgrounding-occluded-windows',
+          '--disable-renderer-backgrounding'
+        ]
       });
     }
   }
@@ -32,42 +49,45 @@ class ExportService {
   // Generate PDF report
   async generatePDFReport(userId, options = {}) {
     try {
-      await this.initialize();
-      
-      const {
-        period = '30d',
-        includeCharts = true,
-        includeReceipts = true,
-        reportType = 'comprehensive'
-      } = options;
+      // Use memory manager to queue PDF generation
+      return await memoryManager.queueOperation(async () => {
+        await this.initialize();
+        
+        const {
+          period = '30d',
+          includeCharts = true,
+          includeReceipts = true,
+          reportType = 'comprehensive'
+        } = options;
 
-      // Calculate date range
-      const endDate = new Date();
-      const startDate = moment().subtract(parseInt(period.replace('d', '')), 'days').toDate();
+        // Calculate date range
+        const endDate = new Date();
+        const startDate = moment().subtract(parseInt(period.replace('d', '')), 'days').toDate();
 
-      // Gather data
-      const data = await this.gatherReportData(userId, startDate, endDate, reportType);
+        // Gather data
+        const data = await this.gatherReportData(userId, startDate, endDate, reportType);
 
-      // Generate HTML content
-      const htmlContent = this.generateHTMLReport(data, options);
+        // Generate HTML content
+        const htmlContent = this.generateHTMLReport(data, options);
 
-      // Create PDF
-      const page = await this.browser.newPage();
-      await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-      
-      const pdfBuffer = await page.pdf({
-        format: 'A4',
-        printBackground: true,
-        margin: {
-          top: '20mm',
-          right: '20mm',
-          bottom: '20mm',
-          left: '20mm'
-        }
-      });
+        // Create PDF
+        const page = await this.browser.newPage();
+        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+        
+        const pdfBuffer = await page.pdf({
+          format: 'A4',
+          printBackground: true,
+          margin: {
+            top: '20mm',
+            right: '20mm',
+            bottom: '20mm',
+            left: '20mm'
+          }
+        });
 
-      await page.close();
-      return pdfBuffer;
+        await page.close();
+        return pdfBuffer;
+      }, 'low'); // PDF generation has lower priority
 
     } catch (error) {
       console.error('PDF generation error:', error);

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: mykhata-backend
+    env: node
+    buildCommand: npm install --production
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DISABLE_OCR
+        value: "true"
+      - key: DISABLE_PDF
+        value: "true"
+    healthCheckPath: /
+    plan: starter
