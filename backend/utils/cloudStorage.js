@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
-import sharp from 'sharp';
+// import sharp from 'sharp';
 import crypto from 'crypto';
 
 class CloudStorageService {
@@ -143,20 +143,9 @@ class CloudStorageService {
    */
   async optimizeImage(imageBuffer, options = {}) {
     try {
-      const {
-        maxWidth = 1200,
-        maxHeight = 1200,
-        quality = 85,
-        format = 'jpeg'
-      } = options;
-
-      return await sharp(imageBuffer)
-        .resize(maxWidth, maxHeight, { 
-          withoutEnlargement: true, 
-          fit: 'inside' 
-        })
-        .jpeg({ quality })
-        .toBuffer();
+      // Image optimization temporarily disabled
+      // Return original buffer
+      return imageBuffer;
     } catch (error) {
       console.error('Image optimization error:', error);
       return imageBuffer; // Return original if optimization fails
