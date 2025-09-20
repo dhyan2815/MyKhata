@@ -470,6 +470,10 @@ const LandingPage = () => {
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
             <p>&copy; 2024 MyKhata. All rights reserved.</p>
+            <p className="mt-2 text-sm font-bold">
+              Made by{' '}
+              <a href="https://www.linkedin.com/in/dhyan2815" target="_blank" rel="noopener noreferrer" className="text-teal-400 font-medium hover:underline cursor-pointer" > Dhyan Patel </a>
+            </p>
           </div>
         </div>
       </footer>
