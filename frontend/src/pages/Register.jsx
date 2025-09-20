@@ -414,7 +414,7 @@ const Register = () => {
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-            className="absolute bottom-32 left-8 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-4 z-20"
+            className="absolute bottom-25 left-8 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-4 z-20"
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
@@ -430,7 +430,7 @@ const Register = () => {
           <motion.div
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-            className="absolute top-1/2 left-8 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-4 z-20"
+            className="absolute top-1/4 left-8 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-4 z-20"
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">

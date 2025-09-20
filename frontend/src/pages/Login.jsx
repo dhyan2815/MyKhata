@@ -137,7 +137,7 @@ const Login = () => {
                   transition={{ duration: 0.5, delay: 0.3 }}
                   className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4"
                 >
-                  <Wallet className="w-8 h-8 text-teal-600" />
+                  <User className="w-8 h-8 text-teal-600" />
                 </motion.div>
                 <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
                   Welcome Back!
@@ -329,11 +329,11 @@ const Login = () => {
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-green-600" />
+                <CheckCircle className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <div className="text-sm font-semibold text-gray-900">+15% Savings</div>
-                <div className="text-xs text-gray-600">This month</div>
+                <div className="text-sm font-semibold text-gray-900">Free Forever</div>
+                <div className="text-xs text-gray-600">No hidden fees</div>
               </div>
             </div>
           </motion.div>
@@ -341,7 +341,7 @@ const Login = () => {
           <motion.div
             animate={{ y: [0, 10, 0] }}
             transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-            className="absolute bottom-32 left-8 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-4 z-20"
+            className="absolute bottom-25 left-8 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-4 z-20"
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
@@ -357,7 +357,7 @@ const Login = () => {
           <motion.div
             animate={{ y: [0, -5, 0] }}
             transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-            className="absolute top-1/2 left-8 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-4 z-20"
+            className="absolute top-1/4 left-8 bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-4 z-20"
           >
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -373,9 +373,9 @@ const Login = () => {
           {/* Overlay content */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-8 z-20">
             <div className="text-white">
-              <h3 className="text-2xl font-bold mb-2">Welcome Back to MyKhata</h3>
+              <h3 className="text-2xl font-bold mb-2">Join 10,000+ Smart Users</h3>
               <p className="text-teal-100 mb-4">
-                Continue your financial journey with smart insights and effortless expense tracking.
+                Start your financial transformation today with AI-powered insights and effortless expense tracking.
               </p>
               <div className="flex items-center space-x-4 text-sm">
                 <div className="flex items-center space-x-1">
