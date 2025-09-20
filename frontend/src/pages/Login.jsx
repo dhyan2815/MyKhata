@@ -373,18 +373,18 @@ const Login = () => {
           {/* Overlay content */}
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-8 z-20">
             <div className="text-white">
-              <h3 className="text-2xl font-bold mb-2">Join 10,000+ Smart Users</h3>
+              <h3 className="text-2xl font-bold mb-2">Experience Smarter Money Management!</h3>
               <p className="text-teal-100 mb-4">
                 Start your financial transformation today with AI-powered insights and effortless expense tracking.
               </p>
               <div className="flex items-center space-x-4 text-sm">
                 <div className="flex items-center space-x-1">
                   <Users className="w-4 h-4" />
-                  <span>10K+ users</span>
+                  <span>10+ Users</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  <span>4.9/5 rating</span>
+                  <span>4.2/5 Rating</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Shield className="w-4 h-4" />
