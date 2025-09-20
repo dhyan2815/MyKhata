@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../api/auth';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { 
   User, 
   Mail, 
@@ -17,7 +18,9 @@ import {
   Star,
   Users,
   TrendingUp,
-  Receipt
+  Receipt,
+  Sun,
+  Moon
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Image from '../assets/illustration-img.jpg';
@@ -28,6 +31,7 @@ import { motion } from 'framer-motion';
 const Register = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { theme, toggleTheme, isDark } = useTheme();
   
   // State for form data (name, email, password, confirmPassword)
   const [formData, setFormData] = useState({
@@ -95,9 +99,9 @@ const Register = () => {
 
   // Registration benefits
   const registrationBenefits = [
-    { icon: <CheckCircle className="w-5 h-5 text-green-600" />, text: "Free forever" },
-    { icon: <Shield className="w-5 h-5 text-blue-600" />, text: "Secure & private" },
-    { icon: <Zap className="w-5 h-5 text-yellow-600" />, text: "Setup in 2 minutes" }
+    { icon: <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />, text: "Free forever" },
+    { icon: <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />, text: "Secure & private" },
+    { icon: <Zap className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />, text: "Setup in 2 minutes" }
   ];
 
   return (
@@ -105,7 +109,7 @@ const Register = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-teal-50"
+      className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors"
     >
       <Helmet>
         <title>Create Account · MyKhata</title>
@@ -113,17 +117,31 @@ const Register = () => {
       </Helmet>
 
       {/* Navigation */}
-      <nav className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-gray-100">
+      <nav className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm shadow-sm border-b border-gray-100 dark:border-gray-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center">
-              <Wallet className="w-8 h-8 text-teal-600" />
-              <span className="ml-2 text-2xl font-bold text-gray-900">MyKhata</span>
+              <Wallet className="w-8 h-8 text-teal-600 dark:text-teal-400" />
+              <span className="ml-2 text-2xl font-bold text-gray-900 dark:text-white">MyKhata</span>
             </Link>
             <div className="flex items-center space-x-4">
+              {/* Theme Toggle Button */}
+              <motion.button
+                onClick={toggleTheme}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                aria-label="Toggle theme"
+              >
+                {isDark ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )}
+              </motion.button>
               <Link
                 to="/"
-                className="text-gray-600 hover:text-teal-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center"
+                className="text-gray-600 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center"
               >
                 <ArrowLeft className="w-4 h-4 mr-1" />
                 Back to Home
@@ -142,21 +160,21 @@ const Register = () => {
           className="w-full lg:w-1/2 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8"
         >
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
-            <div className="bg-white rounded-2xl shadow-xl p-8 lg:p-10">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 lg:p-10 transition-colors">
               {/* Header */}
               <div className="text-center mb-8">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
-                  className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4"
+                  className="w-16 h-16 bg-teal-100 dark:bg-teal-900 rounded-full flex items-center justify-center mx-auto mb-4"
                 >
-                  <User className="w-8 h-8 text-teal-600" />
+                  <User className="w-8 h-8 text-teal-600 dark:text-teal-400" />
                 </motion.div>
-                <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
+                <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-2">
                   Start Your Financial Journey
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                   Create your account and begin smart budgeting today
                 </p>
               </div>
@@ -165,12 +183,12 @@ const Register = () => {
               <form className="space-y-6" onSubmit={handleSubmit}>
                 {/* Name input */}
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Full Name
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <User className="w-5 h-5 text-gray-400" />
+                      <User className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                     </div>
                     <input
                       id="name"
@@ -180,7 +198,7 @@ const Register = () => {
                       required
                       value={formData.name}
                       onChange={handleChange}
-                      className="input pl-10 w-full h-12 text-base"
+                      className="input pl-10 w-full h-12 text-base dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="John Doe"
                     />
                   </div>
@@ -188,12 +206,12 @@ const Register = () => {
 
                 {/* Email input */}
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Email address
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Mail className="w-5 h-5 text-gray-400" />
+                      <Mail className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                     </div>
                     <input
                       id="email"
@@ -203,7 +221,7 @@ const Register = () => {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="input pl-10 w-full h-12 text-base"
+                      className="input pl-10 w-full h-12 text-base dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="youremail@example.com"
                     />
                   </div>
@@ -211,12 +229,12 @@ const Register = () => {
 
                 {/* Password input */}
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Password
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <LockKeyhole className="w-5 h-5 text-gray-400" />
+                      <LockKeyhole className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                     </div>
                     <input
                       id="password"
@@ -226,30 +244,30 @@ const Register = () => {
                       required
                       value={formData.password}
                       onChange={handleChange}
-                      className="input pl-10 pr-10 w-full h-12 text-base"
+                      className="input pl-10 pr-10 w-full h-12 text-base dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="Create a strong password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword((prev) => !prev)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                     >
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                   </div>
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                     Password must be at least 6 characters long
                   </p>
                 </div>
 
                 {/* Confirm Password input */}
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Confirm Password
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <LockKeyhole className="w-5 h-5 text-gray-400" />
+                      <LockKeyhole className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                     </div>
                     <input
                       id="confirmPassword"
@@ -259,13 +277,13 @@ const Register = () => {
                       required
                       value={formData.confirmPassword}
                       onChange={handleChange}
-                      className="input pl-10 pr-10 w-full h-12 text-base"
+                      className="input pl-10 pr-10 w-full h-12 text-base dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400"
                       placeholder="Confirm your password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword((prev) => !prev)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                     >
                       {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
@@ -280,17 +298,17 @@ const Register = () => {
                       name="terms"
                       type="checkbox"
                       required
-                      className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
+                      className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700"
                     />
                   </div>
                   <div className="ml-3 text-sm">
-                    <label htmlFor="terms" className="text-gray-700">
+                    <label htmlFor="terms" className="text-gray-700 dark:text-gray-300">
                       I agree to the{' '}
-                      <a href="#" className="text-teal-600 hover:text-teal-500 font-medium">
+                      <a href="#" className="text-teal-600 dark:text-teal-400 hover:text-teal-500 dark:hover:text-teal-300 font-medium">
                         Terms of Service
                       </a>{' '}
                       and{' '}
-                      <a href="#" className="text-teal-600 hover:text-teal-500 font-medium">
+                      <a href="#" className="text-teal-600 dark:text-teal-400 hover:text-teal-500 dark:hover:text-teal-300 font-medium">
                         Privacy Policy
                       </a>
                     </label>
@@ -337,10 +355,10 @@ const Register = () => {
               <div className="mt-8">
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-gray-300"></div>
+                    <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-white text-gray-500">
+                    <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                       Already have an account?
                     </span>
                   </div>
@@ -350,7 +368,7 @@ const Register = () => {
                 <div className="mt-6">
                   <Link
                     to="/login"
-                    className="w-full flex items-center justify-center py-3 px-4 border-2 border-gray-300 rounded-lg shadow-sm bg-white text-base font-medium text-gray-700 hover:border-teal-600 hover:text-teal-600 transition-all duration-200"
+                    className="w-full flex items-center justify-center py-3 px-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-300 hover:border-teal-600 dark:hover:border-teal-400 hover:text-teal-600 dark:hover:text-teal-400 transition-all duration-200"
                   >
                     <Mail className="w-5 h-5 mr-2" />
                     Sign in instead
@@ -367,7 +385,7 @@ const Register = () => {
               className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4"
             >
               {registrationBenefits.map((benefit, index) => (
-                <div key={index} className="flex items-center justify-center space-x-2 text-sm text-gray-600">
+                <div key={index} className="flex items-center justify-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                   {benefit.icon}
                   <span>{benefit.text}</span>
                 </div>
