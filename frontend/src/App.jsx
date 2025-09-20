@@ -6,6 +6,7 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
 
 // Lazy load components for better performance
+const LandingPage = lazy(() => import('./pages/LandingPage'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const Transactions = lazy(() => import('./pages/Transactions'));
 const Categories = lazy(() => import('./pages/Categories'));
@@ -87,14 +88,17 @@ function App() {
       />
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
+          {/* Landing page for new users */}
+          <Route path="/" element={!user ? <LandingPage /> : <Navigate to="/dashboard" replace />} />
+          
           {/* Public routes for login and registration */}
-          <Route path="/login" element={!user ? <Login /> : <Navigate to="/" replace />} />
-          <Route path="/register" element={!user ? <Register /> : <Navigate to="/register" replace />} />
+          <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" replace />} />
+          <Route path="/register" element={!user ? <Register /> : <Navigate to="/dashboard" replace />} />
           
           {/* Protected routes wrapped in Layout */}
           <Route element={<Layout />}>
-            {/* Dashboard (home) route */}
-            <Route path="/" element={
+            {/* Dashboard route */}
+            <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
@@ -149,9 +153,9 @@ function App() {
             } />
           </Route>
           
-          {/* Default route - redirect unauthenticated users to register page */}
+          {/* Default route - redirect unauthenticated users to landing page */}
           <Route path="*" element={
-            !user ? <Navigate to="/register" replace /> : <NotFound />
+            !user ? <Navigate to="/" replace /> : <NotFound />
           } />
         </Routes>
       </Suspense>
