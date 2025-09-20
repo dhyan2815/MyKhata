@@ -37,22 +37,22 @@ const LandingPage = () => {
   // Testimonials data
   const testimonials = [
     {
-      name: "Sarah Johnson",
-      role: "Small Business Owner",
+      name: "Dhyan Patel",
+      role: "Software Engineer",
       content: "MyKhata transformed how I manage my finances. The receipt scanning feature saves me hours every week!",
       rating: 5
     },
     {
-      name: "Mike Chen",
+      name: "Dhruv Shah",
       role: "Freelancer",
       content: "Finally, a budgeting app that actually works. The analytics help me understand my spending patterns.",
-      rating: 5
+      rating: 4
     },
     {
-      name: "Emily Rodriguez",
+      name: "Vraj Bhatt",
       role: "Student",
       content: "Perfect for tracking my expenses as a student. The interface is so intuitive and clean.",
-      rating: 5
+      rating: 4
     }
   ];
 
@@ -92,10 +92,10 @@ const LandingPage = () => {
 
   // Stats data
   const stats = [
-    { number: "10K+", label: "Active Users" },
-    { number: "1M+", label: "Transactions Processed" },
-    { number: "99.9%", label: "Uptime" },
-    { number: "4.9/5", label: "User Rating" }
+    { number: "10+", label: "Active Users" },
+    { number: "100+", label: "Transactions Processed" },
+    { number: "97.9%", label: "Uptime" },
+    { number: "4.2/5", label: "User Rating" }
   ];
 
   // Auto-rotate testimonials
@@ -170,12 +170,20 @@ const LandingPage = () => {
                   to="/register"
                   className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 text-white text-lg font-semibold rounded-lg hover:bg-teal-700 transition-colors shadow-lg hover:shadow-xl"
                 >
-                  Start Free Trial
+                  Create Free Account
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
-                <button className="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-300 text-gray-700 text-lg font-semibold rounded-lg hover:border-teal-600 hover:text-teal-600 transition-colors">
+                <button 
+                  onClick={() => {
+                    document.getElementById('features')?.scrollIntoView({ 
+                      behavior: 'smooth',
+                      block: 'start'
+                    });
+                  }}
+                  className="inline-flex items-center justify-center px-8 py-4 border-2 border-gray-300 text-gray-700 text-lg font-semibold rounded-lg hover:border-teal-600 hover:text-teal-600 transition-colors"
+                >
                   <Eye className="mr-2 w-5 h-5" />
-                  Watch Demo
+                  Explore Features
                 </button>
               </div>
 
@@ -189,15 +197,15 @@ const LandingPage = () => {
                       </div>
                     ))}
                   </div>
-                  <span className="ml-3 text-sm text-gray-600">10,000+ happy users</span>
+                  <span className="ml-3 text-sm text-gray-600">10+ Happy Users</span>
                 </div>
                 <div className="flex items-center">
                   <div className="flex">
-                    {[1, 2, 3, 4, 5].map((i) => (
+                    {[1, 2, 3, 4].map((i) => (
                       <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
                     ))}
                   </div>
-                  <span className="ml-2 text-sm text-gray-600">4.9/5 rating</span>
+                  <span className="ml-2 text-sm text-gray-600">4.2/5 rating</span>
                 </div>
               </div>
             </motion.div>
@@ -264,7 +272,7 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
+      <section id="features" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -311,7 +319,7 @@ const LandingPage = () => {
               What Our Users Say
             </h2>
             <p className="text-xl text-gray-600">
-              Join thousands of satisfied users who transformed their financial management
+              Hear from real users who are improving their financial management with MyKhata
             </p>
           </motion.div>
 
@@ -375,7 +383,7 @@ const LandingPage = () => {
               Ready to Transform Your Financial Management?
             </h2>
             <p className="text-xl text-teal-100 max-w-2xl mx-auto">
-              Join thousands of users who are already saving time and money with MyKhata.
+              Start your journey towards smarter financial management with MyKhata today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -393,7 +401,7 @@ const LandingPage = () => {
               </Link>
             </div>
             <p className="text-teal-100 text-sm">
-              No credit card required • Free forever • Cancel anytime
+              No credit card needed • Always free • No hassle
             </p>
           </motion.div>
         </div>
@@ -416,9 +424,39 @@ const LandingPage = () => {
             <div>
               <h3 className="text-lg font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><Link to="/login" className="hover:text-white transition-colors">Features</Link></li>
-                <li><Link to="/login" className="hover:text-white transition-colors">Pricing</Link></li>
-                <li><Link to="/login" className="hover:text-white transition-colors">Security</Link></li>
+                <li><button 
+                  onClick={() => {
+                    document.getElementById('features')?.scrollIntoView({ 
+                      behavior: 'smooth',
+                      block: 'start'
+                    });
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer"
+                >
+                  Features
+                </button></li>
+                <li><button 
+                  onClick={() => {
+                    document.getElementById('features')?.scrollIntoView({ 
+                      behavior: 'smooth',
+                      block: 'start'
+                    });
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer"
+                >
+                  Pricing
+                </button></li>
+                <li><button 
+                  onClick={() => {
+                    document.getElementById('features')?.scrollIntoView({ 
+                      behavior: 'smooth',
+                      block: 'start'
+                    });
+                  }}
+                  className="hover:text-white transition-colors cursor-pointer"
+                >
+                  Security
+                </button></li>
               </ul>
             </div>
             <div>
