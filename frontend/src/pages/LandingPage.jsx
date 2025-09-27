@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import Image from '../assets/illustration-img.jpg';
+import DashboardImage from '../assets/m_dashboard.png';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -164,18 +164,18 @@ const LandingPage = () => {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-teal-50 to-white dark:from-gray-900 dark:to-gray-800 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-9 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6 }}
               className="space-y-8"
             >
-              <div className="space-y-4">
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-tight">
-                  Balance Your Books,{' '}
-                  <span className="text-teal-600 dark:text-teal-400">Not Just Your Life</span>
+              <div className="space-y-8">
+                <h1 className="text-3xl sm:text-5xl lg:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
+                    Simply Manage Your Money and Time. <br />
+                  <span className="block mt-4 text-teal-600 dark:text-teal-400"> Effortless Reporting. Smarter Decisions.</span>
                 </h1>
                 <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
                   Transform your financial management with MyKhata. Track expenses, scan receipts, 
@@ -183,7 +183,7 @@ const LandingPage = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-6">
                 <Link
                   to="/register"
                   className="inline-flex items-center justify-center px-8 py-4 bg-teal-600 dark:bg-teal-500 text-white text-lg font-semibold rounded-lg hover:bg-teal-700 dark:hover:bg-teal-600 transition-colors shadow-lg hover:shadow-xl"
@@ -206,7 +206,7 @@ const LandingPage = () => {
               </div>
 
               {/* Trust indicators */}
-              <div className="flex items-center space-x-6 pt-4">
+              <div className="flex items-center space-x-20 pt-4">
                 <div className="flex items-center">
                   <div className="flex -space-x-2">
                     {[1, 2, 3, 4].map((i) => (
@@ -235,26 +235,28 @@ const LandingPage = () => {
               className="relative"
             >
               <div className="relative z-10">
+                {/* Dashboard Image */}
                 <img
-                  src={Image}
+                  src={DashboardImage}
                   alt="MyKhata Dashboard Preview"
-                  className="w-full h-auto rounded-2xl shadow-2xl"
+                  className="w-full h-auto rounded-xl shadow-2xl"
                 />
-                {/* Floating elements */}
+                {/* Floating elements - Top Left */}
                 <motion.div
                   animate={{ y: [0, -10, 0] }}
                   transition={{ duration: 3, repeat: Infinity }}
-                  className="absolute -top-4 -right-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4"
+                  className="absolute -top-3 -left-10 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4"
                 >
                   <div className="flex items-center space-x-2">
                     <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
                     <span className="text-sm font-semibold text-gray-900 dark:text-white">+15% Savings</span>
                   </div>
                 </motion.div>
+                {/* Floating elements - Bottom Right */}
                 <motion.div
                   animate={{ y: [0, 10, 0] }}
                   transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                  className="absolute -bottom-4 -left-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4"
+                  className="absolute -bottom-1 -right-10 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4"
                 >
                   <div className="flex items-center space-x-2">
                     <Receipt className="w-5 h-5 text-teal-600 dark:text-teal-400" />
@@ -440,7 +442,7 @@ const LandingPage = () => {
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Product</h3>
+              <h3 className="text-lg text-white dark:text-black font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-gray-300 dark:text-gray-500">
                 <li><button 
                   onClick={() => {
@@ -478,11 +480,9 @@ const LandingPage = () => {
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold mb-4">Support</h3>
+              <h3 className="text-lg text-white dark:text-black font-semibold mb-4">Support</h3>
               <ul className="space-y-2 text-gray-400 dark:text-gray-500">
-                <li><Link to="/login" className="hover:text-white dark:hover:text-gray-300 transition-colors">Help Center</Link></li>
-                <li><Link to="/login" className="hover:text-white dark:hover:text-gray-300 transition-colors">Contact Us</Link></li>
-                <li><Link to="/login" className="hover:text-white dark:hover:text-gray-300 transition-colors">Privacy Policy</Link></li>
+                <li><a href="mailto:dhyan.work.2815@gmail.com" className="hover:text-white dark:hover:text-gray-300 transition-colors"> Contact Us </a></li>
               </ul>
             </div>
           </div>
