@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Transaction from '../models/transactionModel.js';
+import Category from '../models/categoryModel.js';
 import { convertCurrency } from '../utils/currencyConverter.js';
 
 // @desc    Create a new transaction
@@ -7,6 +8,26 @@ import { convertCurrency } from '../utils/currencyConverter.js';
 // @access  Private
 const createTransaction = asyncHandler(async (req, res) => {
   const { amount, type, category, description, date } = req.body;
+
+  // Validate category
+  const categoryDoc = await Category.findById(category);
+
+  if (!categoryDoc) {
+    res.status(404);
+    throw new Error('Category not found');
+  }
+
+  // Check if category belongs to user
+  if (categoryDoc.user.toString() !== req.user._id.toString()) {
+    res.status(401);
+    throw new Error('Not authorized to use this category');
+  }
+
+  // Check if transaction type matches category type
+  if (categoryDoc.type !== type) {
+    res.status(400);
+    throw new Error(`Transaction type '${type}' does not match category type '${categoryDoc.type}'`);
+  }
 
   const transaction = await Transaction.create({
     user: req.user._id,
@@ -94,7 +115,6 @@ const getTransactionById = asyncHandler(async (req, res) => {
     .select('amount type category description date currency user');
 
   if (transaction && transaction.user.toString() === req.user._id.toString()) {
-    const { user, ...transactionData } = transaction.toObject();
     res.json(transaction);
   } else {
     res.status(404);
@@ -112,6 +132,40 @@ const updateTransaction = asyncHandler(async (req, res) => {
     .select('amount type category description date user');
 
   if (transaction && transaction.user.toString() === req.user._id.toString()) {
+    // If category is being updated, validate it
+    if (category && category !== transaction.category.toString()) {
+      const categoryDoc = await Category.findById(category);
+
+      if (!categoryDoc) {
+        res.status(404);
+        throw new Error('Category not found');
+      }
+
+      // Check if category belongs to user
+      if (categoryDoc.user.toString() !== req.user._id.toString()) {
+        res.status(401);
+        throw new Error('Not authorized to use this category');
+      }
+
+      // Check if transaction type matches category type
+      // If type is also updated, check against new type, otherwise check against existing type
+      const transactionType = type || transaction.type;
+      if (categoryDoc.type !== transactionType) {
+        res.status(400);
+        throw new Error(`Transaction type '${transactionType}' does not match category type '${categoryDoc.type}'`);
+      }
+    } else if (type && type !== transaction.type) {
+        // If type is updated but category is not, check if new type matches existing category type
+        // We need to fetch the existing category to check its type
+        // Since we only have the ID in transaction.category, we need to fetch it
+        // Or we can rely on populate but transaction here is not populated yet
+        const currentCategory = await Category.findById(transaction.category);
+        if (currentCategory && currentCategory.type !== type) {
+            res.status(400);
+            throw new Error(`Transaction type '${type}' does not match category type '${currentCategory.type}'`);
+        }
+    }
+
     transaction.amount = amount || transaction.amount;
     transaction.type = type || transaction.type;
     transaction.category = category || transaction.category;

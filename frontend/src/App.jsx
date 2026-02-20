@@ -1,4 +1,4 @@
-import { useEffect, Suspense, lazy } from 'react';
+import { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import Layout from './components/layout/Layout';
@@ -31,22 +31,6 @@ function App() {
   // Get user and loading state from AuthContext
   const { user, loading } = useAuth();
 
-  // Prevent body scrolling when modal is open
-  useEffect(() => {
-    const body = document.body;
-    const hasModal = document.querySelector('[role="dialog"]');
-    
-    if (hasModal) {
-      body.style.overflow = 'hidden';
-    } else {
-      body.style.overflow = '';
-    }
-    
-    // Cleanup: always reset overflow when effect is cleaned up
-    return () => {
-      body.style.overflow = '';
-    };
-  }, []);
 
   // Show loading spinner while authentication state is being determined
   if (loading) {
